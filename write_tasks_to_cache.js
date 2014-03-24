@@ -20,7 +20,6 @@ var getJSONFromFile = function(filepath) {
     }
 };
 var forEachTask = function(fn) {
-    var tasks = gulp.tasks;
     for(var task in gulp.tasks) {
         if (gulp.tasks.hasOwnProperty(task)) {
             fn(gulp.tasks[task].name, gulp.tasks[task].dep);
