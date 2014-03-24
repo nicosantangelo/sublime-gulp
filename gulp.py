@@ -4,11 +4,11 @@ import json
 import sublime
 from hashlib import sha1 
 
-try:
+if int(sublime.version()) >= 3000:
     from .base_command import BaseCommand
-except ImportError:
+else:
     from base_command import BaseCommand
-
+    
 class GulpCommand(BaseCommand):
     package_name = "Gulp"
     cache_file_name = ".sublime-gulp.cache"
@@ -93,7 +93,7 @@ class GulpCommand(BaseCommand):
     def write_to_cache(self):
         package_path = os.path.join(sublime.packages_path(), self.package_name)
 
-        args = r'node %s/write_tasks_to_cache.js' % package_path
+        args = r'node %s/write_tasks_to_cache.js' % package_path # ST2?
 
         write_to_cache = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True)
         (stdout, stderr) = write_to_cache.communicate()

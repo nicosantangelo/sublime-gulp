@@ -17,8 +17,8 @@ class BaseCommand(sublime_plugin.WindowCommand):
     def display_message(self, text):
         sublime.active_window().active_view().set_status("gulp", text)
 
-    def show_quick_panel(self, items, on_done = None, on_highlighted = None, selected_index = -1):
-        sublime.set_timeout(lambda: self.window.show_quick_panel(items, on_done, sublime.MONOSPACE_FONT, selected_index, on_highlighted), 0)
+    def show_quick_panel(self, items, on_done = None):
+        sublime.set_timeout(lambda: self.window.show_quick_panel(items, on_done, sublime.MONOSPACE_FONT), 0)
 
     def show_input_panel(self, caption, initial_text = "", on_done = None, on_change = None, on_cancel = None):
         self.window.show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
