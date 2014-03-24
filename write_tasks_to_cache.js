@@ -5,8 +5,19 @@ var path = require("path"),
     crypto = require("crypto"),
     shasum = crypto.createHash("sha1");
 
-var gulp = require("gulp");
+var cwd = process.cwd();
 
+var gulpfilePath = path.join(cwd, "gulpfile.js");
+var cachePath    = path.join(cwd, ".sublime-gulp.cache");
+var tmpfilePath  = path.join(cwd, ".sublime-gulp-tmp.js");
+
+var requireGulp = function(gulpfilePath) {
+    // Creates a temporal file exporting gulp at the end (so it can be retrived by node) and then requires it (related: http://goo.gl/QYzRAO)
+    var fileSrc = fs.readFileSync(gulpfilePath);
+    fileSrc += ";module.exports = gulp;";
+    fs.writeFileSync(tmpfilePath, fileSrc);
+    return require(tmpfilePath);
+};
 var generatesha1 = function(filepath) {
     var content = fs.readFileSync(filepath);
     shasum.update("blob " + content.length + "\0", "utf8");
@@ -27,14 +38,8 @@ var forEachTask = function(fn) {
     }
 };
 
-var cwd = process.cwd();
-
-require(cwd + "/gulpfile");
-
-var gulpfilePath = path.join(cwd, "gulpfile.js");
-var cachePath = path.join(cwd, ".sublime-gulp.cache");
+var gulp = requireGulp(gulpfilePath);
 var sha1 = generatesha1(gulpfilePath);
-
 var gulpsublimecache = getJSONFromFile(cachePath) || {};
 
 if (!gulpsublimecache[gulpfilePath] || gulpsublimecache[gulpfilePath].sha1 !== sha1) {
@@ -55,3 +60,5 @@ if (!gulpsublimecache[gulpfilePath] || gulpsublimecache[gulpfilePath].sha1 !== s
 
     fs.writeFileSync(cachePath, JSON.stringify(gulpsublimecache));
 }
+
+fs.unlink(tmpfilePath);

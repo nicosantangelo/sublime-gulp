@@ -60,11 +60,11 @@ class GulpCommand(BaseCommand):
             tasks = [[name, task['dependencies']] for name, task in json_result.items()]
             return sorted(tasks, key = lambda task: task)
 
-
     # Refactor
     def fetch_json(self):
         jsonfilename = os.path.join(self.working_dir, self.cache_file_name)
         gulpfile = os.path.join(self.working_dir, "gulpfile.js") # .coffee ?
+        data = None
 
         if os.path.exists(jsonfilename):
             filesha1 = Security.hashfile(gulpfile)
@@ -96,8 +96,7 @@ class GulpCommand(BaseCommand):
         (stdout, stderr) = write_to_cache.communicate()
 
         if 127 == write_to_cache.returncode:
-            # node not found. gulp not in path
-            sublime.error_message("Error")
+            sublime.error_message("\"node\" command not found.\nPlease be sure to have node installed and in your PATH.")
             return
 
         return self.fetch_json()
@@ -122,7 +121,6 @@ class Env():
         if self.exec_args:
             path = exec_args.get('path', os.environ['PATH'])
         return str(path)
-
 
     def get_path_with_exec_args(self):
         env = os.environ.copy()
