@@ -57,8 +57,11 @@ class GulpCommand(BaseCommand):
         except TypeError as e:
             sublime.error_message("SublimeGulp: JSON  cache (.sublime-gulp.cache) is malformed.\nCould not read available tasks\n")
         else:
-            tasks = [[name, task['dependencies']] for name, task in json_result.items()]
+            tasks = [[name, self.dependencies_text(task)] for name, task in json_result.items()]
             return sorted(tasks, key = lambda task: task)
+
+    def dependencies_text(self, task):
+        return "Dependencies: " + task['dependencies'] if task['dependencies'] else ""
 
     # Refactor
     def fetch_json(self):
