@@ -1,7 +1,7 @@
-import os
-import subprocess
-import json
 import sublime
+import os
+import signal, subprocess
+import json
 from hashlib import sha1 
 
 if int(sublime.version()) >= 3000:
@@ -105,20 +105,56 @@ class GulpCommand(BaseCommand):
         return self.fetch_json()
 
     def run_gulp_task(self, task_index):
+        sublime.set_timeout_async(lambda: self.__run__(task_index), 0)
+
+    def __run__(self, task_index):
         if task_index > -1:
             path = self.env.get_path()
             exec_args = {
                 'cmd': "gulp " + self.tasks[task_index][0],
-                'shell': True,
-                'working_dir': self.working_dir,
+                # 'shell': True,
+                # 'working_dir': self.working_dir,
                 'path': path
             }
-            self.window.run_command("exec", exec_args)
+            # self.window.run_command("exec", exec_args)
+            proc = subprocess.Popen(exec_args['cmd'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True, preexec_fn=os.setsid)
+            ProcessCache.add(proc)
+            for line in iter(proc.stdout.readline, ''):
+                print(line)
+            (stdout, stderr) = proc.communicate()
 
 
 class GulpKillCommand(BaseCommand):
     def run(self):
-        self.window.run_command("exec", { "kill": True })
+        # self.window.run_command("exec", { "kill": True })
+        ProcessCache.each(self.kill)
+        ProcessCache.clear()
+
+    def kill(self, proc):
+        try:
+            os.killpg(proc.pid, signal.SIGTERM)
+        except ProcessLookupError:
+            print("Process not found")
+
+# This implementation still has problems
+# 1. It isn't cross-platform
+# 2. It queues tasks, so if watch is running and every other task will get executed after watch is killed
+# 3. It can frezee sublime!
+class ProcessCache():
+    _procs = []
+
+    @classmethod
+    def add(cls, proc):
+       cls._procs.append(proc)
+
+    @classmethod
+    def each(cls, fn):
+        for proc in cls._procs:
+            fn(proc)
+
+    @classmethod
+    def clear(cls):
+        del cls._procs[:]
 
 class Env():
     def __init__(self, settings):
