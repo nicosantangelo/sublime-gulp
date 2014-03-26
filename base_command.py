@@ -27,7 +27,6 @@ class BaseCommand(sublime_plugin.WindowCommand):
     def show_in_editable_tab(self, text, extra = None):
         view = self.show_in_tab(text)
         view.set_scratch(True)
-        OpenViews.set(view, extra)
 
     def show_in_tab(self, text):
         view = self.window.new_file()
