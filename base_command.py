@@ -47,7 +47,6 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.output_view.set_read_only(True)
 
     def set_new_view_attributes(self, view):
-        view.set_syntax_file(self.syntax_file)
         view.set_viewport_position((0, 0), True)
 
 class ViewInsertCommand(sublime_plugin.TextCommand):
