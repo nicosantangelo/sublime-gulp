@@ -2,5 +2,9 @@
     {
       "caption": "Gulp",
       "command": "gulp"
+    },
+    {
+      "caption": "Gulp: Kill running tasks",
+      "command": "gulp_kill"
     }
 ]

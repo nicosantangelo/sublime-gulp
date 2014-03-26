@@ -115,6 +115,11 @@ class GulpCommand(BaseCommand):
             }
             self.window.run_command("exec", exec_args)
 
+
+class GulpKillCommand(BaseCommand):
+    def run(self):
+        self.window.run_command("exec", { "kill": True })
+
 class Env():
     def __init__(self, settings):
         self.exec_args = settings.get('exec_args', False)
