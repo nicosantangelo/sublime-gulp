@@ -36,9 +36,9 @@ class BaseCommand(sublime_plugin.WindowCommand):
         return view
 
     def show_output_panel(self, text):
-        self.output_view = self.window.get_output_panel("textarea")
+        self.output_view = self.window.get_output_panel("gulp_output")
         self.append_to_output_view(text)
-        self.window.run_command("show_panel", { "panel": "output.textarea" })
+        self.window.run_command("show_panel", { "panel": "output.gulp_output" })
         self.set_new_view_attributes(self.output_view)
 
     def append_to_output_view(self, text):
