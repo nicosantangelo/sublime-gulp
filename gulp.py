@@ -94,7 +94,7 @@ class GulpCommand(BaseCommand):
     def write_to_cache(self):
         package_path = os.path.join(sublime.packages_path(), self.package_name)
 
-        args = r'node %s/write_tasks_to_cache.js' % package_path # ST2?
+        args = r'node "%s/write_tasks_to_cache.js"' % package_path # Test in ST2
 
         write_to_cache = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True)
         (stdout, stderr) = write_to_cache.communicate()
@@ -112,17 +112,24 @@ class GulpCommand(BaseCommand):
 
     def __run__(self, task_index):
         if task_index > -1:
-            cmd = r"gulp %s" % self.tasks[task_index][0],
-            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True, preexec_fn=os.setsid)
+            task_name = self.tasks[task_index][0]
+            cmd = r"gulp %s" % task_name
+
+            if sublime.platform() == "windows":
+                process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True)
+            else:
+                process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True, preexec_fn=os.setsid)
+
             ProcessCache.add(process)
+            self.show_output_panel("Running %s...\n" % task_name) # Just show the panel don't override the contents.
             self.show_process_output(process)
 
     def show_process_output(self, process):
-        # ST2!
-        self.show_output_panel("")
+        # Test in ST2!
         for line in process.stdout:
-            self.append_to_output_view(str(line.rstrip().decode('utf-8')) + "\n")
+            self.append_to_output_view(str(line.rstrip().decode('utf-8')) + "\n") # Move viewport to the end
         process.terminate()
+        # Remove from cache
 
 
 class GulpKillCommand(BaseCommand):
@@ -130,14 +137,21 @@ class GulpKillCommand(BaseCommand):
         ProcessCache.each(self.kill)
         ProcessCache.clear()
 
-    def kill(self, proc):
-        try:
-            os.killpg(proc.pid, signal.SIGTERM)
-        except ProcessLookupError:
-            print("Process not found")
+    def kill(self, process):
+        if sublime.platform() == "windows":
+            kill_process = subprocess.Popen(['taskkill', '/F', '/T', '/PID', str(process.pid)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            kill_process.communicate()
+        else:
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                print("Process not found")
 
-# This implementation still has problems
-# 1. It isn't cross-platform
+        self.display_message("All running tasks killed!") # Show in panel, make sure it exists
+
+class CrossPlatformProcess():
+    pass
+
 class ProcessCache():
     _procs = []
 
