@@ -1,5 +1,6 @@
 import sublime
 import os
+from threading import Thread
 import signal, subprocess
 import json
 from hashlib import sha1 
@@ -105,7 +106,9 @@ class GulpCommand(BaseCommand):
         return self.fetch_json()
 
     def run_gulp_task(self, task_index):
-        sublime.set_timeout_async(lambda: self.__run__(task_index), 0)
+        thread = Thread(target = self.__run__, args = (task_index, ))
+        # Option to kill on timeout. Check thread.isAlive or fire on sublime.set_async_timeout(kill, timeout)
+        thread.start()
 
     def __run__(self, task_index):
         if task_index > -1:
@@ -135,7 +138,6 @@ class GulpKillCommand(BaseCommand):
 
 # This implementation still has problems
 # 1. It isn't cross-platform
-# 2. It queues tasks, so if watch is running and every other task will get executed after watch is killed
 class ProcessCache():
     _procs = []
 
