@@ -109,24 +109,21 @@ class GulpCommand(BaseCommand):
 
     def __run__(self, task_index):
         if task_index > -1:
-            path = self.env.get_path()
-            exec_args = {
-                'cmd': "gulp " + self.tasks[task_index][0],
-                # 'shell': True,
-                # 'working_dir': self.working_dir,
-                'path': path
-            }
-            # self.window.run_command("exec", exec_args)
-            proc = subprocess.Popen(exec_args['cmd'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True, preexec_fn=os.setsid)
-            ProcessCache.add(proc)
-            for line in iter(proc.stdout.readline, ''):
-                print(line)
-            (stdout, stderr) = proc.communicate()
+            cmd = r"gulp %s" % self.tasks[task_index][0],
+            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True, preexec_fn=os.setsid)
+            ProcessCache.add(process)
+            self.show_process_output(process)
+
+    def show_process_output(self, process):
+        # ST2!
+        self.show_output_panel("")
+        for line in process.stdout:
+            self.append_to_output_view(str(line.rstrip().decode('utf-8')) + "\n")
+        process.terminate()
 
 
 class GulpKillCommand(BaseCommand):
     def run(self):
-        # self.window.run_command("exec", { "kill": True })
         ProcessCache.each(self.kill)
         ProcessCache.clear()
 
@@ -139,7 +136,6 @@ class GulpKillCommand(BaseCommand):
 # This implementation still has problems
 # 1. It isn't cross-platform
 # 2. It queues tasks, so if watch is running and every other task will get executed after watch is killed
-# 3. It can frezee sublime!
 class ProcessCache():
     _procs = []
 
