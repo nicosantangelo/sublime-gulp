@@ -115,11 +115,7 @@ class GulpCommand(BaseCommand):
             task_name = self.tasks[task_index][0]
             cmd = r"gulp %s" % task_name
 
-            if sublime.platform() == "windows":
-                process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True)
-            else:
-                process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True, preexec_fn=os.setsid)
-
+            process = CrossPlatformProcess(self).run(cmd)
             ProcessCache.add(process)
             self.show_output_panel("Running %s...\n" % task_name) # Just show the panel don't override the contents.
             self.show_process_output(process)
@@ -138,6 +134,23 @@ class GulpKillCommand(BaseCommand):
         ProcessCache.clear()
 
     def kill(self, process):
+        CrossPlatformProcess.kill(process)
+        self.display_message("All running tasks killed!") # Show in panel, make sure it exists
+
+class CrossPlatformProcess():
+    def __init__(self, command):
+        self.path = command.env.get_path_with_exec_args()
+        self.working_dir = command.working_dir
+
+    def run(self, cmd):
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, cwd=self.working_dir, shell=True, preexec_fn=self._preexec_val())
+        return process
+
+    def _preexec_val(self):
+        return os.setsid if sublime.platform() != "windows" else None
+
+    @classmethod
+    def kill(cls, process):
         if sublime.platform() == "windows":
             kill_process = subprocess.Popen(['taskkill', '/F', '/T', '/PID', str(process.pid)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             kill_process.communicate()
@@ -146,11 +159,6 @@ class GulpKillCommand(BaseCommand):
                 os.killpg(process.pid, signal.SIGTERM)
             except ProcessLookupError:
                 print("Process not found")
-
-        self.display_message("All running tasks killed!") # Show in panel, make sure it exists
-
-class CrossPlatformProcess():
-    pass
 
 class ProcessCache():
     _procs = []
