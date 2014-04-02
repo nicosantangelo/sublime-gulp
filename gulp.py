@@ -112,18 +112,22 @@ class GulpCommand(BaseCommand):
 
     def __run__(self, task_index):
         if task_index > -1:
-            task_name = self.tasks[task_index][0]
-            cmd = r"gulp %s" % task_name
+            cmd = self.construct_cmd(task_index)
             process = CrossPlatformProcess(self)
             process.run(cmd)
-            self.show_output_panel("Running %s...\n" % task_name) # Just show the panel don't override the contents.
             process.pipe_stdout(self.append_to_output_view)
+
+    def construct_cmd(self, task_index):
+        task_name = self.tasks[task_index][0]
+        self.show_output_panel("Running %s...\n" % task_name)
+        return r"gulp %s" % task_name
 
 
 class GulpKillCommand(BaseCommand):
     def run(self):
-        ProcessCache.kill_all()
-        self.display_message("All running tasks killed!") # Show in panel, make sure it exists
+        if not ProcessCache.empty():
+            ProcessCache.kill_all()
+            self.show_output_panel("All running tasks killed!")
 
 
 class CrossPlatformProcess():
@@ -175,6 +179,10 @@ class ProcessCache():
         for process in cls._procs:
             process.kill()
         cls.clear()
+
+    @classmethod
+    def empty(cls):
+        return len(cls._procs) == 0
 
     @classmethod
     def clear(cls):
