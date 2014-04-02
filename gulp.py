@@ -143,8 +143,11 @@ class CrossPlatformProcess():
         # Test in ST2!
         for line in self.process.stdout:
             fn(str(line.rstrip().decode('utf-8')) + "\n")
+        self.terminate()
+
+    def terminate(self):
         self.process.terminate()
-        # Remove from cache
+        ProcessCache.remove(self)
 
     def kill(self):
         pid = self.process.pid
@@ -152,18 +155,20 @@ class CrossPlatformProcess():
             kill_process = subprocess.Popen(['taskkill', '/F', '/T', '/PID', str(pid)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             kill_process.communicate()
         else:
-            try:
-                os.killpg(pid, signal.SIGTERM)
-            except ProcessLookupError:
-                print("Process not found")
+            os.killpg(pid, signal.SIGTERM)
 
 
 class ProcessCache():
     _procs = []
 
     @classmethod
-    def add(cls, proc):
-       cls._procs.append(proc)
+    def add(cls, process):
+       cls._procs.append(process)
+
+    @classmethod
+    def remove(cls, process):
+        if process in cls._procs:
+            cls._procs.remove(process)
 
     @classmethod
     def kill_all(cls):
