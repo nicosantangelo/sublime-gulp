@@ -114,28 +114,17 @@ class GulpCommand(BaseCommand):
         if task_index > -1:
             task_name = self.tasks[task_index][0]
             cmd = r"gulp %s" % task_name
-
-            process = CrossPlatformProcess(self).run(cmd)
-            ProcessCache.add(process)
+            process = CrossPlatformProcess(self)
+            process.run(cmd)
             self.show_output_panel("Running %s...\n" % task_name) # Just show the panel don't override the contents.
-            self.show_process_output(process)
-
-    def show_process_output(self, process):
-        # Test in ST2!
-        for line in process.stdout:
-            self.append_to_output_view(str(line.rstrip().decode('utf-8')) + "\n") # Move viewport to the end
-        process.terminate()
-        # Remove from cache
+            process.pipe_stdout(self.append_to_output_view)
 
 
 class GulpKillCommand(BaseCommand):
     def run(self):
-        ProcessCache.each(self.kill)
-        ProcessCache.clear()
-
-    def kill(self, process):
-        CrossPlatformProcess.kill(process)
+        ProcessCache.kill_all()
         self.display_message("All running tasks killed!") # Show in panel, make sure it exists
+
 
 class CrossPlatformProcess():
     def __init__(self, command):
@@ -143,22 +132,31 @@ class CrossPlatformProcess():
         self.working_dir = command.working_dir
 
     def run(self, cmd):
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, cwd=self.working_dir, shell=True, preexec_fn=self._preexec_val())
-        return process
+        self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, cwd=self.working_dir, shell=True, preexec_fn=self._preexec_val())
+        ProcessCache.add(self)
+        return self
 
     def _preexec_val(self):
         return os.setsid if sublime.platform() != "windows" else None
 
-    @classmethod
-    def kill(cls, process):
+    def pipe_stdout(self, fn):
+        # Test in ST2!
+        for line in self.process.stdout:
+            fn(str(line.rstrip().decode('utf-8')) + "\n")
+        self.process.terminate()
+        # Remove from cache
+
+    def kill(self):
+        pid = self.process.pid
         if sublime.platform() == "windows":
-            kill_process = subprocess.Popen(['taskkill', '/F', '/T', '/PID', str(process.pid)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            kill_process = subprocess.Popen(['taskkill', '/F', '/T', '/PID', str(pid)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             kill_process.communicate()
         else:
             try:
-                os.killpg(process.pid, signal.SIGTERM)
+                os.killpg(pid, signal.SIGTERM)
             except ProcessLookupError:
                 print("Process not found")
+
 
 class ProcessCache():
     _procs = []
@@ -168,13 +166,15 @@ class ProcessCache():
        cls._procs.append(proc)
 
     @classmethod
-    def each(cls, fn):
-        for proc in cls._procs:
-            fn(proc)
+    def kill_all(cls):
+        for process in cls._procs:
+            process.kill()
+        cls.clear()
 
     @classmethod
     def clear(cls):
         del cls._procs[:]
+
 
 class Env():
     def __init__(self, settings):
@@ -193,6 +193,7 @@ class Env():
             if path:
                 env['PATH'] = path
         return env
+
 
 class Security():
     @classmethod
