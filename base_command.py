@@ -29,25 +29,26 @@ class BaseCommand(sublime_plugin.WindowCommand):
         view.set_scratch(True)
 
     def show_in_tab(self, text):
-        view = self.window.new_file()
+        view = self.window.new_file() 
         view.set_name("Gulp")
-        view.run_command("view_insert", { "size" : view.size(), "content": text });
-        self.set_new_view_attributes(view)
+        self._insert(view, text)
         return view
 
+    # Use this method and check the conditional here. open_file or get_output_panel
     def show_output_panel(self, text):
         self.output_view = self.window.get_output_panel("gulp_output")
         self.append_to_output_view(text)
         self.window.run_command("show_panel", { "panel": "output.gulp_output" })
-        self.set_new_view_attributes(self.output_view)
 
-    def append_to_output_view(self, text):
+    def append_to_oputput_view(self, text):
         self.output_view.set_read_only(False)
-        self.output_view.run_command("append", { "characters": text })
+        self._insert(self.output_view, text, True)
         self.output_view.set_read_only(True)
 
-    def set_new_view_attributes(self, view):
-        view.set_viewport_position((0, 0), True)
+    def _insert(self, view, content, scroll_to_end = False):
+        view.run_command("view_insert", { "size": view.size(), "content": content })
+        position = (view.size(), view.size()) if scroll_to_end else (0, 0)
+        view.set_viewport_position(position, True)
 
 class ViewInsertCommand(sublime_plugin.TextCommand):
     def run(self, edit, size, content):
