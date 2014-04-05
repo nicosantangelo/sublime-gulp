@@ -1,3 +1,6 @@
 {
-
+	"exec_args": {},
+	
+    // Use a new tab when showing the results. If it's false it'll use a panel.
+    "results_in_new_tab": false
 }

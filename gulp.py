@@ -124,7 +124,7 @@ class GulpCommand(BaseCommand):
 
 
 class GulpKillCommand(BaseCommand):
-    def run(self):
+    def work(self):
         if not ProcessCache.empty():
             ProcessCache.kill_all()
             self.show_output_panel("All running tasks killed!")
