@@ -24,10 +24,6 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.window.show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
 
     # Output view
-    def show_in_editable_tab(self, text, extra = None):
-        view = self.show_in_tab(text)
-        view.set_scratch(True)
-
     def show_in_tab(self, text):
         view = self.window.new_file() 
         view.set_name("Gulp")
@@ -40,7 +36,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.append_to_output_view(text)
         self.window.run_command("show_panel", { "panel": "output.gulp_output" })
 
-    def append_to_oputput_view(self, text):
+    def append_to_output_view(self, text):
         self.output_view.set_read_only(False)
         self._insert(self.output_view, text, True)
         self.output_view.set_read_only(True)
