@@ -106,18 +106,21 @@ class GulpCommand(BaseCommand):
         return self.fetch_json()
 
     def run_gulp_task(self, task_index):
-        thread = Thread(target = self.__run__, args = (task_index, ))
-        # Option to kill on timeout. Check thread.isAlive or fire on sublime.set_async_timeout(kill, timeout)
-        thread.start()
-
-    def __run__(self, task_index):
         if task_index > -1:
-            cmd = self.construct_cmd(task_index)
-            process = CrossPlatformProcess(self)
-            process.run(cmd)
-            process.pipe_stdout(self.append_to_output_view)
+            command = self.construct_command(task_index)
+            # Option to kill on timeout. Check thread.isAlive or fire on sublime.set_async_timeout(kill, timeout)
+            Thread(target = self.__run_command__, args = (command, )).start()
 
-    def construct_cmd(self, task_index):
+    def __run_command__(self, command):
+            process = CrossPlatformProcess(self)
+            process.run(command)
+            if int(sublime.version()) >= 3000:
+                process.pipe_stdout(self.append_to_output_view)
+            else:
+                stdout, stin = process.communicate()
+                sublime.set_timeout(lambda: self.append_to_output_view(stdout), 0)
+
+    def construct_command(self, task_index):
         task_name = self.tasks[task_index][0]
         self.show_output_panel("Running %s...\n" % task_name)
         return r"gulp %s" % task_name
@@ -127,7 +130,7 @@ class GulpKillCommand(BaseCommand):
     def work(self):
         if not ProcessCache.empty():
             ProcessCache.kill_all()
-            self.show_output_panel("All running tasks killed!")
+            self.show_output_panel("All running tasks killed!\n")
 
 
 class CrossPlatformProcess():
@@ -144,10 +147,12 @@ class CrossPlatformProcess():
         return os.setsid if sublime.platform() != "windows" else None
 
     def pipe_stdout(self, fn):
-        # Test in ST2!
         for line in self.process.stdout:
             fn(str(line.rstrip().decode('utf-8')) + "\n")
         self.terminate()
+
+    def communicate(self):
+        return self.process.communicate()
 
     def terminate(self):
         self.process.terminate()
