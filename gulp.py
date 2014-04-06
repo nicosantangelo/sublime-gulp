@@ -1,10 +1,14 @@
-import os
-import subprocess
-import json
 import sublime
+import os
+from threading import Thread
+import signal, subprocess
+import json
 from hashlib import sha1 
 
-if int(sublime.version()) >= 3000:
+def is_sublime_text_3():
+    return int(sublime.version()) >= 3000
+
+if is_sublime_text_3():
     from .base_command import BaseCommand
 else:
     from base_command import BaseCommand
@@ -93,7 +97,7 @@ class GulpCommand(BaseCommand):
     def write_to_cache(self):
         package_path = os.path.join(sublime.packages_path(), self.package_name)
 
-        args = r'node %s/write_tasks_to_cache.js' % package_path # ST2?
+        args = r'node "%s/write_tasks_to_cache.js"' % package_path # Test in ST2
 
         write_to_cache = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True)
         (stdout, stderr) = write_to_cache.communicate()
@@ -106,19 +110,92 @@ class GulpCommand(BaseCommand):
 
     def run_gulp_task(self, task_index):
         if task_index > -1:
-            path = self.env.get_path()
-            exec_args = {
-                'cmd': "gulp " + self.tasks[task_index][0],
-                'shell': True,
-                'working_dir': self.working_dir,
-                'path': path
-            }
-            self.window.run_command("exec", exec_args)
+            command = self.construct_command(task_index)
+            # Option to kill on timeout. Check thread.isAlive or fire on sublime.set_async_timeout(kill, timeout)
+            Thread(target = self.__run_command__, args = (command, )).start()
+
+    def __run_command__(self, command):
+            process = CrossPlatformProcess(self)
+            process.run(command)
+            if is_sublime_text_3():
+                process.pipe_stdout(self.append_to_output_view)
+            else:
+                stdout, stin = process.communicate()
+                sublime.set_timeout(lambda: self.append_to_output_view(stdout), 0)
+
+    def construct_command(self, task_index):
+        task_name = self.tasks[task_index][0]
+        self.show_output_panel("Running %s...\n" % task_name)
+        return r"gulp %s" % task_name
 
 
 class GulpKillCommand(BaseCommand):
-    def run(self):
-        self.window.run_command("exec", { "kill": True })
+    def work(self):
+        if not ProcessCache.empty():
+            ProcessCache.kill_all()
+            self.show_output_panel("All running tasks killed!\n")
+
+
+class CrossPlatformProcess():
+    def __init__(self, command):
+        self.path = command.env.get_path_with_exec_args()
+        self.working_dir = command.working_dir
+
+    def run(self, cmd):
+        self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, cwd=self.working_dir, shell=True, preexec_fn=self._preexec_val())
+        ProcessCache.add(self)
+        return self
+
+    def _preexec_val(self):
+        return os.setsid if sublime.platform() != "windows" else None
+
+    def pipe_stdout(self, fn):
+        for line in self.process.stdout:
+            fn(str(line.rstrip().decode('utf-8')) + "\n")
+        self.terminate()
+
+    def communicate(self):
+        return self.process.communicate()
+
+    def terminate(self):
+        self.process.terminate()
+        ProcessCache.remove(self)
+
+    def kill(self):
+        pid = self.process.pid
+        if sublime.platform() == "windows":
+            kill_process = subprocess.Popen(['taskkill', '/F', '/T', '/PID', str(pid)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            kill_process.communicate()
+        else:
+            os.killpg(pid, signal.SIGTERM)
+
+
+class ProcessCache():
+    _procs = []
+
+    @classmethod
+    def add(cls, process):
+       cls._procs.append(process)
+
+    @classmethod
+    def remove(cls, process):
+        if process in cls._procs:
+            cls._procs.remove(process)
+
+    @classmethod
+    def kill_all(cls):
+        for process in cls._procs:
+            process.kill()
+        cls.clear()
+
+    @classmethod
+    def empty(cls):
+        return len(cls._procs) == 0
+
+    @classmethod
+    def clear(cls):
+        del cls._procs[:]
+
 
 class Env():
     def __init__(self, settings):
@@ -137,6 +214,7 @@ class Env():
             if path:
                 env['PATH'] = path
         return env
+
 
 class Security():
     @classmethod

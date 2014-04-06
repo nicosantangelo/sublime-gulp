@@ -24,30 +24,26 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.window.show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
 
     # Output view
-    def show_in_editable_tab(self, text, extra = None):
-        view = self.show_in_tab(text)
-        view.set_scratch(True)
-
-    def show_in_tab(self, text):
-        view = self.window.new_file()
-        view.set_name("Gulp")
-        view.run_command("view_insert", { "size" : view.size(), "content": text });
-        self.set_new_view_attributes(view)
-        return view
-
     def show_output_panel(self, text):
-        self.output_view = self.window.get_output_panel("textarea")
+        if self.settings.get("results_in_new_tab", False):
+            self.output_view = self.window.open_file("Gulp Results")
+            self.scroll_to_end = False
+        else:
+            self.output_view = self.window.get_output_panel("gulp_output")
+            self.scroll_to_end = True
+            self.window.run_command("show_panel", { "panel": "output.gulp_output" })
+            
         self.append_to_output_view(text)
-        self.window.run_command("show_panel", { "panel": "output.textarea" })
-        self.set_new_view_attributes(self.output_view)
 
     def append_to_output_view(self, text):
         self.output_view.set_read_only(False)
-        self.output_view.run_command("append", { "characters": text })
+        self._insert(self.output_view, text)
         self.output_view.set_read_only(True)
 
-    def set_new_view_attributes(self, view):
-        view.set_viewport_position((0, 0), True)
+    def _insert(self, view, content):
+        view.run_command("view_insert", { "size": view.size(), "content": content })
+        position = (view.size(), view.size()) if self.scroll_to_end else (0, 0)
+        view.set_viewport_position(position, True)
 
 class ViewInsertCommand(sublime_plugin.TextCommand):
     def run(self, edit, size, content):
