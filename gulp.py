@@ -5,7 +5,10 @@ import signal, subprocess
 import json
 from hashlib import sha1 
 
-if int(sublime.version()) >= 3000:
+def is_sublime_text_3():
+    return int(sublime.version()) >= 3000
+
+if is_sublime_text_3():
     from .base_command import BaseCommand
 else:
     from base_command import BaseCommand
@@ -114,7 +117,7 @@ class GulpCommand(BaseCommand):
     def __run_command__(self, command):
             process = CrossPlatformProcess(self)
             process.run(command)
-            if int(sublime.version()) >= 3000:
+            if is_sublime_text_3():
                 process.pipe_stdout(self.append_to_output_view)
             else:
                 stdout, stin = process.communicate()
