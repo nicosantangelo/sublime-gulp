@@ -26,14 +26,17 @@ class GulpCommand(BaseCommand):
         self.env = Env(self.settings)
 
     def list_gulp_files(self):
-        self.folders = []
-        for folder_path in self.window.folders():
-            self.folders.append(folder_path)
-            self.append_to_gulp_files(folder_path)
+        self.append_paths()
         if len(self.gulp_files) > 0:
             self.choose_file()
         else:
             sublime.error_message("gulpfile.js or gulpfile.coffee not found!")
+
+    def append_paths(self):
+        self.folders = []
+        for folder_path in self.window.folders():
+            self.folders.append(folder_path)
+            self.append_to_gulp_files(folder_path)
 
     def append_to_gulp_files(self, path):
         if os.path.exists(os.path.join(path, "gulpfile.js")):
@@ -48,9 +51,12 @@ class GulpCommand(BaseCommand):
     def show_tasks_from_gulp_file(self, file_index):
         if file_index > -1:
             self.working_dir = os.path.dirname(self.gulp_files[file_index])
-            self.tasks = self.list_tasks()
-            if self.tasks is not None:
-                self.show_quick_panel(self.tasks, self.run_gulp_task)
+            self.defer(self.show_tasks)
+
+    def show_tasks(self):
+        self.tasks = self.list_tasks()
+        if self.tasks is not None:
+            self.show_quick_panel(self.tasks, self.run_gulp_task)
 
     def list_tasks(self):
         try:
@@ -97,10 +103,10 @@ class GulpCommand(BaseCommand):
 
         args = r'node "%s/write_tasks_to_cache.js"' % package_path # Test in ST2
 
-        write_to_cache = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True)
-        (stdout, stderr) = write_to_cache.communicate()
+        process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True)
+        (stdout, stderr) = process.communicate()
 
-        if 127 == write_to_cache.returncode:
+        if 127 == process.returncode:
             sublime.error_message("\"node\" command not found.\nPlease be sure to have node installed and in your PATH.")
             return
 

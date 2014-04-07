@@ -1,5 +1,13 @@
 import sublime, sublime_plugin, re
 
+def is_sublime_text_3():
+    return int(sublime.version()) >= 3000
+
+if is_sublime_text_3():
+    from .progress_notifier import ProgressNotifier
+else:
+    from progress_notifier import ProgressNotifier
+
 # A base for each command
 class BaseCommand(sublime_plugin.WindowCommand):
     def run(self):
@@ -44,6 +52,18 @@ class BaseCommand(sublime_plugin.WindowCommand):
         view.run_command("view_insert", { "size": view.size(), "content": content })
         position = (view.size(), view.size()) if self.scroll_to_end else (0, 0)
         view.set_viewport_position(position, True)
+
+    # Async calls
+    def defer(self, fn):
+        self.async(fn, 0)
+        
+    def async(self, fn, delay):
+        progress = ProgressNotifier('Gulp: Working')
+        sublime.set_timeout_async(lambda: self.call(fn, progress), delay)
+
+    def call(self, fn, progress):
+        fn()
+        progress.stop()
 
 class ViewInsertCommand(sublime_plugin.TextCommand):
     def run(self, edit, size, content):
