@@ -7,7 +7,7 @@ Currently under development :).
 ## Usage
 
 ### Run Tasks
-To run a task, first choose `Gulp` from the command pallete, the package will search for a gulpfile.js or gulpfile.coffee in an open folder and create a cache (`.sublime-gulp.cache`) with it (the first run might be a little slow).
+To run a task, first choose `Gulp` from the command pallete, the package will search for a gulpfile.js in an open folder and create a cache (`.sublime-gulp.cache`) with it (the first run might be a little slow).
 
 The package will display all the tasks in a list, selecting one will run it.
 

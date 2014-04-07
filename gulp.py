@@ -38,8 +38,6 @@ class GulpCommand(BaseCommand):
     def append_to_gulp_files(self, path):
         if os.path.exists(os.path.join(path, "gulpfile.js")):
             self.gulp_files.append(os.path.join(path, "gulpfile.js"))
-        elif os.path.exists(os.path.join(path, "gulpfile.coffee")):
-            self.gulp_files.append(os.path.join(path, "gulpfile.coffee"))
 
     def choose_file(self):
         if len(self.gulp_files) == 1:
