@@ -79,7 +79,7 @@ class GulpCommand(BaseCommand):
 
             try:
                 data = json.load(json_data)
-                if data[gulpfile]["sha1"] == filesha1:
+                if gulpfile in data and data[gulpfile]["sha1"] == filesha1:
                     return data[gulpfile]["tasks"]
             finally:
                 json_data.close()
