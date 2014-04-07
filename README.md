@@ -9,24 +9,35 @@ Currently under development :).
 ### Run Tasks
 To run a task, first choose `Gulp` from the command pallete, the package will search for a gulpfile.js or gulpfile.coffee in an open folder and create a cache (`.sublime-gulp.cache`) with it (the first run might be a little slow).
 
-The package will display all the tasks in a list. Selecting one will run it.
+The package will display all the tasks in a list, selecting one will run it.
 
-To show the task output the package uses the `Build Results` window. To access it go to:
+To show the task output the package uses a panel or a new tab (depends on your [settings](https://github.com/NicoSantangelo/sublime-gulp#settings)), you can  add a keybinding to open the panel like this:
 
-`Tools -> Build Results -> Show Build Results`
+`{ "keys": ["{KEYS}"], "command": "show_panel", "args": { "panel": "output.gulp_output" } }`
 
-You can also add a keybinding to toggle it, like this:
+Keep in mind that, the package creates the first cache using [node](http://nodejs.org/), so for it to work you might need to add your node_modules path to NODE_PATH, for example (for Unix):
 
-`{ "keys": ["{KEYS}"], "command": "show_panel", "args": { "toggle": true, "panel": "output.exec" } }`
+`export NODE_PATH=/usr/local/lib/node_modules`
 
 ### Kill tasks
-To kill running tasks like `watch` you can pick the command `Gulp: Kill running tasks`. This might not work as expected in some systems, I'm looking for a workaround in [this branch](https://github.com/NicoSantangelo/sublime-gulp/tree/replace_exec). Any idea is welcome!
+To kill running tasks like `watch` you can pick the command `Gulp: Kill running tasks`.
 
-## Settings (from [sublime-grunt](https://github.com/tvooo/sublime-grunt))
+## Settings
 
-The file `SublimeGulp.sublime-settings` is used for configuration.
+The file `SublimeGulp.sublime-settings` is used for configuration, you can change your user settings in `Preferences -> Package Settings -> Gulp -> Settings - User`.
 
-You may override your `PATH` environment variable as follows:
+The defaults are:
+
+````json
+{
+	"exec_args": {},
+    "results_in_new_tab": false
+}
+````
+
+#### exec_args
+
+You may override your `PATH` environment variable as follows (from [sublime-grunt](https://github.com/tvooo/sublime-grunt)):
 
 ````json
 {
@@ -36,11 +47,9 @@ You may override your `PATH` environment variable as follows:
 }
 ````
 
-You can change your user settings in `Preferences -> Package Settings -> Gulp -> Settings - User`
+#### results_in_new_tab
 
-Also, the package creates the first cache using [node](http://nodejs.org/), so for it to work you might need to add your node_modules path to NODE_PATH, for example (for Unix):
-
-`export NODE_PATH=/usr/local/lib/node_modules`
+If set to true, a new tab will be used instead of a panel to output the results.
 
 ## Shortcut Keys
 
