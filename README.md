@@ -53,13 +53,18 @@ If set to true, a new tab will be used instead of a panel to output the results.
 
 ## Shortcut Keys
 
-This package doesn't bind any command to a keybinding, but you can add it like this:
+This package doesn't bind any command to a keyboard shortcut, but you can add it like this:
 
 ````json
-{
-    "keys": ["{KEYS}"], "command": "gulp", 
-    "keys": ["{KEYS}"], "command": "gulp_kill"
-}
+[
+    { "keys": ["{KEYS}"], "command": "gulp" },
+    { "keys": ["{KEYS}"], "command": "gulp_kill" }
+]
+````
+
+You also can use a shortcut for running a specific task like this:
+````json
+{ "keys": ["{KEYS}"], "command": "gulp", "args": {"task_name": "watch"} },
 ````
 
 ## Instalation
