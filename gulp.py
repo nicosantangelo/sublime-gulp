@@ -30,7 +30,7 @@ class GulpCommand(BaseCommand):
         if len(self.gulp_files) > 0:
             self.choose_file()
         else:
-            sublime.error_message("gulpfile.js or gulpfile.coffee not found!")
+            sublime.error_message("gulpfile.js not found!")
 
     def append_paths(self):
         self.folders = []
