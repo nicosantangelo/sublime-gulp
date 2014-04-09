@@ -51,12 +51,15 @@ class GulpCommand(BaseCommand):
     def show_tasks_from_gulp_file(self, file_index):
         if file_index > -1:
             self.working_dir = os.path.dirname(self.gulp_files[file_index])
-            self.defer(self.show_tasks)
+            if self.task_name:
+                self.run_gulp_task()
+            else:
+                self.defer(self.show_tasks)
 
     def show_tasks(self):
         self.tasks = self.list_tasks()
         if self.tasks is not None:
-            self.show_quick_panel(self.tasks, self.run_gulp_task)
+            self.show_quick_panel(self.tasks, self.task_list_callback)
 
     def list_tasks(self):
         try:
@@ -101,7 +104,7 @@ class GulpCommand(BaseCommand):
     def write_to_cache(self):
         package_path = os.path.join(sublime.packages_path(), self.package_name)
 
-        args = r'node "%s/write_tasks_to_cache.js"' % package_path # Test in ST2
+        args = r'node "%s/write_tasks_to_cache.js"' % package_path
 
         process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True)
         (stdout, stderr) = process.communicate()
@@ -112,25 +115,27 @@ class GulpCommand(BaseCommand):
 
         return self.fetch_json()
 
-    def run_gulp_task(self, task_index):
+    def task_list_callback(self, task_index):
         if task_index > -1:
-            command = self.construct_command(task_index)
-            # Option to kill on timeout. Check thread.isAlive or fire on sublime.set_async_timeout(kill, timeout)
-            Thread(target = self.__run_command__, args = (command, )).start()
+            self.task_name = self.tasks[task_index][0]
+            self.run_gulp_task()
 
-    def __run_command__(self, command):
+    def run_gulp_task(self):
+        command = self.construct_command()
+        Thread(target = self.run_process, args = (command, )).start() # Option to kill on timeout?
+
+    def construct_command(self):
+        self.show_output_panel("Running %s...\n" % self.task_name)
+        return r"gulp %s" % self.task_name
+
+    def run_process(self, command):
             process = CrossPlatformProcess(self)
             process.run(command)
             if is_sublime_text_3():
                 process.pipe_stdout(self.append_to_output_view)
             else:
                 stdout, stin = process.communicate()
-                sublime.set_timeout(lambda: self.append_to_output_view(stdout), 0)
-
-    def construct_command(self, task_index):
-        task_name = self.tasks[task_index][0]
-        self.show_output_panel("Running %s...\n" % task_name)
-        return r"gulp %s" % task_name
+                self.defer_sync(lambda: self.append_to_output_view(stdout))
 
 
 class GulpKillCommand(BaseCommand):

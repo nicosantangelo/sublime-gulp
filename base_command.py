@@ -10,8 +10,9 @@ else:
 
 # A base for each command
 class BaseCommand(sublime_plugin.WindowCommand):
-    def run(self):
+    def run(self, task_name = None):
         self.setup_data_from_settings()
+        self.task_name = task_name
         self.work()
 
     def setup_data_from_settings(self):
@@ -26,7 +27,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         sublime.active_window().active_view().set_status("gulp", text)
 
     def show_quick_panel(self, items, on_done = None):
-        sublime.set_timeout(lambda: self.window.show_quick_panel(items, on_done, sublime.MONOSPACE_FONT), 0)
+        self.defer_sync(lambda: self.window.show_quick_panel(items, on_done, sublime.MONOSPACE_FONT))
 
     def show_input_panel(self, caption, initial_text = "", on_done = None, on_change = None, on_cancel = None):
         self.window.show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
@@ -54,6 +55,9 @@ class BaseCommand(sublime_plugin.WindowCommand):
         view.set_viewport_position(position, True)
 
     # Async calls
+    def defer_sync(self, fn):
+        sublime.set_timeout(fn, 0)
+
     def defer(self, fn):
         self.async(fn, 0)
         
