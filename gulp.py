@@ -66,7 +66,9 @@ class GulpCommand(BaseCommand):
             self.callcount = 0
             json_result = self.fetch_json()
         except TypeError as e:
-            sublime.error_message("SublimeGulp: JSON  cache (.sublime-gulp.cache) is malformed.\nCould not read available tasks\n")
+            sublime.error_message("SublimeGulp: Could not read available tasks\n. Maybe JSON cache (.sublime-gulp.cache) is malformed?.")
+        except Exception as e:
+            sublime.error_message("SublimeGulp: ", str(e))
         else:
             tasks = [[name, self.dependencies_text(task)] for name, task in json_result.items()]
             return sorted(tasks, key = lambda task: task)
@@ -97,9 +99,9 @@ class GulpCommand(BaseCommand):
             return self.write_to_cache()
 
         if data is None:
-            raise TypeError("Could not write to cache gulpfile")
+            raise Exception("Could not write to cache gulpfile")
 
-        raise TypeError("Sha1 from gulp cache ({0}) is not equal to calculated ({1})".format(data[gulpfile]["sha1"], filesha1))
+        raise Exception("Sha1 from gulp cache ({0}) is not equal to calculated ({1})".format(data[gulpfile]["sha1"], filesha1))
 
     def write_to_cache(self):
         package_path = os.path.join(sublime.packages_path(), self.package_name)
@@ -110,7 +112,7 @@ class GulpCommand(BaseCommand):
         (stdout, stderr) = process.communicate()
 
         if 127 == process.returncode:
-            sublime.error_message("\"node\" command not found.\nPlease be sure to have node installed and in your PATH.")
+            sublime.error_message("\"node\" command not found.\nPlease be sure to have node installed and in your PATH (more info in the README).")
             return
 
         return self.fetch_json()
