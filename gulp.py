@@ -112,8 +112,9 @@ class GulpCommand(BaseCommand):
         (stdout, stderr) = process.communicate()
 
         if 127 == process.returncode:
-            sublime.error_message("\"node\" command not found.\nPlease be sure to have node installed and in your PATH (more info in the README).")
-            return
+            raise Exception("\"node\" command not found.\nPlease be sure to have node installed and in your PATH (more info in the README).")
+        elif stderr:
+            raise Exception("There was an error running gulp.\nMake sure gulp is running correctly in your project.")
 
         return self.fetch_json()
 

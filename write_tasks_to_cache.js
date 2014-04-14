@@ -16,7 +16,12 @@ var requireGulp = function(gulpfilePath) {
     var fileSrc = fs.readFileSync(gulpfilePath);
     fileSrc += ";module.exports = gulp;";
     fs.writeFileSync(tmpfilePath, fileSrc);
-    return require(tmpfilePath);
+    try {
+        return require(tmpfilePath);
+    } catch(ex) {
+        fs.unlink(tmpfilePath);
+        throw ex;
+    }
 };
 var generatesha1 = function(filepath) {
     var content = fs.readFileSync(filepath);
