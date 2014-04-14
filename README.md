@@ -20,7 +20,10 @@ Keep in mind that, the package creates the first cache using [node](http://nodej
 `export NODE_PATH=/usr/local/lib/node_modules`
 
 ### Kill tasks
-To kill running tasks like `watch` you can pick the command `Gulp: Kill running tasks`.
+To kill running tasks like `watch` you can pick the command `Gulp: Kill running tasks`. 
+
+**Windows**
+If you're running Windows, the package will use [taskkill](http://technet.microsoft.com/en-us/library/cc725602.aspx) so every child process is correctly terminated. If the executable isn't on your system, you'll need to add it for this command to work correctly.
 
 ## Settings
 
