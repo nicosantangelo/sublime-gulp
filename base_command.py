@@ -62,8 +62,11 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.async(fn, 0)
         
     def async(self, fn, delay):
-        progress = ProgressNotifier('Gulp: Working')
-        sublime.set_timeout_async(lambda: self.call(fn, progress), delay)
+        if is_sublime_text_3():
+            progress = ProgressNotifier('Gulp: Working')
+            sublime.set_timeout_async(lambda: self.call(fn, progress), delay)
+        else:
+            fn()
 
     def call(self, fn, progress):
         fn()
