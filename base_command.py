@@ -1,4 +1,4 @@
-import sublime, sublime_plugin, re
+import sublime, sublime_plugin
 
 def is_sublime_text_3():
     return int(sublime.version()) >= 3000
