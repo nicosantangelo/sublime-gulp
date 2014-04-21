@@ -35,12 +35,16 @@ class GulpCommand(BaseCommand):
     def append_paths(self):
         self.folders = []
         for folder_path in self.window.folders():
-            self.folders.append(folder_path)
             self.append_to_gulp_files(folder_path)
+            for inner_folder in self.settings.get("gulpfile_paths", []):
+                self.append_to_gulp_files(os.path.join(folder_path, inner_folder))
 
-    def append_to_gulp_files(self, path):
-        if os.path.exists(os.path.join(path, "gulpfile.js")):
-            self.gulp_files.append(os.path.join(path, "gulpfile.js"))
+
+    def append_to_gulp_files(self, folder_path):
+        gulpfile_path = os.path.join(folder_path, "gulpfile.js")
+        self.folders.append(folder_path)
+        if os.path.exists(gulpfile_path):
+            self.gulp_files.append(gulpfile_path)
 
     def choose_file(self):
         if len(self.gulp_files) == 1:

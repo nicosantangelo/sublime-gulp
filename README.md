@@ -34,7 +34,8 @@ The defaults are:
 ````json
 {
 	"exec_args": {},
-    "results_in_new_tab": false
+    "results_in_new_tab": false,
+    "gulpfile_paths": []
 }
 ````
 
@@ -69,6 +70,11 @@ You also can use a shortcut for running a specific task like this:
 ````json
 { "keys": ["{KEYS}"], "command": "gulp", "args": {"task_name": "watch"} },
 ````
+
+#### gulpfile_paths
+
+Additional paths to search the gulpfile in, by default only the root of each project folder is used.
+Example: `["src", "nested/folder"]`
 
 ## Instalation
 
