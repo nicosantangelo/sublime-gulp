@@ -1,0 +1,7 @@
+<snippet>
+	<content><![CDATA[
+.pipe(${1:name}('${2:}'))
+]]></content>
+	<tabTrigger>pipe</tabTrigger>
+	<scope>source.js</scope>
+</snippet>

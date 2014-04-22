@@ -1,0 +1,9 @@
+<snippet>
+  <content><![CDATA[
+gulp.task('${1:name}',['${2:tasks}'], function() {
+    ${3:// content}
+});
+]]></content>
+  <tabTrigger>gulpt</tabTrigger>
+  <scope>source.js</scope>
+</snippet>
