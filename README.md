@@ -1,6 +1,6 @@
 # Sublime Gulp
 
-A Gulp task runner for Sublime Text. This package is a port of the awesome [sublime-grunt](https://github.com/tvooo/sublime-grunt).
+A Gulp task runner with snippets for Sublime Text. This package is a port of the awesome [sublime-grunt](https://github.com/tvooo/sublime-grunt).
 
 Currently under development :).
 
@@ -33,7 +33,7 @@ The defaults are:
 
 ````json
 {
-	"exec_args": {},
+    "exec_args": {},
     "results_in_new_tab": false,
     "gulpfile_paths": []
 }
@@ -84,3 +84,47 @@ You can clone the repo in your `/Packages` (*Preferences -> Browse Packages...*)
     
     cd ~/path/to/Packages
     git clone git://github.com/NicoSantangelo/sublime-gulp.git Gulp
+
+
+##Snippets
+
+
+#### vargulp
+```
+var gulp = require('gulp-name');
+```
+
+#### pipe
+```
+pipe(name('file'))
+```
+
+#### gulps - [Docs](https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpsrcglobs-options)
+```
+gulp.src('scriptFiles')
+  .pipe(name('file'))
+```
+
+#### gulpt - [Docs](https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulptaskname-deps-fn)
+```
+gulp.task('name',['tasks'], function() {
+    // content
+});
+```
+
+#### gulpd - [Docs](https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpdestpath)
+```
+.pipe(gulp.dest('folder'));
+```
+
+#### gulpw - [Docs](https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpwatchglob-opts-tasks)
+```
+gulp.watch('file', ['tasks']);
+```
+
+#### gulpwcb - [Docs](https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpwatchglob-opts-cb)
+```
+gulp.watch('file', function(event) {
+  console.log(' File '+event.path+' was '+event.type+', running tasks...');
+});
+```

@@ -1,0 +1,9 @@
+<snippet>
+  <content><![CDATA[
+gulp.watch(${1:'file'}, function(event) {
+  console.log('${2:File} '+event.path+' ${3:was} '+event.type+', ${4:running tasks...}');
+});
+]]></content>
+  <tabTrigger>gulpwcb</tabTrigger>
+  <scope>source.js</scope>
+</snippet>
