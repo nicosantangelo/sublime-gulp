@@ -5,4 +5,4 @@ Recent Changes
 @NicoSantangelo's https://github.com/NicoSantangelo "Gulp" package.
 
 Users of the Gulp Snippets package, all of the snippets still work with the same shortcuts.
-Gulp adds new features like Tasks.
+Gulp adds new features like running Tasks.
