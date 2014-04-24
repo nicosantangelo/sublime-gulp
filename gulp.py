@@ -220,13 +220,13 @@ class Env():
     def get_path(self):
         path = os.environ['PATH']
         if self.exec_args:
-            path = exec_args.get('path', os.environ['PATH'])
+            path = self.exec_args.get('path', os.environ['PATH'])
         return str(path)
 
     def get_path_with_exec_args(self):
         env = os.environ.copy()
         if self.exec_args:
-            path = str(exec_args.get('path', ''))
+            path = str(self.exec_args.get('path', ''))
             if path:
                 env['PATH'] = path
         return env
