@@ -20,6 +20,7 @@ Keep in mind that, the package creates the first cache using [node](http://nodej
 `export NODE_PATH=/usr/local/lib/node_modules`
 
 **Mac OS X**
+
 It's possible that your path isn't being reported by your shell so if you're having troubles running the package, give [SublimeFixMacPath](https://github.com/int3h/SublimeFixMacPath) a try.
 
 ### Kill tasks
