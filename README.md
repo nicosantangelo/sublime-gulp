@@ -83,7 +83,8 @@ The defaults are:
 {
     "exec_args": {},
     "results_in_new_tab": false,
-    "gulpfile_paths": []
+    "gulpfile_paths": [],
+    "log_erros": true
 }
 ````
 
@@ -107,6 +108,9 @@ If set to true, a new tab will be used instead of a panel to output the results.
 
 Additional paths to search the gulpfile in, by default only the root of each project folder is used.
 Example: `["src", "nested/folder"]`
+
+#### log_erros
+Toggles the creation of sublime-gulp.log if any error occurs.
 
 ## Shortcut Keys
 
