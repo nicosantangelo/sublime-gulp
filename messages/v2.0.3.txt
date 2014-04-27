@@ -1,0 +1,23 @@
+   _____       _       
+  / ____|     | |      
+ | |  __ _   _| |_ __  
+ | | |_ | | | | | '_ \ 
+ | |__| | |_| | | |_) |
+  \_____|\__,_|_| .__/ 
+                | |    
+                |_|    
+
+                
+Recent Changes
+==============
+
+Hello!, sorry to bother.
+
+If you're having troubles using the plugin, now errors will be logged in sublime-gulp.log so you can see or report what is happening (this can be turned off in the settings with log_errors).
+
+Also, if you're running Mac OS, take a look at https://github.com/int3h/SublimeFixMacPath.
+
+That is all, remember that you can report issues or feature requests at: https://github.com/NicoSantangelo/sublime-gulp
+
+
+Thanks!
