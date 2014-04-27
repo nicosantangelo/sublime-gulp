@@ -1,14 +1,14 @@
+import datetime
 import sublime
-import os
+import os, os.path
 from threading import Thread
 import signal, subprocess
 import json
 from hashlib import sha1 
 
-def is_sublime_text_3():
-    return int(sublime.version()) >= 3000
+is_sublime_text_3 = int(sublime.version()) >= 3000
 
-if is_sublime_text_3():
+if is_sublime_text_3:
     from .base_command import BaseCommand
 else:
     from base_command import BaseCommand
@@ -16,6 +16,7 @@ else:
 class GulpCommand(BaseCommand):
     package_name = "Gulp"
     cache_file_name = ".sublime-gulp.cache"
+    log_file_name = 'sublime-gulp.log'
     
     def work(self):
         self.set_instance_variables()
@@ -70,7 +71,7 @@ class GulpCommand(BaseCommand):
             self.callcount = 0
             json_result = self.fetch_json()
         except TypeError as e:
-            sublime.error_message("SublimeGulp: Could not read available tasks\n. Maybe the JSON cache (.sublime-gulp.cache) is malformed?")
+            sublime.error_message("SublimeGulp: Could not read available tasks.\nMaybe the JSON cache (.sublime-gulp.cache) is malformed?")
         except Exception as e:
             sublime.error_message("SublimeGulp: " + str(e))
         else:
@@ -118,9 +119,18 @@ class GulpCommand(BaseCommand):
         if 127 == process.returncode:
             raise Exception("\"node\" command not found.\nPlease be sure to have nodejs installed on your system and in your PATH (more info in the README).")
         elif stderr:
-            raise Exception("There was an error running gulp.\nMake sure gulp is running correctly in your project.")
+            self.log_errors(stderr)
+            raise Exception("There was an error running gulp, make sure gulp is running correctly in your project.\nFor more info check the sublime-gulp.log file")
 
         return self.fetch_json()
+
+    def log_errors(self, text):
+        if not self.settings.get("log_errors", True):
+            return
+        log_path = self.working_dir + "/" + self.log_file_name
+        header = "Remember that you can report errors and get help in https://github.com/NicoSantangelo/sublime-gulp" if not os.path.isfile(log_path) else ""
+        with open(log_path, 'a', encoding = "utf-8") as log_file:
+            log_file.write(header + "\n\n" + str(datetime.datetime.now().strftime("%m-%d-%Y %H:%M")) + ":\n" + text.decode('utf-8'))
 
     def task_list_callback(self, task_index):
         if task_index > -1:
@@ -138,7 +148,7 @@ class GulpCommand(BaseCommand):
     def run_process(self, command):
             process = CrossPlatformProcess(self)
             process.run(command)
-            if is_sublime_text_3():
+            if is_sublime_text_3:
                 process.pipe_stdout(self.append_to_output_view)
             else:
                 stdout, stin = process.communicate()

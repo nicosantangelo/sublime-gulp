@@ -1,9 +1,8 @@
 import sublime, sublime_plugin
 
-def is_sublime_text_3():
-    return int(sublime.version()) >= 3000
+is_sublime_text_3 = int(sublime.version()) >= 3000
 
-if is_sublime_text_3():
+if is_sublime_text_3:
     from .progress_notifier import ProgressNotifier
 else:
     from progress_notifier import ProgressNotifier
@@ -62,7 +61,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.async(fn, 0)
         
     def async(self, fn, delay):
-        if is_sublime_text_3():
+        if is_sublime_text_3:
             progress = ProgressNotifier('Gulp: Working')
             sublime.set_timeout_async(lambda: self.call(fn, progress), delay)
         else:
@@ -71,6 +70,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
     def call(self, fn, progress):
         fn()
         progress.stop()
+
 
 class ViewInsertCommand(sublime_plugin.TextCommand):
     def run(self, edit, size, content):

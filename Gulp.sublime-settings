@@ -6,5 +6,8 @@
     "results_in_new_tab": false,
 
     // Additional paths to search the gulpfile in (by default only the root of each project folder is used). Example: ["src", "nested/folder"]
-    "gulpfile_paths": []
+    "gulpfile_paths": [],
+
+    // Create the file 'sublime-gulp.log' to report errors
+    "log_errors": true
 }
