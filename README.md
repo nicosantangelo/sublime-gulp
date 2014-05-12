@@ -19,6 +19,20 @@ Keep in mind that, the package creates the first cache using [node](http://nodej
 
 `export NODE_PATH=/usr/local/lib/node_modules`
 
+**CoffeeScript**
+
+If you want to use a `gulpfile.coffee` you need to do two things:
+
+1. Add `module.exports = gulp` to your `gulpfile.coffee` so node can use it
+2. Create a gulpfile.js if it doesn't exist and add this to it:
+
+```javascript
+require('coffee-script/register');
+var gulp = require('./gulpfile.coffee');
+```
+
+That's it!. Thanks to [@guillaume86](https://github.com/guillaume86) for the help in the [issue #5](https://github.com/NicoSantangelo/sublime-gulp/issues/5)
+
 **Mac OS X**
 
 It's possible that your path isn't being reported by your shell so if you're having troubles running the package, give [SublimeFixMacPath](https://github.com/int3h/SublimeFixMacPath) a try.
