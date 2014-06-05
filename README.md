@@ -11,9 +11,9 @@ To run a task, first choose `Gulp` from the command pallete, the package will se
 
 The package will display all the tasks in a list, selecting one will run it.
 
-To show the task output the package uses a panel or a new tab (depends on your [settings](https://github.com/NicoSantangelo/sublime-gulp#settings)), you can  add a keybinding to open the panel like this:
+To show the task output the package uses a panel or a new tab (depends on your [settings](https://github.com/NicoSantangelo/sublime-gulp#settings)), you can add a [key binding](http://docs.sublimetext.info/en/latest/reference/key_bindings.html) to open the panel like this:
 
-`{ "keys": ["{KEYS}"], "command": "show_panel", "args": { "panel": "output.gulp_output" } }`
+`{ "keys": ["KEYS"], "command": "show_panel", "args": { "panel": "output.gulp_output" } }`
 
 Keep in mind that, the package creates the first cache using [node](http://nodejs.org/), so for it to work you might need to add your node_modules path to NODE_PATH, for example (for Unix):
 
@@ -133,14 +133,14 @@ This package doesn't bind any command to a keyboard shortcut, but you can add it
 
 ````json
 [
-    { "keys": ["{KEYS}"], "command": "gulp" },
-    { "keys": ["{KEYS}"], "command": "gulp_kill" }
+    { "keys": ["KEYS"], "command": "gulp" },
+    { "keys": ["KEYS"], "command": "gulp_kill" }
 ]
 ````
 
 You also can use a shortcut for running a specific task like this:
 ````json
-{ "keys": ["{KEYS}"], "command": "gulp", "args": {"task_name": "watch"} },
+{ "keys": ["KEYS"], "command": "gulp", "args": {"task_name": "watch"} },
 ````
 
 
