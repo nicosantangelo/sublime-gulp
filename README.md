@@ -28,7 +28,7 @@ If you want to use a `gulpfile.coffee` you need to do two things:
 
 ```javascript
 require('coffee-script/register');
-var gulp = require('./gulpfile.coffee');
+var gulp = module.exports = require('./gulpfile.coffee');
 ```
 
 That's it!. Thanks to [@guillaume86](https://github.com/guillaume86) for the help in the [issue #5](https://github.com/NicoSantangelo/sublime-gulp/issues/5)
