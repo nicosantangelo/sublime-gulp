@@ -76,9 +76,9 @@ class GulpCommand(BaseCommand):
             self.callcount = 0
             json_result = self.fetch_json()
         except TypeError as e:
-            sublime.error_message("SublimeGulp: Could not read available tasks.\nMaybe the JSON cache (.sublime-gulp.cache) is malformed?")
+            sublime.error_message("Gulp: Could not read available tasks.\nMaybe the JSON cache (.sublime-gulp.cache) is malformed?")
         except Exception as e:
-            sublime.error_message("SublimeGulp: " + str(e))
+            sublime.error_message("Gulp: " + str(e))
         else:
             tasks = [[name, self.dependencies_text(task)] for name, task in json_result.items()]
             return sorted(tasks, key = lambda task: task)
@@ -179,7 +179,15 @@ class GulpPluginsCommand(BaseCommand):
             sublime.set_timeout(lambda: self.handle_thread(thread, progress), 100)
          else:
             progress.stop()
-            self.show_quick_panel([["Title", "SubTitle"]]) #thread.Result
+            plugin_response = json.loads(thread.result.decode())
+            if plugin_response["timed_out"]:
+                sublime.error_message("Gulp: Sadly the request timed out, try again later.")
+            else:
+                self.plugins = plugin_response["hits"]["hits"]
+                self.show_quick_panel([["Title", "SubTitle"]], self.open_in_browser)
+
+    def open_in_browser(self, index = -1):
+        pass
 
 class CrossPlatformProcess():
     def __init__(self, command):
@@ -272,7 +280,7 @@ class Security():
             return filehash.hexdigest()
 
 class PluginRegistryCall(Thread):
-    url = "http://registry.gulpjs.com/_search?fields=name,keywords,rating,description,author,modified,homepage,version&from=20&q=keywords:gulpplugin,gulpfriendly&size=750"
+    url = "http://registry.gulpjs.com/_search?fields=name,description,author,homepage,version&from=20&q=keywords:gulpplugin,gulpfriendly&size=750"
 
     def __init__(self, timeout = 5):
         self.timeout = timeout
@@ -287,9 +295,9 @@ class PluginRegistryCall(Thread):
             return
 
         except urllib2.HTTPError as e:
-            err = '%s: HTTP error %s contacting gulpjs registry' % (__name__, str(e.code))
+            err = 'Gulp: HTTP error %s contacting gulpjs registry' % (str(e.code))
         except urllib2.URLError as e:
-            err = '%s: URL error %s contacting gulpjs registry' % (__name__, str(e.reason))
+            err = 'Gulp: URL error %s contacting gulpjs registry' % (str(e.reason))
 
         sublime.error_message(err)
         self.result = False
