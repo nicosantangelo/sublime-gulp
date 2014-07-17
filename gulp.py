@@ -11,9 +11,11 @@ is_sublime_text_3 = int(sublime.version()) >= 3000
 
 if is_sublime_text_3:
     from .base_command import BaseCommand
+    import urllib.request as urllib2
 else:
     from base_command import BaseCommand
-    
+    import urllib2
+
 class GulpCommand(BaseCommand):
     package_name = "Gulp"
     cache_file_name = ".sublime-gulp.cache"
@@ -252,3 +254,26 @@ class Security():
             filehash.update(str("blob " + str(len(content)) + "\0").encode('UTF-8'))
             filehash.update(content)
             return filehash.hexdigest()
+
+class PluginRegistryCall(Thread):
+    url = "http://registry.gulpjs.com/_search?fields=name,keywords,rating,description,author,modified,homepage,version&from=20&q=keywords:gulpplugin,gulpfriendly&size=750"
+
+    def __init__(self, timeout = 5):
+        self.timeout = timeout
+        self.result = None
+        Thread.__init__(self)
+
+    def run(self):
+        try:
+            request = urllib2.Request(url, None, headers={ "User-Agent": "Sublime Text" })
+            http_file = urllib2.urlopen(url, timeout = self.timeout)
+            self.result = http_file.read()
+            return
+
+        except urllib2.HTTPError as e:
+            err = '%s: HTTP error %s contacting gulpjs registry' % (__name__, str(e.code))
+        except urllib2.URLError as e:
+            err = '%s: URL error %s contacting gulpjs registry' % (__name__, str(e.reason))
+
+        sublime.error_message(err)
+        self.result = False
