@@ -6,5 +6,9 @@
     {
       "caption": "Gulp: Kill running tasks",
       "command": "gulp_kill"
+    },
+    {
+      "caption": "Gulp: List plugins",
+      "command": "gulp_plugins"
     }
 ]

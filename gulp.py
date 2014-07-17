@@ -10,10 +10,12 @@ from hashlib import sha1
 is_sublime_text_3 = int(sublime.version()) >= 3000
 
 if is_sublime_text_3:
+    from .progress_notifier import ProgressNotifier
     from .base_command import BaseCommand
     import urllib.request as urllib2
 else:
     from base_command import BaseCommand
+    from progress_notifier import ProgressNotifier
     import urllib2
 
 class GulpCommand(BaseCommand):
@@ -165,6 +167,20 @@ class GulpKillCommand(BaseCommand):
             self.show_output_panel("All running tasks killed!\n")
 
 
+class GulpPluginsCommand(BaseCommand):
+    def work(self):
+        progress = ProgressNotifier("Gulp: Working")
+        thread = PluginRegistryCall()
+        thread.start()
+        self.handle_thread(thread, progress)
+
+    def handle_thread(self, thread, progress):
+         if thread.is_alive() or thread.result == False:
+            sublime.set_timeout(lambda: self.handle_thread(thread, progress), 100)
+         else:
+            progress.stop()
+            self.show_quick_panel([["Title", "SubTitle"]]) #thread.Result
+
 class CrossPlatformProcess():
     def __init__(self, command):
         self.path = command.env.get_path_with_exec_args()
@@ -265,8 +281,8 @@ class PluginRegistryCall(Thread):
 
     def run(self):
         try:
-            request = urllib2.Request(url, None, headers={ "User-Agent": "Sublime Text" })
-            http_file = urllib2.urlopen(url, timeout = self.timeout)
+            request = urllib2.Request(self.url, None, headers = { "User-Agent": "Sublime Text" })
+            http_file = urllib2.urlopen(request, timeout = self.timeout)
             self.result = http_file.read()
             return
 
