@@ -5,6 +5,7 @@ import os, os.path
 from threading import Thread
 import signal, subprocess
 import json
+import webbrowser
 from hashlib import sha1 
 
 is_sublime_text_3 = int(sublime.version()) >= 3000
@@ -169,6 +170,10 @@ class GulpKillCommand(BaseCommand):
 
 class GulpPluginsCommand(BaseCommand):
     def work(self):
+        self.plugins = None
+        self.request_plugin_list()
+
+    def request_plugin_list(self):
         progress = ProgressNotifier("Gulp: Working")
         thread = PluginRegistryCall()
         thread.start()
@@ -183,11 +188,13 @@ class GulpPluginsCommand(BaseCommand):
             if plugin_response["timed_out"]:
                 sublime.error_message("Gulp: Sadly the request timed out, try again later.")
             else:
-                self.plugins = plugin_response["hits"]["hits"]
-                self.show_quick_panel([["Title", "SubTitle"]], self.open_in_browser)
+                self.plugins = PluginList(plugin_response)
+                self.show_quick_panel(self.plugins.quick_panel_list(), self.open_in_browser)
 
     def open_in_browser(self, index = -1):
-        pass
+        if index >= 0 and index < self.plugins.length:
+            webbrowser.open_new(self.plugins.get(index).get('homepage'))
+
 
 class CrossPlatformProcess():
     def __init__(self, command):
@@ -278,6 +285,30 @@ class Security():
             filehash.update(str("blob " + str(len(content)) + "\0").encode('UTF-8'))
             filehash.update(content)
             return filehash.hexdigest()
+
+
+class PluginList():
+    def __init__(self, plugins_response):
+        self.plugins = [Plugin(plugin_json) for plugin_json in plugins_response["hits"]["hits"]]
+        self.length = len(self.plugins)
+
+    def get(self, index):
+        if index >= 0 and index < self.length:
+            return self.plugins[index]
+
+    def quick_panel_list(self):
+        return [ [plugin.get('name') + ' (v' + plugin.get('version') + ')', plugin.get('description')] for plugin in self.plugins ]
+
+class Plugin():
+    def __init__(self, plugin_json):
+        self.plugin = plugin_json
+
+    def get(self, property):
+        return self.plugin['fields'][property][0] if self.has(property) else ''
+
+    def has(self, property):
+        return 'fields' in self.plugin and property in self.plugin['fields']
+
 
 class PluginRegistryCall(Thread):
     url = "http://registry.gulpjs.com/_search?fields=name,description,author,homepage,version&from=20&q=keywords:gulpplugin,gulpfriendly&size=750"
