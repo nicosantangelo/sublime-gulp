@@ -44,6 +44,8 @@ To kill running tasks like `watch` you can pick the command `Gulp: Kill running 
 
 If you're running Windows, the package will use [taskkill](http://technet.microsoft.com/en-us/library/cc725602.aspx) so every child process is correctly terminated. If the executable isn't on your system, you'll need to add it for this command to work correctly.
 
+### List plugins
+Running `Gulp: List plugins` from the command palette will display the gulp plugins on a searcheable list. Picking one will open it on your default browser.
 
 ##Snippets
 
