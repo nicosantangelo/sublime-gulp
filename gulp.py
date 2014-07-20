@@ -189,7 +189,7 @@ class GulpPluginsCommand(BaseCommand):
                 sublime.error_message("Gulp: Sadly the request timed out, try again later.")
             else:
                 self.plugins = PluginList(plugin_response)
-                self.show_quick_panel(self.plugins.quick_panel_list(), self.open_in_browser)
+                self.show_quick_panel(self.plugins.quick_panel_list(), self.open_in_browser, font = 0)
 
     def open_in_browser(self, index = -1):
         if index >= 0 and index < self.plugins.length:
