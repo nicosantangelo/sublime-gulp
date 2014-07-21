@@ -184,7 +184,7 @@ class GulpPluginsCommand(BaseCommand):
             sublime.set_timeout(lambda: self.handle_thread(thread, progress), 100)
          else:
             progress.stop()
-            plugin_response = json.loads(thread.result.decode())
+            plugin_response = json.loads(thread.result.decode('utf-8'))
             if plugin_response["timed_out"]:
                 sublime.error_message("Gulp: Sadly the request timed out, try again later.")
             else:

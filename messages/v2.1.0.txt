@@ -16,5 +16,6 @@ New command!, now you can list all gulp plugins from SublimeText.
 Running 'Gulp: List plugins' from the command palette will display the gulp plugins on a searcheable list.
 Picking one will open it on your default browser.
 
+For issues or feature requests, head over to https://github.com/NicoSantangelo/sublime-gulp
 
 That is all, thanks!
