@@ -136,7 +136,8 @@ This package doesn't bind any command to a keyboard shortcut, but you can add it
 ````json
 [
     { "keys": ["KEYS"], "command": "gulp" },
-    { "keys": ["KEYS"], "command": "gulp_kill" }
+    { "keys": ["KEYS"], "command": "gulp_kill" },
+    { "keys": ["KEYS"], "command": "gulp_plugins" }
 ]
 ````
 
