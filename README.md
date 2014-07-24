@@ -9,7 +9,7 @@ This package is a merge between [Gulp Snippets](https://github.com/filipelinhare
 ### Run Tasks
 To run a task, first choose `Gulp` from the command pallete, the package will search for a gulpfile.js in an open folder and create a cache (`.sublime-gulp.cache`) with it (the first run might be a little slow).
 
-The package will display all the tasks in a list, selecting one will run it.
+The package will display all the tasks in a list, selecting one will run it (if you want, you can [run specific tasks with a keyboard shortcut](https://github.com/NicoSantangelo/sublime-gulp#bind-specific-tasks)).
 
 To show the task output the package uses a panel or a new tab (depends on your [settings](https://github.com/NicoSantangelo/sublime-gulp#settings)), you can add a [key binding](http://docs.sublimetext.info/en/latest/reference/key_bindings.html) to open the panel like this:
 
@@ -151,7 +151,7 @@ You also can use a shortcut for running a specific task like this:
 { "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch" } },
 ````
 
-and if you want to run it in `silent` mode, you can add `"silent"` to the `args`
+and if you want to run it in [`silent`](https://github.com/NicoSantangelo/sublime-gulp#run-tasks-silent) mode, you can add `"silent"` to the `args`
 
 ````json
 { "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch", "silent": true } },
