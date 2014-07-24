@@ -45,6 +45,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
             self.window.run_command("show_panel", { "panel": "output.gulp_output" })
             
         self.append_to_output_view(text)
+        self.set_output_close_on_timeout()
 
     def append_to_output_view(self, text):
         if not self.silent:
@@ -57,12 +58,27 @@ class BaseCommand(sublime_plugin.WindowCommand):
         position = (view.size(), view.size()) if self.scroll_to_end else (0, 0)
         view.set_viewport_position(position, True)
 
+    def set_output_close_on_timeout(self):
+        timeout = self.settings.get("close_panel_timeout", False)
+        if timeout:
+            self.set_timeout(self.close_panel, timeout)
+
+    def close_panel(self):
+        if self.settings.get("results_in_new_tab", False):
+            self.window.focus_view(self.output_view)
+            self.window.run_command('close_file')
+        else:
+            self.window.run_command("hide_panel", { "panel": "output.gulp_output" })
+
     # Async calls
     def defer_sync(self, fn):
-        sublime.set_timeout(fn, 0)
+        self.set_timeout(fn, 0)
 
     def defer(self, fn):
         self.async(fn, 0)
+
+    def set_timeout(self, fn, delay):
+        sublime.set_timeout(fn, delay)
         
     def async(self, fn, delay):
         if is_sublime_text_3:
