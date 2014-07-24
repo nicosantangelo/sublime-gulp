@@ -9,9 +9,10 @@ else:
 
 # A base for each command
 class BaseCommand(sublime_plugin.WindowCommand):
-    def run(self, task_name = None):
+    def run(self, task_name = None, silent = False):
         self.setup_data_from_settings()
         self.task_name = task_name
+        self.silent = silent
         self.work()
 
     def setup_data_from_settings(self):
@@ -33,6 +34,8 @@ class BaseCommand(sublime_plugin.WindowCommand):
 
     # Output view
     def show_output_panel(self, text):
+        if self.silent: return
+        
         if self.settings.get("results_in_new_tab", False):
             self.output_view = self.window.open_file("Gulp Results")
             self.scroll_to_end = False
@@ -44,9 +47,10 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.append_to_output_view(text)
 
     def append_to_output_view(self, text):
-        self.output_view.set_read_only(False)
-        self._insert(self.output_view, text)
-        self.output_view.set_read_only(True)
+        if not self.silent:
+            self.output_view.set_read_only(False)
+            self._insert(self.output_view, text)
+            self.output_view.set_read_only(True)
 
     def _insert(self, view, content):
         view.run_command("view_insert", { "size": view.size(), "content": content })
