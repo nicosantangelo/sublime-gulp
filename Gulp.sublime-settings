@@ -7,7 +7,7 @@
 
     // Defines the delay used to autoclose the panel or tab that holds the gulp results.
     // If false (or 0) it will remain open.
-    "close_panel_timeout_in_milliseconds": 0,
+    "results_autoclose_timeout_in_milliseconds": 0,
 
     // Additional paths to search the gulpfile in (by default only the root of each project folder is used). Example: ["src", "nested/folder"]
     "gulpfile_paths": [],

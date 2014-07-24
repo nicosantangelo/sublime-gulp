@@ -103,6 +103,7 @@ The defaults are:
 {
     "exec_args": {},
     "results_in_new_tab": false,
+    "results_autoclose_timeout_in_milliseconds": 0,
     "gulpfile_paths": [],
     "log_erros": true
 }
@@ -123,6 +124,11 @@ You may override your `PATH` environment variable as follows (from [sublime-grun
 #### results_in_new_tab
 
 If set to true, a new tab will be used instead of a panel to output the results.
+
+#### results_autoclose_timeout_in_milliseconds
+
+Defines the delay used to autoclose the panel or tab that holds the gulp results.
+If false (or 0) it will remain open, so if what you want if to keep it close check the [`silent`](https://github.com/NicoSantangelo/sublime-gulp#run-tasks-silent) command.
 
 #### gulpfile_paths
 

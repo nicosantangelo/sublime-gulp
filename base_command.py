@@ -59,7 +59,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         view.set_viewport_position(position, True)
 
     def set_output_close_on_timeout(self):
-        timeout = self.settings.get("close_panel_timeout", False)
+        timeout = self.settings.get("results_autoclose_timeout_in_milliseconds", False)
         if timeout:
             self.set_timeout(self.close_panel, timeout)
 
