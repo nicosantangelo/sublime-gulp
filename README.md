@@ -37,6 +37,9 @@ That's it!. Thanks to [@guillaume86](https://github.com/guillaume86) for the hel
 
 It's possible that your path isn't being reported by your shell so if you're having troubles running the package, give [SublimeFixMacPath](https://github.com/int3h/SublimeFixMacPath) a try.
 
+### Run Tasks (silent)
+Works the same way as the normal `Gulp` command, but `Gulp (silent)` will not write the results on the output panel or tab.
+
 ### Kill tasks
 To kill running tasks like `watch` you can pick the command `Gulp: Kill running tasks`. 
 
@@ -141,11 +144,18 @@ This package doesn't bind any command to a keyboard shortcut, but you can add it
 ]
 ````
 
+#### Bind specific tasks
 You also can use a shortcut for running a specific task like this:
+
 ````json
-{ "keys": ["KEYS"], "command": "gulp", "args": {"task_name": "watch"} },
+{ "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch" } },
 ````
 
+and if you want to run it in `silent` mode, you can add `"silent"` to the `args`
+
+````json
+{ "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch", "silent": true } },
+````
 
 ## Installation
 
