@@ -57,7 +57,7 @@ class GulpCommand(BaseCommand):
         if len(self.gulp_files) == 1:
             self.show_tasks_from_gulp_file(0)
         else:
-            self.window.show_quick_panel(self.gulp_files, self.show_tasks_from_gulp_file)
+            self.show_quick_panel(self.gulp_files, self.show_tasks_from_gulp_file)
 
     def show_tasks_from_gulp_file(self, file_index):
         if file_index > -1:
