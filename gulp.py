@@ -160,6 +160,7 @@ class GulpCommand(BaseCommand):
                 stdout, stin = process.communicate()
                 self.defer_sync(lambda: self.append_to_output_view(stdout))
             self.set_output_close_on_timeout()
+            sublime.status_message("Gulp: gulp %s finished!" % self.task_name)
 
 
 class GulpKillCommand(BaseCommand):
