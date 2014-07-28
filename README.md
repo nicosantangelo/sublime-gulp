@@ -154,13 +154,13 @@ This package doesn't bind any command to a keyboard shortcut, but you can add it
 You also can use a shortcut for running a specific task like this:
 
 ````json
-{ "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch" } },
+{ "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch" } }
 ````
 
 and if you want to run it in [`silent`](https://github.com/NicoSantangelo/sublime-gulp#run-tasks-silent) mode, you can add `"silent"` to the `args`
 
 ````json
-{ "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch", "silent": true } },
+{ "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch", "silent": true } }
 ````
 
 ## Installation
