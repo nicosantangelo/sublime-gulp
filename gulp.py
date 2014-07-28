@@ -159,6 +159,7 @@ class GulpCommand(BaseCommand):
             else:
                 stdout, stin = process.communicate()
                 self.defer_sync(lambda: self.append_to_output_view(stdout))
+            self.set_output_close_on_timeout()
 
 
 class GulpKillCommand(BaseCommand):

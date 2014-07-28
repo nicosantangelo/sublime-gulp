@@ -45,7 +45,6 @@ class BaseCommand(sublime_plugin.WindowCommand):
             self.window.run_command("show_panel", { "panel": "output.gulp_output" })
             
         self.append_to_output_view(text)
-        self.set_output_close_on_timeout()
 
     def append_to_output_view(self, text):
         if not self.silent:
