@@ -23,14 +23,17 @@ class BaseCommand(sublime_plugin.WindowCommand):
         pass
 
     # Panels and message
-    def display_message(self, text):
-        sublime.active_window().active_view().set_status("gulp", text)
-
     def show_quick_panel(self, items, on_done = None, font = sublime.MONOSPACE_FONT):
         self.defer_sync(lambda: self.window.show_quick_panel(items, on_done, font))
 
     def show_input_panel(self, caption, initial_text = "", on_done = None, on_change = None, on_cancel = None):
         self.window.show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
+
+    def status_message(self, text):
+        sublime.status_message("%s: %s" % (self.package_name, text))
+
+    def error_message(self, text):
+        sublime.error_message("%s: %s" % (self.package_name, text))
 
     # Output view
     def show_output_panel(self, text):
@@ -69,7 +72,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         else:
             self.window.run_command("hide_panel", { "panel": "output.gulp_output" })
 
-    # Async calls
+    # Sync/async calls
     def defer_sync(self, fn):
         self.set_timeout(fn, 0)
 

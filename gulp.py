@@ -37,7 +37,7 @@ class GulpCommand(BaseCommand):
         if len(self.gulp_files) > 0:
             self.choose_file()
         else:
-            sublime.error_message("gulpfile.js not found!")
+            self.error_message("gulpfile.js not found!")
 
     def append_paths(self):
         self.folders = []
@@ -77,9 +77,9 @@ class GulpCommand(BaseCommand):
             self.callcount = 0
             json_result = self.fetch_json()
         except TypeError as e:
-            sublime.error_message("Gulp: Could not read available tasks.\nMaybe the JSON cache (.sublime-gulp.cache) is malformed?")
+            self.error_message("Could not read available tasks.\nMaybe the JSON cache (.sublime-gulp.cache) is malformed?")
         except Exception as e:
-            sublime.error_message("Gulp: " + str(e))
+            self.error_message(str(e))
         else:
             tasks = [[name, self.dependencies_text(task)] for name, task in json_result.items()]
             return sorted(tasks, key = lambda task: task)
@@ -144,23 +144,23 @@ class GulpCommand(BaseCommand):
             self.run_gulp_task()
 
     def run_gulp_task(self):
-        command = self.construct_command()
-        Thread(target = self.run_process, args = (command, )).start() # Option to kill on timeout?
+        task = self.construct_gulp_task()
+        Thread(target = self.run_process, args = (task, )).start() # Option to kill on timeout?
 
-    def construct_command(self):
+    def construct_gulp_task(self):
         self.show_output_panel("Running %s...\n" % self.task_name)
         return r"gulp %s" % self.task_name
 
-    def run_process(self, command):
-            process = CrossPlatformProcess(self)
-            process.run(command)
-            if is_sublime_text_3:
-                process.pipe_stdout(self.append_to_output_view)
-            else:
-                stdout, stin = process.communicate()
-                self.defer_sync(lambda: self.append_to_output_view(stdout))
-            self.set_output_close_on_timeout()
-            sublime.status_message("Gulp: gulp %s finished!" % self.task_name)
+    def run_process(self, task):
+        process = CrossPlatformProcess(self)
+        process.run(task)
+        if is_sublime_text_3:
+            process.pipe_stdout(self.append_to_output_view)
+        else:
+            stdout, stderr = process.communicate()
+            self.defer_sync(lambda: self.append_to_output_view(stdout))
+        self.set_output_close_on_timeout()
+        self.status_message("gulp %s finished!" % self.task_name)
 
 
 class GulpKillCommand(BaseCommand):
@@ -188,7 +188,7 @@ class GulpPluginsCommand(BaseCommand):
             progress.stop()
             plugin_response = json.loads(thread.result.decode('utf-8'))
             if plugin_response["timed_out"]:
-                sublime.error_message("Gulp: Sadly the request timed out, try again later.")
+                self.error_message("Sadly the request timed out, try again later.")
             else:
                 self.plugins = PluginList(plugin_response)
                 self.show_quick_panel(self.plugins.quick_panel_list(), self.open_in_browser, font = 0)
