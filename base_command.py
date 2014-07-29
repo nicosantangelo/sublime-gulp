@@ -74,4 +74,4 @@ class BaseCommand(sublime_plugin.WindowCommand):
 
 class ViewInsertCommand(sublime_plugin.TextCommand):
     def run(self, edit, size, content):
-        self.view.insert(edit, size, content)
+        self.view.insert(edit, int(size), content)
