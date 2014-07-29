@@ -155,10 +155,10 @@ class GulpCommand(BaseCommand):
         process = CrossPlatformProcess(self)
         process.run(task)
         if is_sublime_text_3:
-            process.pipe_stdout(self.append_to_output_view)
+            process.pipe_result(self.append_to_output_view)
         else:
             stdout, stderr = process.communicate()
-            self.defer_sync(lambda: self.append_to_output_view(stdout))
+            self.defer_sync(lambda: self.append_to_output_view("%s\n%s" % (stdout, stderr)))
         self.set_output_close_on_timeout()
         self.status_message("gulp %s finished!" % self.task_name)
 
@@ -211,10 +211,15 @@ class CrossPlatformProcess():
     def _preexec_val(self):
         return os.setsid if sublime.platform() != "windows" else None
 
-    def pipe_stdout(self, fn):
-        for line in self.process.stdout:
-            fn(str(line.rstrip().decode('utf-8')) + "\n")
+    def pipe_result(self, fn):
+        self.pipe(self.process.stdout, fn)
+        self.pipe(self.process.stderr, fn)
         self.terminate()
+
+    def pipe(self, output, fn):
+        for line in output:
+            output_text = str(line.rstrip().decode('utf-8')) + "\n"
+            fn(output_text)
 
     def communicate(self):
         return self.process.communicate()
