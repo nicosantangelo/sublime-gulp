@@ -38,7 +38,9 @@ class BaseCommand(sublime_plugin.WindowCommand):
 
     # Output view
     def show_output_panel(self, text):
-        if self.silent: return
+        if self.silent:
+            self.status_message(text)
+            return
         
         if self.results_in_new_tab:
             self.output_view = self.window.open_file("Gulp Results")
