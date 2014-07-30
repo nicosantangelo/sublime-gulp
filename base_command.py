@@ -45,9 +45,12 @@ class BaseCommand(sublime_plugin.WindowCommand):
         else:
             self.output_view = self.window.get_output_panel("gulp_output")
             self.scroll_to_end = True
-            self.window.run_command("show_panel", { "panel": "output.gulp_output" })
+            self.show_panel()
             
         self.append_to_output_view(text)
+
+    def append_to_output_view_in_main_thread(self, text):
+        self.defer_sync(lambda: self.append_to_output_view(text))
 
     def append_to_output_view(self, text):
         if not self.silent:
@@ -71,6 +74,9 @@ class BaseCommand(sublime_plugin.WindowCommand):
             self.window.run_command('close_file')
         else:
             self.window.run_command("hide_panel", { "panel": "output.gulp_output" })
+
+    def show_panel(self):
+        self.window.run_command("show_panel", { "panel": "output.gulp_output" })
 
     # Sync/async calls
     def defer_sync(self, fn):
