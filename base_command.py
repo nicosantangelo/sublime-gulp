@@ -41,6 +41,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         
         if self.settings.get("results_in_new_tab", False):
             self.output_view = self.window.open_file("Gulp Results")
+            self.output_view.set_scratch(True)
             self.scroll_to_end = False
         else:
             self.output_view = self.window.get_output_panel("gulp_output")
