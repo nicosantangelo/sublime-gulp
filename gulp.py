@@ -159,6 +159,9 @@ class GulpCommand(BaseCommand):
         else:
             stdout, stderr = process.communicate()
             self.defer_sync(lambda: self.append_to_output_view("%s\n%s" % (stdout, stderr)))
+        self.defer_sync(self.finish_running)
+
+    def finish_running(self):
         self.set_output_close_on_timeout()
         self.status_message("gulp %s finished!" % self.task_name)
 
