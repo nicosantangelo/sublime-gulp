@@ -45,7 +45,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
 
     def append_to_output_view(self, text):
         self.output_view.set_read_only(False)
-        self._insert(self.output_view, text)
+        self._insert(self.output_view, CrossPlaformCodecs.decode(text))
         self.output_view.set_read_only(True)
 
     def _insert(self, view, content):
@@ -71,6 +71,10 @@ class BaseCommand(sublime_plugin.WindowCommand):
         fn()
         progress.stop()
 
+class CrossPlaformCodecs():
+    @classmethod
+    def decode(self, text):
+        return text if is_sublime_text_3 else text.decode('utf-8')
 
 class ViewInsertCommand(sublime_plugin.TextCommand):
     def run(self, edit, size, content):
