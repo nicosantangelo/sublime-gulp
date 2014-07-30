@@ -165,7 +165,7 @@ class GulpCommand(BaseCommand):
             self.set_output_close_on_timeout()
         elif stderr and self.settings.get("show_silent_errors", False):
             self.silent = False
-            self.show_output_panel(self.construct_gulp_task())
+            self.show_output_panel("Running %s...\n" % self.task_name)
             self.append_to_output_view(stdout)
             self.append_to_output_view(stderr)
             self.silent = True

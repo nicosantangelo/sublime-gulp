@@ -17,6 +17,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
 
     def setup_data_from_settings(self):
         self.settings = sublime.load_settings("Gulp.sublime-settings")
+        self.results_in_new_tab = self.settings.get("results_in_new_tab", False)
 
     # Main method, override
     def work(self):
@@ -39,7 +40,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
     def show_output_panel(self, text):
         if self.silent: return
         
-        if self.settings.get("results_in_new_tab", False):
+        if self.results_in_new_tab:
             self.output_view = self.window.open_file("Gulp Results")
             self.output_view.set_scratch(True)
             self.scroll_to_end = False
@@ -55,14 +56,17 @@ class BaseCommand(sublime_plugin.WindowCommand):
 
     def append_to_output_view(self, text):
         if not self.silent:
-            self.output_view.set_read_only(False)
             self._insert(self.output_view, CrossPlaformCodecs.decode(text))
-            self.output_view.set_read_only(True)
 
     def _insert(self, view, content):
-        view.run_command("view_insert", { "size": view.size(), "content": content })
-        position = (view.size(), view.size()) if self.scroll_to_end else (0, 0)
-        view.set_viewport_position(position, True)
+        if self.results_in_new_tab and self.output_view.is_loading():
+            self.set_timeout(lambda: self._insert(view, content), 10)
+        else:
+            view.set_read_only(False)
+            view.run_command("view_insert", { "size": view.size(), "content": content })
+            position = (view.size(), view.size()) if self.scroll_to_end else (0, 0)
+            view.set_viewport_position(position, True)
+            view.set_read_only(True)
 
     def set_output_close_on_timeout(self):
         timeout = self.settings.get("results_autoclose_timeout_in_milliseconds", False)
@@ -70,7 +74,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
             self.set_timeout(self.close_panel, timeout)
 
     def close_panel(self):
-        if self.settings.get("results_in_new_tab", False):
+        if self.results_in_new_tab:
             self.window.focus_view(self.output_view)
             self.window.run_command('close_file')
         else:
