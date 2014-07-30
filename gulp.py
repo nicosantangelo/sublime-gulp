@@ -1,3 +1,4 @@
+import sys
 import sublime
 import datetime
 import codecs
@@ -154,16 +155,20 @@ class GulpCommand(BaseCommand):
     def run_process(self, task):
         process = CrossPlatformProcess(self)
         process.run(task)
-        if is_sublime_text_3:
-            process.pipe_result(self.append_to_output_view)
-        else:
-            stdout, stderr = process.communicate()
-            self.defer_sync(lambda: self.append_to_output_view("%s\n%s" % (stdout, stderr)))
-        self.defer_sync(self.finish_running)
+        stdout, stderr = process.communicate(self.append_to_output_view_in_main_thread)
+        self.defer_sync(lambda: self.finish(stdout, stderr))
 
-    def finish_running(self):
-        self.set_output_close_on_timeout()
-        self.status_message("gulp %s finished!" % self.task_name)
+    def finish(self, stdout, stderr):
+        finish_message = "gulp %s finished %s" % (self.task_name, "with some errors." if stderr else "!")
+        self.status_message(finish_message)
+        if not self.silent:
+            self.set_output_close_on_timeout()
+        elif stderr and self.settings.get("show_silent_errors", False):
+            self.silent = False
+            self.show_output_panel(self.construct_gulp_task())
+            self.append_to_output_view(stdout)
+            self.append_to_output_view(stderr)
+            self.silent = True
 
 
 class GulpKillCommand(BaseCommand):
@@ -214,18 +219,25 @@ class CrossPlatformProcess():
     def _preexec_val(self):
         return os.setsid if sublime.platform() != "windows" else None
 
-    def pipe_result(self, fn):
-        self.pipe(self.process.stdout, fn)
-        self.pipe(self.process.stderr, fn)
-        self.terminate()
+    def communicate(self, fn = lambda x:None):
+        if sys.version_info >= (3, 0):
+            stdout, stderr = (self.pipe(self.process.stdout, fn), self.pipe(self.process.stderr, fn))
+            self.terminate()
+        else:
+            stdout, stderr = self.process.communicate()
+            fn("%s\n%s" % (stdout, stderr))
+        return (stdout, stderr)
 
     def pipe(self, output, fn):
+        output_text = ""
         for line in output:
-            output_text = str(line.rstrip().decode('utf-8')) + "\n"
-            fn(output_text)
+            output_line = str(line.rstrip().decode('utf-8')) + "\n"
+            output_text += output_line
+            fn(output_line)
+        return output_text
 
-    def communicate(self):
-        return self.process.communicate()
+    def read(self, output):
+        return output.read().decode('utf-8')
 
     def terminate(self):
         self.process.terminate()
@@ -238,6 +250,7 @@ class CrossPlatformProcess():
             kill_process.communicate()
         else:
             os.killpg(pid, signal.SIGTERM)
+        ProcessCache.remove(self)
 
 
 class ProcessCache():

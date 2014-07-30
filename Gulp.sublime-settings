@@ -2,6 +2,9 @@
     // Override your environment PATH
 	"exec_args": {},
 	
+    // Additional paths to search the gulpfile in (by default only the root of each project folder is used). Example: ["src", "nested/folder"]
+    "gulpfile_paths": [],
+
     // Use a new tab when showing the results. If it's false it'll use a panel.
     "results_in_new_tab": false,
 
@@ -9,8 +12,8 @@
     // If false (or 0) it will remain open.
     "results_autoclose_timeout_in_milliseconds": 0,
 
-    // Additional paths to search the gulpfile in (by default only the root of each project folder is used). Example: ["src", "nested/folder"]
-    "gulpfile_paths": [],
+    // If true it will open the output panel when running Gulp(silent) only if the task failed
+    "show_silent_errors": true,
 
     // Create the file 'sublime-gulp.log' to report errors
     "log_errors": true
