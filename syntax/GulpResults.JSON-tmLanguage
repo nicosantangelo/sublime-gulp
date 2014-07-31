@@ -6,9 +6,15 @@
 
   "patterns": [
     {
-      "match": "^\\[(.+)\\]",
+      "match": "^\\[((\\d|:)+)\\]",
         "captures": {
           "1": { "name": "comment" }
+        }
+    },
+    {
+      "match": "\\[([a-zA-Z ]+)\\]",
+        "captures": {
+          "1": { "name": "entity.name.function" }
         }
     },
     {
@@ -20,13 +26,13 @@
     {
       "match": "Using gulpfile (.+)$",
         "captures": {
-          "1": { "name": "entity.name.function" }
+          "1": { "name": "entity.name.tag" }
         }
     },
     {
       "match": "after (.+s)$",
         "captures": {
-          "1": { "name": "entity.name.function" }
+          "1": { "name": "entity.name.tag" }
         }
     }
   ]

@@ -16,7 +16,19 @@
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>^\[(.+)\]</string>
+			<string>^\[((\d|:)+)\]</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.function</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>\[([a-zA-Z ]+)\]</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -36,7 +48,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>entity.name.function</string>
+					<string>entity.name.tag</string>
 				</dict>
 			</dict>
 			<key>match</key>
@@ -48,7 +60,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>entity.name.function</string>
+					<string>entity.name.tag</string>
 				</dict>
 			</dict>
 			<key>match</key>
