@@ -101,7 +101,8 @@ The defaults are:
     "exec_args": {},
     "results_in_new_tab": false,
     "gulpfile_paths": [],
-    "log_erros": true
+    "log_erros": true,
+    "syntax": "Packages/Gulp/syntax/GulpResults.tmLanguage"
 }
 ````
 
@@ -119,7 +120,7 @@ You may override your `PATH` environment variable as follows (from [sublime-grun
 
 #### results_in_new_tab
 
-If set to true, a new tab will be used instead of a panel to output the results.
+If set to `true`, a new tab will be used instead of a panel to output the results.
 
 #### gulpfile_paths
 
@@ -127,7 +128,13 @@ Additional paths to search the gulpfile in, by default only the root of each pro
 Example: `["src", "nested/folder"]`
 
 #### log_erros
+
 Toggles the creation of sublime-gulp.log if any error occurs.
+
+#### syntax
+
+Syntax file for highlighting the gulp results. You can pick it from from the command pannel as `Set Syntax: Gulp results`.
+Set the setting to `false` if you don't want any colors.
 
 ## Shortcut Keys
 
