@@ -102,9 +102,10 @@ The defaults are:
 ````json
 {
     "exec_args": {},
+    "gulpfile_paths": [],
     "results_in_new_tab": false,
     "results_autoclose_timeout_in_milliseconds": 0,
-    "gulpfile_paths": [],
+    "show_silent_errors": true,
     "log_erros": true
 }
 ````
@@ -125,15 +126,19 @@ You may override your `PATH` environment variable as follows (from [sublime-grun
 
 If set to true, a new tab will be used instead of a panel to output the results.
 
+#### gulpfile_paths
+
+Additional paths to search the gulpfile in, by default only the root of each project folder is used.
+Example: `["src", "nested/folder"]`
+
 #### results_autoclose_timeout_in_milliseconds
 
 Defines the delay used to autoclose the panel or tab that holds the gulp results.
 If false (or 0) it will remain open, so if what you want if to keep it close check the [`silent`](https://github.com/NicoSantangelo/sublime-gulp#run-tasks-silent) command.
 
-#### gulpfile_paths
+#### show_silent_errors
 
-Additional paths to search the gulpfile in, by default only the root of each project folder is used.
-Example: `["src", "nested/folder"]`
+If true it will open the output panel when running [`Gulp(silent)`](https://github.com/NicoSantangelo/sublime-gulp#run-tasks-silent) only if the task failed
 
 #### log_erros
 Toggles the creation of sublime-gulp.log if any error occurs.
