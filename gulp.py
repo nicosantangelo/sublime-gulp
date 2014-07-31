@@ -220,21 +220,24 @@ class CrossPlatformProcess():
         return os.setsid if sublime.platform() != "windows" else None
 
     def communicate(self, fn = lambda x:None):
-        if sys.version_info >= (3, 0):
-            stdout, stderr = (self.pipe(self.process.stdout, fn), self.pipe(self.process.stderr, fn))
-            self.terminate()
-        else:
-            stdout, stderr = self.process.communicate()
-            fn("%s\n%s" % (stdout, stderr))
+        stdout, stderr = self.pipe(fn)
+        self.terminate()
         return (stdout, stderr)
 
-    def pipe(self, output, fn):
+    def pipe(self, fn):
+        return [self._pipe_output(output, fn) for output in [self.process.stdout, self.process.stderr]]
+
+    def _pipe_output(self, output, fn):
         output_text = ""
         for line in output:
-            output_line = str(line.rstrip().decode('utf-8')) + "\n"
+            output_line = self.decode_line(line)
             output_text += output_line
             fn(output_line)
         return output_text
+
+    def decode_line(self, line):
+        line = line.rstrip()
+        return str(line.decode('utf-8') if sys.version_info >= (3, 0) else line) + "\n"
 
     def read(self, output):
         return output.read().decode('utf-8')
