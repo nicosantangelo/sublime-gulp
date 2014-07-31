@@ -41,7 +41,13 @@ class BaseCommand(sublime_plugin.WindowCommand):
             self.scroll_to_end = True
             self.window.run_command("show_panel", { "panel": "output.gulp_output" })
             
+        self.add_syntax()
         self.append_to_output_view(text)
+
+    def add_syntax(self):
+        syntax_file = self.settings.get("syntax", "Packages/Gulp/syntax/GulpResults.tmLanguage")
+        if syntax_file:
+            self.output_view.set_syntax_file(syntax_file)
 
     def append_to_output_view(self, text):
         self.output_view.set_read_only(False)
