@@ -48,6 +48,10 @@ class BaseCommand(sublime_plugin.WindowCommand):
         syntax_file = self.settings.get("syntax", "Packages/Gulp/syntax/GulpResults.tmLanguage")
         if syntax_file:
             self.output_view.set_syntax_file(syntax_file)
+            # On Windows when the panel has a syntax it has a padding on the bottom.
+            # Prevent it from scrolling too far.
+            if sublime.platform() == "windows":
+                self.scroll_to_end = False
 
     def append_to_output_view(self, text):
         self.output_view.set_read_only(False)
@@ -56,7 +60,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
 
     def _insert(self, view, content):
         view.run_command("view_insert", { "size": view.size(), "content": content })
-        position = (view.size(), view.size()) if self.scroll_to_end else (0, 0)
+        position = (0, view.size()) if self.scroll_to_end else (0, 0)
         view.set_viewport_position(position, True)
 
     # Async calls
