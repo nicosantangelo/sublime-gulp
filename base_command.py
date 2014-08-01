@@ -35,12 +35,11 @@ class BaseCommand(sublime_plugin.WindowCommand):
     def show_output_panel(self, text):
         if self.settings.get("results_in_new_tab", False):
             self.output_view = self.window.open_file("Gulp Results")
-            self.scroll_to_end = False
         else:
             self.output_view = self.window.get_output_panel("gulp_output")
-            self.scroll_to_end = True
             self.window.run_command("show_panel", { "panel": "output.gulp_output" })
             
+        self.output_view.settings().set("scroll_past_end", False)
         self.add_syntax()
         self.append_to_output_view(text)
 
@@ -48,10 +47,6 @@ class BaseCommand(sublime_plugin.WindowCommand):
         syntax_file = self.settings.get("syntax", "Packages/Gulp/syntax/GulpResults.tmLanguage")
         if syntax_file:
             self.output_view.set_syntax_file(syntax_file)
-            # On Windows when the panel has a syntax it has a padding on the bottom.
-            # Prevent it from scrolling too far.
-            if sublime.platform() == "windows":
-                self.scroll_to_end = False
 
     def append_to_output_view(self, text):
         self.output_view.set_read_only(False)
@@ -60,8 +55,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
 
     def _insert(self, view, content):
         view.run_command("view_insert", { "size": view.size(), "content": content })
-        position = (0, view.size()) if self.scroll_to_end else (0, 0)
-        view.set_viewport_position(position, True)
+        view.set_viewport_position((0, view.size()), True)
 
     # Async calls
     def defer_sync(self, fn):
