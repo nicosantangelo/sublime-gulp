@@ -71,6 +71,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         else:
             view.set_read_only(False)
             view.run_command("view_insert", { "size": view.size(), "content": content })
+            view.set_viewport_position((0, view.size()), True)
             view.set_read_only(True)
 
     def set_output_close_on_timeout(self):

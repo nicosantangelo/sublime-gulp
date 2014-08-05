@@ -12,8 +12,8 @@ from hashlib import sha1
 is_sublime_text_3 = int(sublime.version()) >= 3000
 
 if is_sublime_text_3:
-    from .progress_notifier import ProgressNotifier
     from .base_command import BaseCommand
+    from .progress_notifier import ProgressNotifier
     import urllib.request as urllib2
 else:
     from base_command import BaseCommand
@@ -149,7 +149,7 @@ class GulpCommand(BaseCommand):
         Thread(target = self.run_process, args = (task, )).start() # Option to kill on timeout?
 
     def construct_gulp_task(self):
-        self.show_output_panel("Running %s...\n" % self.task_name)
+        self.show_output_panel("Running '%s'...\n" % self.task_name)
         return r"gulp %s" % self.task_name
 
     def run_process(self, task):
@@ -165,7 +165,7 @@ class GulpCommand(BaseCommand):
             self.set_output_close_on_timeout()
         elif stderr and self.settings.get("show_silent_errors", False):
             self.silent = False
-            self.show_output_panel("Running %s...\n" % self.task_name)
+            self.show_output_panel("Running '%s'...\n" % self.task_name)
             self.append_to_output_view(stdout)
             self.append_to_output_view(stderr)
             self.silent = True
@@ -204,7 +204,6 @@ class GulpPluginsCommand(BaseCommand):
     def open_in_browser(self, index = -1):
         if index >= 0 and index < self.plugins.length:
             webbrowser.open_new(self.plugins.get(index).get('homepage'))
-
 
 class CrossPlatformProcess():
     def __init__(self, command):
