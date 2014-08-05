@@ -9,7 +9,7 @@ This package is a merge between [Gulp Snippets](https://github.com/filipelinhare
 ### Run Tasks
 To run a task, first choose `Gulp` from the command pallete, the package will search for a gulpfile.js in an open folder and create a cache (`.sublime-gulp.cache`) with it (the first run might be a little slow).
 
-The package will display all the tasks in a list, selecting one will run it.
+The package will display all the tasks in a list, selecting one will run it (if you want, you can [run specific tasks with a keyboard shortcut](https://github.com/NicoSantangelo/sublime-gulp#bind-specific-tasks)).
 
 To show the task output the package uses a panel or a new tab (depends on your [settings](https://github.com/NicoSantangelo/sublime-gulp#settings)), you can add a [key binding](http://docs.sublimetext.info/en/latest/reference/key_bindings.html) to open the panel like this:
 
@@ -36,6 +36,9 @@ That's it!. Thanks to [@guillaume86](https://github.com/guillaume86) for the hel
 **Mac OS X**
 
 It's possible that your path isn't being reported by your shell so if you're having troubles running the package, give [SublimeFixMacPath](https://github.com/int3h/SublimeFixMacPath) a try.
+
+### Run Tasks (silent)
+Works the same way as the normal `Gulp` command, but `Gulp (silent)` will not write the results on the output panel or tab.
 
 ### Kill tasks
 To kill running tasks like `watch` you can pick the command `Gulp: Kill running tasks`. 
@@ -99,8 +102,10 @@ The defaults are:
 ````json
 {
     "exec_args": {},
-    "results_in_new_tab": false,
     "gulpfile_paths": [],
+    "results_in_new_tab": false,
+    "results_autoclose_timeout_in_milliseconds": 0,
+    "show_silent_errors": true,
     "log_erros": true,
     "syntax": "Packages/Gulp/syntax/GulpResults.tmLanguage"
 }
@@ -127,6 +132,15 @@ If set to `true`, a new tab will be used instead of a panel to output the result
 Additional paths to search the gulpfile in, by default only the root of each project folder is used.
 Example: `["src", "nested/folder"]`
 
+#### results_autoclose_timeout_in_milliseconds
+
+Defines the delay used to autoclose the panel or tab that holds the gulp results.
+If false (or 0) it will remain open, so if what you want if to keep it close check the [`silent`](https://github.com/NicoSantangelo/sublime-gulp#run-tasks-silent) command.
+
+#### show_silent_errors
+
+If true it will open the output panel when running [`Gulp(silent)`](https://github.com/NicoSantangelo/sublime-gulp#run-tasks-silent) only if the task failed
+
 #### log_erros
 
 Toggles the creation of sublime-gulp.log if any error occurs.
@@ -148,11 +162,18 @@ This package doesn't bind any command to a keyboard shortcut, but you can add it
 ]
 ````
 
+#### Bind specific tasks
 You also can use a shortcut for running a specific task like this:
+
 ````json
-{ "keys": ["KEYS"], "command": "gulp", "args": {"task_name": "watch"} },
+{ "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch" } }
 ````
 
+and if you want to run it in [`silent`](https://github.com/NicoSantangelo/sublime-gulp#run-tasks-silent) mode, you can add `"silent"` to the `args`
+
+````json
+{ "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch", "silent": true } }
+````
 
 ## Installation
 

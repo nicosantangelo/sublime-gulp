@@ -1,3 +1,4 @@
+import sys
 import sublime
 import datetime
 import codecs
@@ -37,7 +38,7 @@ class GulpCommand(BaseCommand):
         if len(self.gulp_files) > 0:
             self.choose_file()
         else:
-            sublime.error_message("gulpfile.js not found!")
+            self.error_message("gulpfile.js not found!")
 
     def append_paths(self):
         self.folders = []
@@ -57,7 +58,7 @@ class GulpCommand(BaseCommand):
         if len(self.gulp_files) == 1:
             self.show_tasks_from_gulp_file(0)
         else:
-            self.window.show_quick_panel(self.gulp_files, self.show_tasks_from_gulp_file)
+            self.show_quick_panel(self.gulp_files, self.show_tasks_from_gulp_file)
 
     def show_tasks_from_gulp_file(self, file_index):
         if file_index > -1:
@@ -77,9 +78,9 @@ class GulpCommand(BaseCommand):
             self.callcount = 0
             json_result = self.fetch_json()
         except TypeError as e:
-            sublime.error_message("Gulp: Could not read available tasks.\nMaybe the JSON cache (.sublime-gulp.cache) is malformed?")
+            self.error_message("Could not read available tasks.\nMaybe the JSON cache (.sublime-gulp.cache) is malformed?")
         except Exception as e:
-            sublime.error_message("Gulp: " + str(e))
+            self.error_message(str(e))
         else:
             tasks = [[name, self.dependencies_text(task)] for name, task in json_result.items()]
             return sorted(tasks, key = lambda task: task)
@@ -144,21 +145,30 @@ class GulpCommand(BaseCommand):
             self.run_gulp_task()
 
     def run_gulp_task(self):
-        command = self.construct_command()
-        Thread(target = self.run_process, args = (command, )).start() # Option to kill on timeout?
+        task = self.construct_gulp_task()
+        Thread(target = self.run_process, args = (task, )).start() # Option to kill on timeout?
 
-    def construct_command(self):
-        self.show_output_panel("Running '%s'...\n" % self.task_name)
+    def construct_gulp_task(self):
+        self.show_output_panel("Running %s...\n" % self.task_name)
         return r"gulp %s" % self.task_name
 
-    def run_process(self, command):
-            process = CrossPlatformProcess(self)
-            process.run(command)
-            if is_sublime_text_3:
-                process.pipe_stdout(self.append_to_output_view)
-            else:
-                stdout, stin = process.communicate()
-                self.defer_sync(lambda: self.append_to_output_view(stdout))
+    def run_process(self, task):
+        process = CrossPlatformProcess(self)
+        process.run(task)
+        stdout, stderr = process.communicate(self.append_to_output_view_in_main_thread)
+        self.defer_sync(lambda: self.finish(stdout, stderr))
+
+    def finish(self, stdout, stderr):
+        finish_message = "gulp %s finished %s" % (self.task_name, "with some errors." if stderr else "!")
+        self.status_message(finish_message)
+        if not self.silent:
+            self.set_output_close_on_timeout()
+        elif stderr and self.settings.get("show_silent_errors", False):
+            self.silent = False
+            self.show_output_panel("Running %s...\n" % self.task_name)
+            self.append_to_output_view(stdout)
+            self.append_to_output_view(stderr)
+            self.silent = True
 
 
 class GulpKillCommand(BaseCommand):
@@ -186,7 +196,7 @@ class GulpPluginsCommand(BaseCommand):
             progress.stop()
             plugin_response = json.loads(thread.result.decode('utf-8'))
             if plugin_response["timed_out"]:
-                sublime.error_message("Gulp: Sadly the request timed out, try again later.")
+                self.error_message("Sadly the request timed out, try again later.")
             else:
                 self.plugins = PluginList(plugin_response)
                 self.show_quick_panel(self.plugins.quick_panel_list(), self.open_in_browser, font = 0)
@@ -209,13 +219,28 @@ class CrossPlatformProcess():
     def _preexec_val(self):
         return os.setsid if sublime.platform() != "windows" else None
 
-    def pipe_stdout(self, fn):
-        for line in self.process.stdout:
-            fn(str(line.rstrip().decode('utf-8')) + "\n")
+    def communicate(self, fn = lambda x:None):
+        stdout, stderr = self.pipe(fn)
         self.terminate()
+        return (stdout, stderr)
 
-    def communicate(self):
-        return self.process.communicate()
+    def pipe(self, fn):
+        return [self._pipe_output(output, fn) for output in [self.process.stdout, self.process.stderr]]
+
+    def _pipe_output(self, output, fn):
+        output_text = ""
+        for line in output:
+            output_line = self.decode_line(line)
+            output_text += output_line
+            fn(output_line)
+        return output_text
+
+    def decode_line(self, line):
+        line = line.rstrip()
+        return str(line.decode('utf-8') if sys.version_info >= (3, 0) else line) + "\n"
+
+    def read(self, output):
+        return output.read().decode('utf-8')
 
     def terminate(self):
         self.process.terminate()
@@ -228,6 +253,7 @@ class CrossPlatformProcess():
             kill_process.communicate()
         else:
             os.killpg(pid, signal.SIGTERM)
+        ProcessCache.remove(self)
 
 
 class ProcessCache():

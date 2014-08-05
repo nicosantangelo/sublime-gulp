@@ -4,6 +4,11 @@
       "command": "gulp"
     },
     {
+      "caption": "Gulp (silent)",
+      "command": "gulp",
+      "args": { "silent": true }
+    },
+    {
       "caption": "Gulp: Kill running tasks",
       "command": "gulp_kill"
     },
