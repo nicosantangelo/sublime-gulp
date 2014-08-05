@@ -220,6 +220,7 @@ class CrossPlatformProcess():
 
     def communicate(self, fn = lambda x:None):
         stdout, stderr = self.pipe(fn)
+        self.process.communicate()
         self.terminate()
         return (stdout, stderr)
 
@@ -242,8 +243,12 @@ class CrossPlatformProcess():
         return output.read().decode('utf-8')
 
     def terminate(self):
-        self.process.terminate()
+        if self.is_alive():
+            self.process.terminate()
         ProcessCache.remove(self)
+
+    def is_alive(self):
+        return self.process.poll() is None
 
     def kill(self):
         pid = self.process.pid
