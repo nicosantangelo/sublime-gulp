@@ -12,6 +12,6 @@
     "log_errors": true,
 
     // Syntax file for highlighting the gulp results
-    // Set to false if you don't want any colors
+    // Set to false if you don't want any colors (you may need to restart Sublime)
     "syntax": "Packages/Gulp/syntax/GulpResults.tmLanguage"
 }

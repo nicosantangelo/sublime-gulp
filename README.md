@@ -134,7 +134,7 @@ Toggles the creation of sublime-gulp.log if any error occurs.
 #### syntax
 
 Syntax file for highlighting the gulp results. You can pick it from from the command pannel as `Set Syntax: Gulp results`.
-Set the setting to `false` if you don't want any colors.
+Set the setting to `false` if you don't want any colors (you may need to restart Sublime if you're removing the syntax).
 
 ## Shortcut Keys
 
