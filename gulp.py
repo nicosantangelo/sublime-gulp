@@ -21,7 +21,6 @@ else:
     import urllib2
 
 class GulpCommand(BaseCommand):
-    package_name = "Gulp"
     cache_file_name = ".sublime-gulp.cache"
     log_file_name = 'sublime-gulp.log'
     
@@ -173,9 +172,13 @@ class GulpCommand(BaseCommand):
 
 class GulpKillCommand(BaseCommand):
     def work(self):
-        if not ProcessCache.empty():
+        if ProcessCache.empty():
+            self.status_message("There are no running tasks")
+        else:
+            self.show_output_panel("\nFinishing the following running tasks:\n")
+            ProcessCache.each(lambda process: self.append_to_output_view("$ %s \n" % process.last_command))
             ProcessCache.kill_all()
-            self.show_output_panel("All running tasks killed!\n")
+            self.append_to_output_view("\nAll running tasks killed!")
 
 
 class GulpPluginsCommand(BaseCommand):
@@ -209,9 +212,11 @@ class CrossPlatformProcess():
     def __init__(self, command):
         self.path = command.env.get_path_with_exec_args()
         self.working_dir = command.working_dir
+        self.last_command = ""
 
-    def run(self, cmd):
-        self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, cwd=self.working_dir, shell=True, preexec_fn=self._preexec_val())
+    def run(self, command):
+        self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, cwd=self.working_dir, shell=True, preexec_fn=self._preexec_val())
+        self.last_command = command
         ProcessCache.add(self)
         return self
 
@@ -274,9 +279,13 @@ class ProcessCache():
 
     @classmethod
     def kill_all(cls):
-        for process in cls._procs:
-            process.kill()
+        cls.each(lambda process: process.kill())
         cls.clear()
+
+    @classmethod
+    def each(cls, fn):
+        for process in cls._procs:
+            fn(process)
 
     @classmethod
     def empty(cls):

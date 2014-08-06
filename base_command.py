@@ -9,6 +9,8 @@ else:
 
 # A base for each command
 class BaseCommand(sublime_plugin.WindowCommand):
+    package_name = "Gulp"
+    
     def run(self, task_name = None, silent = False):
         self.setup_data_from_settings()
         self.task_name = task_name
