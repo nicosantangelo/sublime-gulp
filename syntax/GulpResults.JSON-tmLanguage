@@ -34,6 +34,12 @@
         "captures": {
           "1": { "name": "entity.name.tag" }
         }
+    },
+    {
+      "match": "^(Finishing the following running tasks:|All running tasks killed!)$",
+        "captures": {
+          "1": { "name": "entity.name.class" }
+        }
     }
   ]
 }
