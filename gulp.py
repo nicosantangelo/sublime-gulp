@@ -181,6 +181,11 @@ class GulpKillCommand(BaseCommand):
             self.append_to_output_view("\nAll running tasks killed!")
 
 
+class GulpShowPanelCommand(BaseCommand):
+    def work(self):
+        self.show_panel()
+
+
 class GulpPluginsCommand(BaseCommand):
     def work(self):
         self.plugins = None

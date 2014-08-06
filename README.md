@@ -11,9 +11,7 @@ To run a task, first choose `Gulp` from the command pallete, the package will se
 
 The package will display all the tasks in a list, selecting one will run it (if you want, you can [run specific tasks with a keyboard shortcut](https://github.com/NicoSantangelo/sublime-gulp#bind-specific-tasks)).
 
-To show the task output the package uses a panel or a new tab (depends on your [settings](https://github.com/NicoSantangelo/sublime-gulp#settings)), you can add a [key binding](http://docs.sublimetext.info/en/latest/reference/key_bindings.html) to open the panel like this:
-
-`{ "keys": ["KEYS"], "command": "show_panel", "args": { "panel": "output.gulp_output" } }`
+To show the task output the package uses a panel or a new tab (depends on your [settings](https://github.com/NicoSantangelo/sublime-gulp#settings)), you can add a [key binding](http://docs.sublimetext.info/en/latest/reference/key_bindings.html) to open the panel (check the [gulp_show_panel command](https://github.com/NicoSantangelo/sublime-gulp#shortcut-keys)).
 
 Keep in mind that, the package creates the first cache using [node](http://nodejs.org/), so for it to work you might need to add your node_modules path to NODE_PATH, for example (for Unix):
 
@@ -46,6 +44,9 @@ To kill running tasks like `watch` you can pick the command `Gulp: Kill running 
 **Windows**
 
 If you're running Windows, the package will use [taskkill](http://technet.microsoft.com/en-us/library/cc725602.aspx) so every child process is correctly terminated. If the executable isn't on your system, you'll need to add it for this command to work correctly.
+
+### Show Panel
+Shows the closed output panel (just the panel, it won't re-open the tab if you're using the show_results_in_new_tab setting).
 
 ### List plugins
 Running `Gulp: List plugins` from the command palette will display the gulp plugins on a searcheable list. Picking one will open it on your default browser.
@@ -148,6 +149,7 @@ Toggles the creation of sublime-gulp.log if any error occurs.
 #### syntax
 
 Syntax file for highlighting the gulp results. You can pick it from from the command pannel as `Set Syntax: Gulp results`.
+
 Set the setting to `false` if you don't want any colors (you may need to restart Sublime if you're removing the syntax).
 
 ## Shortcut Keys
@@ -157,7 +159,11 @@ This package doesn't bind any command to a keyboard shortcut, but you can add it
 ````json
 [
     { "keys": ["KEYS"], "command": "gulp" },
+
     { "keys": ["KEYS"], "command": "gulp_kill" },
+
+    { "keys": ["KEYS"], "command": "gulp_show_panel" },
+
     { "keys": ["KEYS"], "command": "gulp_plugins" }
 ]
 ````

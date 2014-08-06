@@ -9,6 +9,10 @@
       "args": { "silent": true }
     },
     {
+      "caption": "Gulp: Show panel",
+      "command": "gulp_show_panel"
+    },
+    {
       "caption": "Gulp: Kill running tasks",
       "command": "gulp_kill"
     },
