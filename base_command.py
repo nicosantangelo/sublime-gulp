@@ -1,4 +1,5 @@
 import sublime, sublime_plugin
+import os.path
 
 is_sublime_text_3 = int(sublime.version()) >= 3000
 
@@ -13,6 +14,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.setup_data_from_settings()
         self.task_name = task_name
         self.silent = silent
+        self.working_dir = ""
         self.work()
 
     def setup_data_from_settings(self):
@@ -43,7 +45,8 @@ class BaseCommand(sublime_plugin.WindowCommand):
             return
         
         if self.results_in_new_tab:
-            self.output_view = self.window.open_file("Gulp Results")
+            new_tab_path = os.path.join(self.gulp_results_path(), "Gulp Results")
+            self.output_view = self.window.open_file(new_tab_path)
             self.output_view.set_scratch(True)
         else:
             self.output_view = self.window.get_output_panel("gulp_output")
@@ -52,6 +55,9 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.output_view.settings().set("scroll_past_end", False)
         self.add_syntax()
         self.append_to_output_view(text)
+
+    def gulp_results_path(self):
+        return next(folder_path for folder_path in self.window.folders() if self.working_dir.find(folder_path) != -1) if self.working_dir else ""
 
     def add_syntax(self):
         syntax_file = self.settings.get("syntax", "Packages/Gulp/syntax/GulpResults.tmLanguage")
