@@ -1,0 +1,40 @@
+   _____       _       
+  / ____|     | |      
+ | |  __ _   _| |_ __  
+ | | |_ | | | | | '_ \ 
+ | |__| | |_| | | |_) |
+  \_____|\__,_|_| .__/ 
+                | |    
+                |_|    
+
+Recent Changes
+==============
+
+Good news, you're now using the version 3.0.0 of the Gulp package!. A bunch of stuff changed if you have any troubles you can report it on github.com/NicoSantangelo/sublime-gulp/issues
+
+If you are in a hurry and something is not working, you can replace your Gulp package (Browse Packages -> Gulp folder) with v2.1.2 from github.com/NicoSantangelo/sublime-gulp/releases
+
+New features/changes:
+
+* Now the package shows the STDERR output, meaning that if your task fails you'll see the output
+
+* Gulp: Show panel command. This command will simply reopen the panel (not tab), it's just for convenience.
+  You can map it to a shortcut with 'gulp_show_panel'
+
+* Gulp (silent) command. Now you can run a gulp task without showing the panel/tab.
+  Using the setting show_silent_errors you can control if you want the panel/tab to appear if the task errors out
+
+* New setting: results_autoclose_timeout_in_milliseconds.
+  You can set the time the panel/tab will stay open after the task finished (if it's 0, the default value, it will stay open)
+
+* Syntax highlighting! Now the panel/tab has some colors inspired in the terminal output of gulp.
+  If you don't like it or you want to use your own syntax file, you can modify the syntax setting (you may need a ST restart)
+
+* Now the package has some more status messages to let you know what's happening
+
+
+That's all!, thanks a lot to @KevinBatdorf and @Sigmus for the suggestions and help.
+
+For issues or feature requests, head over to https://github.com/NicoSantangelo/sublime-gulp/issues
+
+Thanks!

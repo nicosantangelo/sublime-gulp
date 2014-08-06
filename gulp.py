@@ -178,7 +178,7 @@ class GulpKillCommand(BaseCommand):
             self.show_output_panel("\nFinishing the following running tasks:\n")
             ProcessCache.each(lambda process: self.append_to_output_view("$ %s \n" % process.last_command))
             ProcessCache.kill_all()
-            self.append_to_output_view("\nAll running tasks killed!")
+            self.append_to_output_view("\nAll running tasks killed!\n")
 
 
 class GulpShowPanelCommand(BaseCommand):

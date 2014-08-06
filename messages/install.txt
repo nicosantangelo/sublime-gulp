@@ -14,9 +14,14 @@ Sorry to interrupt
 First of all, thanks for installing sublime-gulp!
 
 You can start using it now by choosing 'Gulp' from your command pallete or selecting one of the available snippets.
-If you want to know a bit more of what you can do with the package, check the readme at: https://github.com/NicoSantangelo/sublime-gulp
+
+If you want to know a bit more of what you can do with the package you can:
+
+* Check the package settings on Preference -> Package Settings -> Gulp -> Settings - Default
+
+* Take a look at the README at: https://github.com/NicoSantangelo/sublime-gulp 
+
 
 For issues or feature requests, head over to https://github.com/NicoSantangelo/sublime-gulp/issues
-
 
 Thanks again!
