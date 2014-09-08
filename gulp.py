@@ -239,7 +239,9 @@ class CrossPlatformProcess():
 
     def _pipe_output(self, output, fn):
         output_text = ""
-        for line in output:
+        while True:
+            line = output.readline()
+            if not line: break
             output_line = self.decode_line(line)
             output_text += output_line
             fn(output_line)
