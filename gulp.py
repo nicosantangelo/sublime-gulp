@@ -152,7 +152,7 @@ class GulpCommand(BaseCommand):
         return r"gulp %s" % self.task_name
 
     def run_process(self, task):
-        process = CrossPlatformProcess(self)
+        process = CrossPlatformProcess(self, True)
         process.run(task)
         stdout, stderr = process.communicate(self.append_to_output_view_in_main_thread)
         self.defer_sync(lambda: self.finish(stdout, stderr))
@@ -169,6 +169,31 @@ class GulpCommand(BaseCommand):
             self.append_to_output_view(stderr)
             self.silent = True
 
+
+class NonBlockingStreamReader:
+    def __init__(self, stream, fn):
+        '''
+        stream: the stream to read from.
+                Usually a process' stdout or stderr.
+        '''
+
+        self._s = stream
+
+        def _run(stream, fn):
+            '''
+            Collect lines from 'stream' and put them in 'quque'.
+            '''
+
+            while True:
+                line = stream.readline()
+                if not line: break
+                line = line.rstrip()
+                line = str(line.decode('utf-8') if sys.version_info >= (3, 0) else line) + "\n"
+                fn(line)
+
+        self._t = Thread(target = _run, args = (self._s, fn))
+        self._t.daemon = True
+        self._t.start()
 
 class GulpKillCommand(BaseCommand):
     def work(self):
@@ -214,10 +239,11 @@ class GulpPluginsCommand(BaseCommand):
             webbrowser.open_new(self.plugins.get(index).get('homepage'))
 
 class CrossPlatformProcess():
-    def __init__(self, command):
+    def __init__(self, command, nonblocking=False):
         self.path = command.env.get_path_with_exec_args()
         self.working_dir = command.working_dir
         self.last_command = ""
+        self.nonblocking = nonblocking
 
     def run(self, command):
         self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, cwd=self.working_dir, shell=True, preexec_fn=self._preexec_val())
@@ -229,10 +255,15 @@ class CrossPlatformProcess():
         return os.setsid if sublime.platform() != "windows" else None
 
     def communicate(self, fn = lambda x:None):
-        stdout, stderr = self.pipe(fn)
-        self.process.communicate()
-        self.terminate()
-        return (stdout, stderr)
+        if self.nonblocking:
+            NonBlockingStreamReader(self.process.stdout, fn)
+            NonBlockingStreamReader(self.process.stderr, fn)
+            return ("", "")
+        else:
+            stdout, stderr = self.pipe(fn)
+            self.process.communicate()
+            self.terminate()
+            return (stdout, stderr)
 
     def pipe(self, fn):
         return [self._pipe_output(output, fn) for output in [self.process.stdout, self.process.stderr]]
