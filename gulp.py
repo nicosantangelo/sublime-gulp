@@ -152,7 +152,8 @@ class GulpCommand(BaseCommand):
         return r"gulp %s" % self.task_name
 
     def run_process(self, task):
-        process = CrossPlatformProcess(self, True)
+        is_nonblocking = self.task_name in self.nonblocking_tasks
+        process = CrossPlatformProcess(self, is_nonblocking)
         process.run(task)
         stdout, stderr = process.communicate(self.append_to_output_view_in_main_thread)
         self.defer_sync(lambda: self.finish(stdout, stderr))

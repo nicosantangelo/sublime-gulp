@@ -22,6 +22,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
     def setup_data_from_settings(self):
         self.settings = sublime.load_settings("Gulp.sublime-settings")
         self.results_in_new_tab = self.settings.get("results_in_new_tab", False)
+        self.nonblocking_tasks  = self.settings.get("nonblocking_tasks", [])
 
     # Main method, override
     def work(self):
