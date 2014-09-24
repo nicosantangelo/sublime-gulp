@@ -170,31 +170,6 @@ class GulpCommand(BaseCommand):
             self.silent = True
 
 
-class NonBlockingStreamReader:
-    def __init__(self, stream, fn):
-        '''
-        stream: the stream to read from.
-                Usually a process' stdout or stderr.
-        '''
-
-        self._s = stream
-
-        def _run(stream, fn):
-            '''
-            Collect lines from 'stream' and put them in 'quque'.
-            '''
-
-            while True:
-                line = stream.readline()
-                if not line: break
-                line = line.rstrip()
-                line = str(line.decode('utf-8') if sys.version_info >= (3, 0) else line) + "\n"
-                fn(line)
-
-        self._t = Thread(target = _run, args = (self._s, fn))
-        self._t.daemon = True
-        self._t.start()
-
 class GulpKillCommand(BaseCommand):
     def work(self):
         if ProcessCache.empty():
@@ -255,18 +230,20 @@ class CrossPlatformProcess():
         return os.setsid if sublime.platform() != "windows" else None
 
     def communicate(self, fn = lambda x:None):
-        if self.nonblocking:
-            NonBlockingStreamReader(self.process.stdout, fn)
-            NonBlockingStreamReader(self.process.stderr, fn)
-            return ("", "")
-        else:
-            stdout, stderr = self.pipe(fn)
+        stdout, stderr = self.pipe(fn)
+        if not self.nonblocking:
             self.process.communicate()
             self.terminate()
-            return (stdout, stderr)
+        return (stdout, stderr)
 
     def pipe(self, fn):
-        return [self._pipe_output(output, fn) for output in [self.process.stdout, self.process.stderr]]
+        pipe_method = self._nonblocking_pipe if self.nonblocking else self._pipe_output
+        return [pipe_method(output, fn) for output in [self.process.stdout, self.process.stderr]]
+
+    def _nonblocking_pipe(self, output, fn):
+        thread = Thread(target = self._pipe_output, args = (output, fn))
+        thread.daemon = True
+        thread.start()
 
     def _pipe_output(self, output, fn):
         output_text = ""
