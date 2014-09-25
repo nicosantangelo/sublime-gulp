@@ -108,7 +108,8 @@ The defaults are:
     "results_autoclose_timeout_in_milliseconds": 0,
     "show_silent_errors": true,
     "log_erros": true,
-    "syntax": "Packages/Gulp/syntax/GulpResults.tmLanguage"
+    "syntax": "Packages/Gulp/syntax/GulpResults.tmLanguage",
+    "nonblocking_tasks": []
 }
 ````
 
@@ -151,6 +152,19 @@ Toggles the creation of sublime-gulp.log if any error occurs.
 Syntax file for highlighting the gulp results. You can pick it from from the command pannel as `Set Syntax: Gulp results`.
 
 Set the setting to `false` if you don't want any colors (you may need to restart Sublime if you're removing the syntax).
+
+#### nonblocking_tasks
+
+Task names to be executed with nonblocking streams, this allows both stdout and stderr to be read at the same time.
+
+Useful for long running tasks like `watch` where the standard blocking stream will only show stdout until the task is killed.
+
+Example:
+
+````json
+"nonblocking_tasks": ["watch", "other long running task"]
+````
+
 
 ## Shortcut Keys
 
