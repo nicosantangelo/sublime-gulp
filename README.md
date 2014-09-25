@@ -162,7 +162,7 @@ Useful for long running tasks like `watch` where the standard blocking stream wi
 Example:
 
 ````json
-"nonblocking_tasks": ["watch", "other long running task"]
+{ "nonblocking_tasks": ["watch", "other long running task"] }
 ````
 
 
