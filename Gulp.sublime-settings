@@ -22,5 +22,6 @@
     // Set to false if you don't want any colors (you may need to restart Sublime)
     "syntax": "Packages/Gulp/syntax/GulpResults.tmLanguage",
 
+    // Read from stdout and stderr without blocking (both at the same time)
     "nonblocking": true
 }
