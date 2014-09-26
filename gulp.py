@@ -152,8 +152,7 @@ class GulpCommand(BaseCommand):
         return r"gulp %s" % self.task_name
 
     def run_process(self, task):
-        is_nonblocking = self.task_name in self.nonblocking_tasks
-        process = CrossPlatformProcess(self, is_nonblocking)
+        process = CrossPlatformProcess(self, self.nonblocking)
         process.run(task)
         stdout, stderr = process.communicate(self.append_to_output_view_in_main_thread)
         self.defer_sync(lambda: self.finish(stdout, stderr))
@@ -215,7 +214,7 @@ class GulpPluginsCommand(BaseCommand):
             webbrowser.open_new(self.plugins.get(index).get('homepage'))
 
 class CrossPlatformProcess():
-    def __init__(self, command, nonblocking=False):
+    def __init__(self, command, nonblocking=True):
         self.path = command.env.get_path_with_exec_args()
         self.working_dir = command.working_dir
         self.last_command = ""
@@ -232,24 +231,25 @@ class CrossPlatformProcess():
 
     def communicate(self, fn = lambda x:None):
         stdout, stderr = self.pipe(fn)
-        if not self.nonblocking:
-            self.process.communicate()
-            self.terminate()
+        self.process.communicate()
+        self.terminate()
         return (stdout, stderr)
 
     def pipe(self, fn):
-        pipe_method = self._nonblocking_pipe if self.nonblocking else self._pipe_output
-        return [pipe_method(output, fn) for output in [self.process.stdout, self.process.stderr]]
+        streams = [self.process.stdout, self.process.stderr]
+        streams_text = []
+        if self.nonblocking:
+            threads = [ThreadWithResult(target=self._pipe_stream, args=(stream, fn)) for stream in streams]
+            [t.join() for t in threads]
+            streams_text = [t.result for t in threads]
+        else:
+            streams_text = [self._pipe_stream(stream, fn) for stream in streams]
+        return streams_text
 
-    def _nonblocking_pipe(self, output, fn):
-        thread = Thread(target = self._pipe_output, args = (output, fn))
-        thread.daemon = True
-        thread.start()
-
-    def _pipe_output(self, output, fn):
+    def _pipe_stream(self, stream, fn):
         output_text = ""
         while True:
-            line = output.readline()
+            line = stream.readline()
             if not line: break
             output_line = self.decode_line(line)
             output_text += output_line
@@ -260,8 +260,8 @@ class CrossPlatformProcess():
         line = line.rstrip()
         return str(line.decode('utf-8') if sys.version_info >= (3, 0) else line) + "\n"
 
-    def read(self, output):
-        return output.read().decode('utf-8')
+    def read(self, stream):
+        return stream.read().decode('utf-8')
 
     def terminate(self):
         if self.is_alive():
@@ -387,3 +387,14 @@ class PluginRegistryCall(Thread):
 
         sublime.error_message(err)
         self.result = False
+
+class ThreadWithResult(Thread):
+    def __init__(self, target, args):
+        self.result = None
+        self.target = target
+        self.args = args
+        Thread.__init__(self)
+        self.start()
+
+    def run(self):
+        self.result = self.target(*self.args)
