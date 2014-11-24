@@ -17,6 +17,12 @@ Keep in mind that, the package creates the first cache using [node](http://nodej
 
 `export NODE_PATH=/usr/local/lib/node_modules`
 
+**Troubleshooting**
+
+The plugin wont work unless you have `gulp` defined on your gulpfile.
+
+So if you can't find why Sublime Gulp isn't working be sure to at least have `var gulp = require('gulp');` defined. [More info](https://github.com/NicoSantangelo/sublime-gulp/issues/12) (thanks [@smeijer](https://github.com/smeijer) for the help)
+
 **CoffeeScript**
 
 If you want to use a `gulpfile.coffee` you need to do two things:
