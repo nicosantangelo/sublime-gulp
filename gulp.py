@@ -176,7 +176,7 @@ class GulpKillCommand(BaseCommand):
             self.status_message("There are no running tasks")
         else:
             self.show_output_panel("\nFinishing the following running tasks:\n")
-            ProcessCache.each(lambda process: self.append_to_output_view("$ %s \n" % process.last_command))
+            ProcessCache.each(lambda process: self.append_to_output_view("$ %s\n" % process.last_command))
             ProcessCache.kill_all()
             self.append_to_output_view("\nAll running tasks killed!\n")
 
