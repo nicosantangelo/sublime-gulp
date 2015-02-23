@@ -57,6 +57,9 @@ Shows the closed output panel (just the panel, it won't re-open the tab if you'r
 ### List plugins
 Running `Gulp: List plugins` from the command palette will display the gulp plugins on a searcheable list. Picking one will open it on your default browser.
 
+### Delete cache
+Running `Gulp: Delete cache` will delete the `.sublime-gulp.cache` file for you, forcing a re-parsing of the `gulpfile.js`.
+
 ##Snippets
 
 #### vargulp

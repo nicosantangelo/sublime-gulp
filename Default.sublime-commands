@@ -19,5 +19,9 @@
     {
       "caption": "Gulp: List plugins",
       "command": "gulp_plugins"
+    },
+    {
+      "caption": "Gulp: Delete chache",
+      "command": "gulp_delete_cache"
     }
 ]

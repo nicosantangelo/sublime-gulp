@@ -213,6 +213,17 @@ class GulpPluginsCommand(BaseCommand):
         if index >= 0 and index < self.plugins.length:
             webbrowser.open_new(self.plugins.get(index).get('homepage'))
 
+class GulpDeleteCacheCommand(BaseCommand):
+    def work(self):
+        try:
+            jsonfilename = os.path.join(self.working_dir, GulpCommand.cache_file_name)
+            if os.path.exists(jsonfilename):
+                os.remove(jsonfilename)
+                self.status_message('Cache removed successfully')
+        except Exception as e:
+            self.status_message("Could not remove cache: %s" % str(e))
+
+
 class CrossPlatformProcess():
     def __init__(self, command, nonblocking=True):
         self.path = command.env.get_path_with_exec_args()
