@@ -21,7 +21,7 @@
       "command": "gulp_plugins"
     },
     {
-      "caption": "Gulp: Delete chache",
+      "caption": "Gulp: Delete cache",
       "command": "gulp_delete_cache"
     }
 ]
