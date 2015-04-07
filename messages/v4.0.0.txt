@@ -1,0 +1,21 @@
+   _____       _       
+  / ____|     | |      
+ | |  __ _   _| |_ __  
+ | | |_ | | | | | '_ \ 
+ | |__| | |_| | | |_) |
+  \_____|\__,_|_| .__/ 
+                | |    
+                |_|    
+
+Recent Changes
+==============
+
+Hello!
+
+The lastest version of sublime-gulp now has experimental support for gulp4.0-alpha!
+
+If you tried to list the tasks using the gulp4.0, try removing the `.sublime-gulp.cache` file (you can use `Gulp: Delete cache`) and running `Gulp` again.
+
+If you find any problem or you have a feature request please let me know at https://github.com/NicoSantangelo/sublime-gulp/issues
+
+Thanks a lot to @Smuliii for the heads up!
