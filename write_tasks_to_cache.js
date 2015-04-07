@@ -36,11 +36,37 @@ var getJSONFromFile = function(filepath) {
     }
 };
 var forEachTask = function(fn) {
+    if(gulp.tasks) {
+        _forEachTask3x(fn);
+    } else {
+        _forEachTask4x(fn);
+    }
+};
+
+var _forEachTask3x = function(fn) {
     for(var task in gulp.tasks) {
         if (gulp.tasks.hasOwnProperty(task)) {
             fn(gulp.tasks[task].name, gulp.tasks[task].dep);
         }
     }
+};
+
+var _forEachTask4x = function(fn) {
+    gulp.tree({ deep: true }).forEach(function(task) {
+        if (task.type === "task") {
+            var deps = [];
+            task.nodes.forEach(function(node) {
+              var innerDeps = node.nodes.map(function(dep) {
+                if (dep.type === "task") {
+                  return dep.label;
+                }
+              });
+              deps = deps.concat(innerDeps);
+            });
+            
+            fn(task.label, deps);
+        }
+    });
 };
 
 var gulp = requireGulp(gulpfilePath);
