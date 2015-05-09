@@ -23,5 +23,10 @@
     "syntax": "Packages/Gulp/syntax/GulpResults.tmLanguage",
 
     // Read from stdout and stderr without blocking (both at the same time)
-    "nonblocking": true
+    "nonblocking": true,
+
+    // Add a custom flag to a particular gulp command. Format: { "task_name": "flags" }
+    // For example: { "concat": "--silent" }
+    "flags": {
+    }
 }

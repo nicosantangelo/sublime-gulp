@@ -15,6 +15,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
     def run(self, task_name = None, silent = False):
         self.setup_data_from_settings()
         self.task_name = task_name
+        self.task_flag = self.get_flag_from_task_name()
         self.silent = silent
         self.working_dir = ""
         self.work()
@@ -23,6 +24,10 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.settings = sublime.load_settings("Gulp.sublime-settings")
         self.results_in_new_tab = self.settings.get("results_in_new_tab", False)
         self.nonblocking  = self.settings.get("nonblocking", True)
+
+    def get_flag_from_task_name(self):
+        flags = self.settings.get("flags", {})
+        return flags[self.task_name] if self.task_name in flags else ""
 
     # Main method, override
     def work(self):

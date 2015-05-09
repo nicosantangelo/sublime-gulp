@@ -141,6 +141,7 @@ class GulpCommand(BaseCommand):
     def task_list_callback(self, task_index):
         if task_index > -1:
             self.task_name = self.tasks[task_index][0]
+            self.task_flag = self.get_flag_from_task_name()
             self.run_gulp_task()
 
     def run_gulp_task(self):
@@ -148,8 +149,8 @@ class GulpCommand(BaseCommand):
         Thread(target = self.run_process, args = (task, )).start() # Option to kill on timeout?
 
     def construct_gulp_task(self):
-        self.show_output_panel("Running '%s'...\n" % self.task_name)
-        return r"gulp %s" % self.task_name
+        self.show_running_status_in_output_panel()
+        return r"gulp %s %s" % (self.task_name, self.task_flag)
 
     def run_process(self, task):
         process = CrossPlatformProcess(self, self.nonblocking)
@@ -158,16 +159,20 @@ class GulpCommand(BaseCommand):
         self.defer_sync(lambda: self.finish(stdout, stderr))
 
     def finish(self, stdout, stderr):
-        finish_message = "gulp %s finished %s" % (self.task_name, "with some errors." if stderr else "!")
+        finish_message = "gulp %s %s finished %s" % (self.task_name, self.task_flag, "with some errors." if stderr else "!")
         self.status_message(finish_message)
         if not self.silent:
             self.set_output_close_on_timeout()
         elif stderr and self.settings.get("show_silent_errors", False):
             self.silent = False
-            self.show_output_panel("Running '%s'...\n" % self.task_name)
+            self.show_running_status_in_output_panel()
             self.append_to_output_view(stdout)
             self.append_to_output_view(stderr)
             self.silent = True
+
+    def show_running_status_in_output_panel(self):
+        with_flag_text = (' with %s' % self.task_flag) if self.task_flag else ''
+        self.show_output_panel("Running '%s'%s...\n" % (self.task_name, with_flag_text))
 
 
 class GulpKillCommand(BaseCommand):
