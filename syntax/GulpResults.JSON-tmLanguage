@@ -24,6 +24,12 @@
         }
     },
     {
+      "match": " with (.+)...",
+        "captures": {
+          "1": { "name": "support.function" }
+        }
+    },
+    {
       "match": "Using gulpfile (.+)$",
         "captures": {
           "1": { "name": "entity.name.tag" }

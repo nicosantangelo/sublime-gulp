@@ -48,6 +48,18 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
+					<string>support.function</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string> with (.+)...</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
 					<string>entity.name.tag</string>
 				</dict>
 			</dict>
