@@ -1,0 +1,23 @@
+   _____       _       
+  / ____|     | |      
+ | |  __ _   _| |_ __  
+ | | |_ | | | | | '_ \ 
+ | |__| | |_| | | |_) |
+  \_____|\__,_|_| .__/ 
+                | |    
+                |_|    
+
+Recent Changes
+==============
+
+Hello!
+
+The lastest version of sublime-gulp now has support for command flags (arguments)!
+
+If you want to run a gulp task with a flag like `--watch` or even `--version` you can set it on the settings file or on a specific keybinding. For more info take a look at the README here: https://github.com/NicoSantangelo/sublime-gulp#settings
+
+If you're using flags right now and this implementation does not solve your particular workflow, let me know!
+
+As always, if you find any problem or you have a feature request you can do so at https://github.com/NicoSantangelo/sublime-gulp/issues
+
+Thanks a lot to @vitalybe and @cperryk for the feature request.
