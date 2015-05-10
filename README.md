@@ -118,7 +118,8 @@ The defaults are:
     "show_silent_errors": true,
     "log_erros": true,
     "syntax": "Packages/Gulp/syntax/GulpResults.tmLanguage",
-    "nonblocking": true
+    "nonblocking": true,
+    "flags": {}
 }
 ````
 
@@ -168,6 +169,21 @@ When enabled, the package will read the streams from the task process using two 
 
 If set to `false`, it will read first from `stdout` and then from `stderr`.
 
+#### flags
+
+This seting lets you define custom flags for your gulp commands. The key is the name of the task and the value is the string containing the flags.
+
+For example if you have to run `build` with the `--watch` flag, like this `gulp build --watch` you'll do:
+
+````json
+{
+    "flags": {
+        "build": "--watch"
+    }
+}
+````
+
+If you want to add a flag to a task just for a project, you can try [binding a specific task](#bind-specific-tasks).
 
 ## Shortcut Keys
 
@@ -196,6 +212,12 @@ and if you want to run it in [`silent`](#run-tasks-silent) mode, you can add `"s
 
 ````json
 { "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch", "silent": true } }
+````
+
+Lastly, you can add a flag to the command using `task_flag`. This option will override the any [flag](#flags) defined on the settings file. If you set it to `""` (empty string) it will run the command without flags.
+
+````json
+{ "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "build", "task_flag": "--watch" } }
 ````
 
 ## Installation
