@@ -1,5 +1,6 @@
 import sys
 import sublime
+import sublime_plugin
 import datetime
 import codecs
 import os, os.path
@@ -230,12 +231,17 @@ class GulpDeleteCacheCommand(GulpCommand):
             self.working_dir = os.path.dirname(self.gulp_files[file_index])
             try:
                 jsonfilename = os.path.join(self.working_dir, GulpCommand.cache_file_name)
-                print(jsonfilename)
                 if os.path.exists(jsonfilename):
                     os.remove(jsonfilename)
                     self.status_message('Cache removed successfully')
             except Exception as e:
                 self.status_message("Could not remove cache: %s" % str(e))
+
+
+class GulpExitCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        self.window.run_command("gulp_kill")
+        self.window.run_command("exit")
 
 
 class CrossPlatformProcess():
