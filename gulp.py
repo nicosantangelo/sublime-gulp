@@ -207,12 +207,16 @@ class GulpPluginsCommand(BaseCommand):
             sublime.set_timeout(lambda: self.handle_thread(thread, progress), 100)
          else:
             progress.stop()
-            plugin_response = json.loads(thread.result.decode('utf-8'))
-            if plugin_response["timed_out"]:
-                self.error_message("Sadly the request timed out, try again later.")
+            if thread.result:
+                plugin_response = json.loads(thread.result.decode('utf-8'))
+                if plugin_response["timed_out"]:
+                    self.error_message("Sadly the request timed out, try again later.")
+                else:
+                    self.plugins = PluginList(plugin_response)
+                    self.show_quick_panel(self.plugins.quick_panel_list(), self.open_in_browser, font = 0)
             else:
-                self.plugins = PluginList(plugin_response)
-                self.show_quick_panel(self.plugins.quick_panel_list(), self.open_in_browser, font = 0)
+                self.error_message("\n\nThe plugin repository seems to be down.\n\nIf the site at http://gulpjs.com/plugins is working, please report this issue at the Sublime Gulp repo.\n\nThanks!")
+
 
     def open_in_browser(self, index = -1):
         if index >= 0 and index < self.plugins.length:
