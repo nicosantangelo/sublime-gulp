@@ -203,9 +203,9 @@ class GulpPluginsCommand(BaseCommand):
         self.handle_thread(thread, progress)
 
     def handle_thread(self, thread, progress):
-         if thread.is_alive() or thread.result == False:
+        if thread.is_alive() and not thread.error:
             sublime.set_timeout(lambda: self.handle_thread(thread, progress), 100)
-         else:
+        else:
             progress.stop()
             if thread.result:
                 plugin_response = json.loads(thread.result.decode('utf-8'))
@@ -215,8 +215,16 @@ class GulpPluginsCommand(BaseCommand):
                     self.plugins = PluginList(plugin_response)
                     self.show_quick_panel(self.plugins.quick_panel_list(), self.open_in_browser, font = 0)
             else:
-                self.error_message("\n\nThe plugin repository seems to be down.\n\nIf the site at http://gulpjs.com/plugins is working, please report this issue at the Sublime Gulp repo.\n\nThanks!")
+                self.error_message(self.error_text_for(thread))
 
+    def error_text_for(self, thread):
+        tuple = (
+            "The plugin repository seems to be down.",
+            "If the site at http://gulpjs.com/plugins is working, please report this issue at the Sublime Gulp repo.",
+            "Thanks!",
+            thread.error
+        )
+        return "\n\n%s\n\n%s\n\n%s\n\n%s" % tuple
 
     def open_in_browser(self, index = -1):
         if index >= 0 and index < self.plugins.length:
@@ -400,6 +408,7 @@ class PluginRegistryCall(Thread):
     def __init__(self, timeout = 5):
         self.timeout = timeout
         self.result = None
+        self.error = None
         Thread.__init__(self)
 
     def run(self):
@@ -410,12 +419,12 @@ class PluginRegistryCall(Thread):
             return
 
         except urllib2.HTTPError as e:
-            err = 'Gulp: HTTP error %s contacting gulpjs registry' % (str(e.code))
+            err = 'Error: HTTP error %s contacting gulpjs registry' % (str(e.code))
         except urllib2.URLError as e:
-            err = 'Gulp: URL error %s contacting gulpjs registry' % (str(e.reason))
+            err = 'Error: URL error %s contacting gulpjs registry' % (str(e.reason))
 
-        sublime.error_message(err)
-        self.result = False
+        self.error = err
+        self.result = None
 
 class ThreadWithResult(Thread):
     def __init__(self, target, args):
