@@ -209,11 +209,8 @@ class GulpPluginsCommand(BaseCommand):
             progress.stop()
             if thread.result:
                 plugin_response = json.loads(thread.result.decode('utf-8'))
-                if plugin_response["timed_out"]:
-                    self.error_message("Sadly the request timed out, try again later.")
-                else:
-                    self.plugins = PluginList(plugin_response)
-                    self.show_quick_panel(self.plugins.quick_panel_list(), self.open_in_browser, font = 0)
+                self.plugins = PluginList(plugin_response)
+                self.show_quick_panel(self.plugins.quick_panel_list(), self.open_in_browser, font = 0)
             else:
                 self.error_message(self.error_text_for(thread))
 
@@ -381,7 +378,7 @@ class Security():
 
 class PluginList():
     def __init__(self, plugins_response):
-        self.plugins = [Plugin(plugin_json) for plugin_json in plugins_response["hits"]["hits"]]
+        self.plugins = [Plugin(plugin_json) for plugin_json in plugins_response["results"]]
         self.length = len(self.plugins)
 
     def get(self, index):
@@ -389,21 +386,27 @@ class PluginList():
             return self.plugins[index]
 
     def quick_panel_list(self):
-        return [ [plugin.get('name') + ' (v' + plugin.get('version') + ')', plugin.get('description')] for plugin in self.plugins ]
+        return [ [plugin.name + ' (' + plugin.version + ')', plugin.description] for plugin in self.plugins ]
 
 class Plugin():
     def __init__(self, plugin_json):
         self.plugin = plugin_json
+        self.set_attributes()
+
+    def set_attributes(self):
+        self.name = self.get('name')
+        self.version = "v" + self.get('version')
+        self.description = self.get('description')
 
     def get(self, property):
-        return self.plugin['fields'][property][0] if self.has(property) else ''
+        return self.plugin[property] if self.has(property) else ''
 
     def has(self, property):
-        return 'fields' in self.plugin and property in self.plugin['fields']
+        return property in self.plugin
 
 
 class PluginRegistryCall(Thread):
-    url = "http://registry.gulpjs.com/_search?fields=name,description,author,homepage,version&from=20&q=keywords:gulpplugin,gulpfriendly&size=750"
+    url = "http://npmsearch.com/query?fields=name,description,homepage,version,rating&q=keywords:gulpfriendly&q=keywords:gulpplugin&size=1755&sort=rating:desc&start=20"
 
     def __init__(self, timeout = 5):
         self.timeout = timeout
