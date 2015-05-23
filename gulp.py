@@ -240,9 +240,10 @@ class GulpDeleteCacheCommand(GulpCommand):
 
 class GulpExitCommand(sublime_plugin.WindowCommand):
     def run(self):
-        self.window.run_command("gulp_kill")
-        self.window.run_command("exit")
-
+        try:
+            self.window.run_command("gulp_kill")
+        finally:
+            self.window.run_command("exit")
 
 class CrossPlatformProcess():
     def __init__(self, command, nonblocking=True):
