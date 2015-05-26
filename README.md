@@ -2,16 +2,16 @@
 
 A Gulp task runner with snippets for Sublime Text.
 
-This package is a merge between [Gulp Snippets](https://github.com/filipelinhares/gulp-sublime-snippets) from [@filipelinhares](https://github.com/filipelinhares) and [Gulp](https://github.com/NicoSantangelo/sublime-gulp) from [NicoSantangelo](https://github.com/NicoSantangelo) (this last one, port of the awesome [sublime-grunt](https://github.com/tvooo/sublime-grunt)).
+This package is a merge between [Gulp Snippets](https://github.com/filipelinhares/gulp-sublime-snippets) from [@filipelinhares](https://github.com/filipelinhares) and [Gulp](https://github.com/NicoSantangelo/sublime-gulp) from [NicoSantangelo](https://github.com/NicoSantangelo) (this last one, based of the awesome [sublime-grunt](https://github.com/tvooo/sublime-grunt)).
 
 ## Usage
 
-### Run Tasks
+### 1. Run Tasks
 To run a task, first choose `Gulp` from the command pallete, the package will search for a gulpfile.js in an open folder and create a cache (`.sublime-gulp.cache`) with it (the first run might be a little slow).
 
 The package will display all the tasks in a list, selecting one will run it (if you want, you can [run specific tasks with a keyboard shortcut](#bind-specific-tasks)).
 
-To show the task output the package uses a panel or a new tab (depends on your [settings](#settings)), you can add a [key binding](http://docs.sublimetext.info/en/latest/reference/key_bindings.html) to open the panel (check the [gulp_show_panel command](#shortcut-keys)).
+To show the task output the package uses a panel or a new tab (depends on your [settings](#settings)), you can add a [key binding](http://docs.sublimetext.info/en/latest/reference/key_bindings.html) to open the panel (check the [`Gulp: Show Panel`](#4-show-panel) command).
 
 Keep in mind that, the package creates the first cache using [node](http://nodejs.org/), so for it to work you might need to add your node_modules path to NODE_PATH, for example (for Unix):
 
@@ -41,26 +41,26 @@ That's it!. Thanks to [@guillaume86](https://github.com/guillaume86) for the hel
 
 It's possible that your path isn't being reported by your shell so if you're having troubles running the package, give [SublimeFixMacPath](https://github.com/int3h/SublimeFixMacPath) a try.
 
-### Run Tasks (silent)
+### 2. Run Tasks (silent)
 Works the same way as the normal `Gulp` command, but `Gulp (silent)` will not write the results on the output panel or tab.
 
-### Kill tasks
+### 3. Kill tasks
 To kill running tasks like `watch` you can pick the command `Gulp: Kill running tasks`. 
 
 **Windows**
 
 If you're running Windows, the package will use [taskkill](http://technet.microsoft.com/en-us/library/cc725602.aspx) so every child process is correctly terminated. If the executable isn't on your system, you'll need to add it for this command to work correctly.
 
-### Show Panel
-Shows the closed output panel (just the panel, it won't re-open the tab if you're using the show_results_in_new_tab setting).
+### 4. Show Panel
+`Gulp: Show Panel` shows the closed output panel (just the panel, it won't re-open the tab if you're using the [`results_in_new_tab` setting](#settings)).
 
-### List plugins
+### 5. List plugins
 Running `Gulp: List plugins` from the command palette will display the gulp plugins on a searcheable list. Picking one will open it on your default browser.
 
-### Delete cache
-Running `Gulp: Delete cache` will delete the `.sublime-gulp.cache` file for you, forcing a re-parsing of the `gulpfile.js`.
+### 6. Delete cache
+Running `Gulp: Delete cache` will delete the `.sublime-gulp.cache` file for you, forcing a re-parse of the `gulpfile.js`.
 
-### Gulp exit
+### 7. Gulp exit
 This command will close Sublime Text, but first it'll kill any running tasks. It's the same as running `Gulp: Kill running tasks` and immediately exiting the editor. If error occurs killing the tasks or no running tasks are found, the editor will close anyways.
 
 You can select `Gulp: Exit editor killing running tasks` from the command palette or create a [keybinding](#shortcut-keys) like this:
@@ -71,7 +71,7 @@ You can select `Gulp: Exit editor killing running tasks` from the command palett
 
 You can bind it to `alt+f4` or `super+q` so you don't have to remember it. Sadly it **won't run** if you close the editor using the close button.
 
-##Snippets
+## Snippets
 
 #### vargulp
 ```
@@ -158,11 +158,11 @@ Example: `["src", "nested/folder"]`
 #### results_autoclose_timeout_in_milliseconds
 
 Defines the delay used to autoclose the panel or tab that holds the gulp results.
-If false (or 0) it will remain open, so if what you want if to keep it close check the [`silent`](#run-tasks-silent) command.
+If false (or 0) it will remain open, so if what you want if to keep it close check the [`silent`](#2-run-tasks-silent) command.
 
 #### show_silent_errors
 
-If true it will open the output panel when running [`Gulp(silent)`](#run-tasks-silent) only if the task failed
+If true it will open the output panel when running [`Gulp (silent)`](#2-run-tasks-silent) only if the task failed
 
 #### log_erros
 
@@ -223,7 +223,7 @@ You also can use a shortcut for running a specific task like this:
 { "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch" } }
 ````
 
-and if you want to run it in [`silent`](#run-tasks-silent) mode, you can add `"silent"` to the `args`
+and if you want to run it in [`silent`](#2-run-tasks-silent) mode, you can add `"silent"` to the `args`
 
 ````json
 { "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch", "silent": true } }
