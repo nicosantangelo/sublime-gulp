@@ -61,15 +61,15 @@ Running `Gulp: List plugins` from the command palette will display the gulp plug
 Running `Gulp: Delete cache` will delete the `.sublime-gulp.cache` file for you, forcing a re-parsing of the `gulpfile.js`.
 
 ### Gulp exit
-This command will close Sublime Text, but first it'll kill any running tasks. It's the same as running `Gulp: Kill running tasks` and immediately exiting the editor.
+This command will close Sublime Text, but first it'll kill any running tasks. It's the same as running `Gulp: Kill running tasks` and immediately exiting the editor. If error occurs killing the tasks or no running tasks are found, the editor will close anyways.
 
-`Gulp exit` will not appear on the command palette. To use it, you need to add a [keybinding](#shortcut-keys) like this:
+You can select `Gulp: Exit editor killing running tasks` from the command palette or create a [keybinding](#shortcut-keys) like this:
 
 ````
 { "keys": ["KEYS"], "command": "gulp_exit" }
 ````
 
-If you want to always run it, you can bind it to `alt+f4` or `super+q`. Sadly it won't run if you close the editor using the close button.
+You can bind it to `alt+f4` or `super+q` so you don't have to remember it. Sadly it **won't run** if you close the editor using the close button.
 
 ##Snippets
 
