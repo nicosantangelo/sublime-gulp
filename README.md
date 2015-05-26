@@ -2,7 +2,7 @@
 
 A Gulp task runner with snippets for Sublime Text.
 
-This package is a merge between [Gulp Snippets](https://github.com/filipelinhares/gulp-sublime-snippets) from [@filipelinhares](https://github.com/filipelinhares) and [Gulp](https://github.com/NicoSantangelo/sublime-gulp) from [NicoSantangelo](https://github.com/NicoSantangelo) (this last one, based of the awesome [sublime-grunt](https://github.com/tvooo/sublime-grunt)).
+This package is a merge between [Gulp Snippets](https://github.com/filipelinhares/gulp-sublime-snippets) from [@filipelinhares](https://github.com/filipelinhares) and [Gulp](https://github.com/NicoSantangelo/sublime-gulp) from [NicoSantangelo](https://github.com/NicoSantangelo) (this last one, inspired by the awesome [sublime-grunt](https://github.com/tvooo/sublime-grunt)).
 
 ## Usage
 
