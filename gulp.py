@@ -96,7 +96,7 @@ class GulpCommand(BaseCommand):
 
         if os.path.exists(jsonfilename):
             filesha1 = Security.hashfile(gulpfile)
-            json_data = open(jsonfilename)
+            json_data = codecs.open(jsonfilename, 'r', "utf-8")
 
             try:
                 data = json.load(json_data)
