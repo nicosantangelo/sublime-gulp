@@ -406,7 +406,7 @@ class Plugin():
         self.description = self.get('description')
 
     def get(self, property):
-        return self.plugin[property] if self.has(property) else ''
+        return self.plugin[property][0] if self.has(property) else ''
 
     def has(self, property):
         return property in self.plugin
