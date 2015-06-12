@@ -120,7 +120,11 @@ class GulpCommand(BaseCommand):
 
         args = r'node "%s/write_tasks_to_cache.js"' % package_path
 
-        process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), cwd=self.working_dir, shell=True)
+        prevdir = os.getcwd()
+        os.chdir(self.working_dir)
+        process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), shell=True)
+        os.chdir(prevdir)
+
         (stdout, stderr) = process.communicate()
 
         if 127 == process.returncode:
@@ -262,7 +266,11 @@ class CrossPlatformProcess():
         self.nonblocking = nonblocking
 
     def run(self, command):
-        self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, cwd=self.working_dir, shell=True, preexec_fn=self._preexec_val())
+        prevdir = os.getcwd()
+        os.chdir(self.working_dir)
+        self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, shell=True, preexec_fn=self._preexec_val())
+        os.chdir(prevdir)
+
         self.last_command = command
         ProcessCache.add(self)
         return self
