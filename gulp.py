@@ -9,6 +9,7 @@ import signal, subprocess
 import json
 import webbrowser
 from hashlib import sha1 
+from contextlib import contextmanager
 
 is_sublime_text_3 = int(sublime.version()) >= 3000
 
@@ -120,12 +121,9 @@ class GulpCommand(BaseCommand):
 
         args = r'node "%s/write_tasks_to_cache.js"' % package_path
 
-        prevdir = os.getcwd()
-        os.chdir(self.working_dir)
-        process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), shell=True)
-        os.chdir(prevdir)
-
-        (stdout, stderr) = process.communicate()
+        with Dir.cd(self.working_dir):
+            process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), shell=True)
+            (stdout, stderr) = process.communicate()
 
         if 127 == process.returncode:
             raise Exception("\"node\" command not found.\nPlease be sure to have nodejs installed on your system and in your PATH (more info in the README).")
@@ -266,10 +264,8 @@ class CrossPlatformProcess():
         self.nonblocking = nonblocking
 
     def run(self, command):
-        prevdir = os.getcwd()
-        os.chdir(self.working_dir)
-        self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, shell=True, preexec_fn=self._preexec_val())
-        os.chdir(prevdir)
+        with Dir.cd(self.working_dir):
+            self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, shell=True, preexec_fn=self._preexec_val())
 
         self.last_command = command
         ProcessCache.add(self)
@@ -328,6 +324,18 @@ class CrossPlatformProcess():
         else:
             os.killpg(pid, signal.SIGTERM)
         ProcessCache.remove(self)
+
+
+class Dir():
+    @classmethod
+    @contextmanager
+    def cd(cls, newdir):
+        prevdir = os.getcwd()
+        os.chdir(newdir)
+        try:
+            yield
+        finally:
+            os.chdir(prevdir)
 
 
 class ProcessCache():
