@@ -146,6 +146,10 @@ You may override your `PATH` environment variable as follows (from [sublime-grun
 }
 ````
 
+##### gulp installed locally
+
+If gulp is installed locally in the project, you have to specify the path to the gulp executable. Threfore, adjust the path to `/bin:/usr/bin:/usr/local/bin:node_modules/.bin`
+
 #### results_in_new_tab
 
 If set to `true`, a new tab will be used instead of a panel to output the results.
