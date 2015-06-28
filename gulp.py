@@ -303,7 +303,8 @@ class CrossPlatformProcess():
 
     def decode_line(self, line):
         line = line.rstrip()
-        return str(line.decode('utf-8') if sys.version_info >= (3, 0) else line) + "\n"
+        decoded_line = codecs.decode(line, 'utf-8', 'replace') if sys.version_info >= (3, 0) else line
+        return str(decoded_line) + "\n"
 
     def read(self, stream):
         return stream.read().decode('utf-8')
