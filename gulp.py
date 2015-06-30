@@ -97,7 +97,7 @@ class GulpCommand(BaseCommand):
 
         if os.path.exists(jsonfilename):
             filesha1 = Security.hashfile(gulpfile)
-            json_data = codecs.open(jsonfilename, 'r', "utf-8")
+            json_data = codecs.open(jsonfilename, "r", "utf-8", errors='replace')
 
             try:
                 data = json.load(json_data)
@@ -138,7 +138,7 @@ class GulpCommand(BaseCommand):
             return
         log_path = self.working_dir + "/" + self.log_file_name
         header = "Remember that you can report errors and get help in https://github.com/NicoSantangelo/sublime-gulp" if not os.path.isfile(log_path) else ""
-        with codecs.open(log_path, 'a', "utf-8") as log_file:
+        with codecs.open(log_path, "a", "utf-8", errors='replace') as log_file:
             log_file.write(header + "\n\n" + str(datetime.datetime.now().strftime("%m-%d-%Y %H:%M")) + ":\n" + text.decode('utf-8'))
 
     def task_list_callback(self, task_index):
