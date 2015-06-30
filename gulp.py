@@ -1,4 +1,5 @@
 import sys
+import traceback
 import sublime
 import sublime_plugin
 import datetime
@@ -81,6 +82,7 @@ class GulpCommand(BaseCommand):
         except TypeError as e:
             self.error_message("Could not read available tasks.\nMaybe the JSON cache (.sublime-gulp.cache) is malformed?")
         except Exception as e:
+            print(traceback.format_exc())
             self.error_message(str(e))
         else:
             tasks = [[name, self.dependencies_text(task)] for name, task in json_result.items()]
