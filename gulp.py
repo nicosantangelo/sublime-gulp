@@ -140,8 +140,11 @@ class GulpCommand(BaseCommand):
             return
         log_path = self.working_dir + "/" + self.log_file_name
         header = "Remember that you can report errors and get help in https://github.com/NicoSantangelo/sublime-gulp" if not os.path.isfile(log_path) else ""
+        timestamp = str(datetime.datetime.now().strftime("%m-%d-%Y %H:%M"))
+
         with codecs.open(log_path, "a", "utf-8", errors='replace') as log_file:
-            log_file.write(header + "\n\n" + str(datetime.datetime.now().strftime("%m-%d-%Y %H:%M")) + ":\n" + text.decode('utf-8'))
+            decoded_stderr = CrossPlaformCodecs.force_decode(text)
+            log_file.write(header + "\n\n" + timestamp + ":\n" + decoded_stderr)
 
     def task_list_callback(self, task_index):
         if task_index > -1:
@@ -257,6 +260,42 @@ class GulpExitCommand(sublime_plugin.WindowCommand):
             self.window.run_command("gulp_kill")
         finally:
             self.window.run_command("exit")
+            
+            
+class CrossPlaformCodecs():
+    @classmethod
+    def decode_line(self, line):
+        line = line.rstrip()
+        decoded_line = self.force_decode(line) if sys.version_info >= (3, 0) else line
+        return str(decoded_line) + "\n"
+
+    @classmethod
+    def force_decode(self, text):
+        try:
+            text = text.decode('utf-8')
+        except UnicodeDecodeError:
+            if sublime.platform() == "windows":
+                text = self.decode_windows_line(text)
+        return text
+
+    @classmethod
+    def decode_windows_line(self, text):
+        # Import only for Windows
+        import locale
+
+        # STDERR gets the wrong encoding, use chcp to get the real one
+        proccess = subprocess.Popen(["chcp"], shell=True, stdout=subprocess.PIPE)
+        (chcp, _) = proccess.communicate()
+
+        # Decode using the locale preferred encoding (for example 'cp1251') and remove newlines
+        chcp = chcp.decode(locale.getpreferredencoding()).strip()
+
+        # Get the actual number
+        chcp = chcp.split(" ")[-1]
+
+        # Actually decode
+        return text.decode("cp" + chcp)
+
 
 class CrossPlatformProcess():
     def __init__(self, command, nonblocking=True):
@@ -298,18 +337,10 @@ class CrossPlatformProcess():
         while True:
             line = stream.readline()
             if not line: break
-            output_line = self.decode_line(line)
+            output_line = CrossPlaformCodecs.decode_line(line)
             output_text += output_line
             fn(output_line)
         return output_text
-
-    def decode_line(self, line):
-        line = line.rstrip()
-        decoded_line = codecs.decode(line, 'utf-8', 'replace') if sys.version_info >= (3, 0) else line
-        return str(decoded_line) + "\n"
-
-    def read(self, stream):
-        return stream.read().decode('utf-8')
 
     def terminate(self):
         if self.is_alive():
