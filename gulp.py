@@ -17,10 +17,12 @@ is_sublime_text_3 = int(sublime.version()) >= 3000
 if is_sublime_text_3:
     from .base_command import BaseCommand
     from .progress_notifier import ProgressNotifier
+    from .cross_platform_codecs import CrossPlaformCodecs
     import urllib.request as urllib2
 else:
     from base_command import BaseCommand
     from progress_notifier import ProgressNotifier
+    from cross_platform_codecs import CrossPlaformCodecs
     import urllib2
 
 class GulpCommand(BaseCommand):
@@ -261,41 +263,6 @@ class GulpExitCommand(sublime_plugin.WindowCommand):
         finally:
             self.window.run_command("exit")
             
-            
-class CrossPlaformCodecs():
-    @classmethod
-    def decode_line(self, line):
-        line = line.rstrip()
-        decoded_line = self.force_decode(line) if sys.version_info >= (3, 0) else line
-        return str(decoded_line) + "\n"
-
-    @classmethod
-    def force_decode(self, text):
-        try:
-            text = text.decode('utf-8')
-        except UnicodeDecodeError:
-            if sublime.platform() == "windows":
-                text = self.decode_windows_line(text)
-        return text
-
-    @classmethod
-    def decode_windows_line(self, text):
-        # Import only for Windows
-        import locale
-
-        # STDERR gets the wrong encoding, use chcp to get the real one
-        proccess = subprocess.Popen(["chcp"], shell=True, stdout=subprocess.PIPE)
-        (chcp, _) = proccess.communicate()
-
-        # Decode using the locale preferred encoding (for example 'cp1251') and remove newlines
-        chcp = chcp.decode(locale.getpreferredencoding()).strip()
-
-        # Get the actual number
-        chcp = chcp.split(" ")[-1]
-
-        # Actually decode
-        return text.decode("cp" + chcp)
-
 
 class CrossPlatformProcess():
     def __init__(self, command, nonblocking=True):
@@ -445,6 +412,7 @@ class PluginList():
     def quick_panel_list(self):
         return [ [plugin.name + ' (' + plugin.version + ')', plugin.description] for plugin in self.plugins ]
 
+
 class Plugin():
     def __init__(self, plugin_json):
         self.plugin = plugin_json
@@ -485,6 +453,7 @@ class PluginRegistryCall(Thread):
 
         self.error = err
         self.result = None
+
 
 class ThreadWithResult(Thread):
     def __init__(self, target, args):
