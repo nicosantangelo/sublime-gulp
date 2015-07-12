@@ -1,3 +1,4 @@
+import sublime
 import sys
 
 class CrossPlaformCodecs():
