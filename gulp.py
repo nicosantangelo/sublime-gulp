@@ -124,6 +124,7 @@ class GulpCommand(BaseCommand):
         package_path = os.path.join(sublime.packages_path(), self.package_name)
 
         args = r'node "%s/write_tasks_to_cache.js"' % package_path
+        args = CrossPlaformCodecs.encode_process_command(args)
 
         with Dir.cd(self.working_dir):
             process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), shell=True)

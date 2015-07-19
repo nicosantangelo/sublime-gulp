@@ -34,3 +34,8 @@ class CrossPlaformCodecs():
 
         # Actually decode
         return text.decode("cp" + chcp)
+
+    @classmethod
+    def encode_process_command(self, command):
+        is_sublime_2_and_in_windows = sublime.platform() == "windows" and int(sublime.version()) < 3000
+        return command.encode(sys.getfilesystemencoding()) if is_sublime_2_and_in_windows else command
