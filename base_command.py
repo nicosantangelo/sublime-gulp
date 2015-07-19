@@ -17,7 +17,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
     def run(self, task_name = None, task_flag = None, silent = False):
         self.setup_data_from_settings()
         self.task_name = task_name
-        self.task_flag = task_flag if task_name and task_flag is not None else self.get_flag_from_task_name()
+        self.task_flag = task_flag if task_name is not None and task_flag is not None else self.get_flag_from_task_name()
         self.silent = silent
         self.working_dir = ""
         self.work()

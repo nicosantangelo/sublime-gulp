@@ -67,7 +67,7 @@ class GulpCommand(BaseCommand):
     def show_tasks_from_gulp_file(self, file_index):
         if file_index > -1:
             self.working_dir = os.path.dirname(self.gulp_files[file_index])
-            if self.task_name:
+            if self.task_name is not None:
                 self.run_gulp_task()
             else:
                 self.defer(self.show_tasks)
@@ -160,6 +160,8 @@ class GulpCommand(BaseCommand):
         Thread(target = self.run_process, args = (task, )).start() # Option to kill on timeout?
 
     def construct_gulp_task(self):
+        print("HEREEEEEEEEEEEEEEE")
+        print(self.task_flag)
         self.show_running_status_in_output_panel()
         return r"gulp %s %s" % (self.task_name, self.task_flag)
 
