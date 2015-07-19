@@ -160,8 +160,6 @@ class GulpCommand(BaseCommand):
         Thread(target = self.run_process, args = (task, )).start() # Option to kill on timeout?
 
     def construct_gulp_task(self):
-        print("HEREEEEEEEEEEEEEEE")
-        print(self.task_flag)
         self.show_running_status_in_output_panel()
         return r"gulp %s %s" % (self.task_name, self.task_flag)
 
