@@ -14,7 +14,7 @@ var tmpfilePath  = path.join(cwd, ".sublime-gulp-tmp.js");
 var requireGulp = function(gulpfilePath) {
     // Creates a temporal file exporting gulp at the end (so it can be retrived by node) and then requires it (related: http://goo.gl/QYzRAO)
     var fileSrc = fs.readFileSync(gulpfilePath);
-    fileSrc += ";module.exports = gulp;";
+    fileSrc += "\n/**/;module.exports = gulp;";
     fs.writeFileSync(tmpfilePath, fileSrc);
     try {
         return require(tmpfilePath);
