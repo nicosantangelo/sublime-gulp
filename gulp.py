@@ -28,6 +28,7 @@ else:
 class GulpCommand(BaseCommand):
     cache_file_name = ".sublime-gulp.cache"
     log_file_name = 'sublime-gulp.log'
+    allowed_extensions = [".babel.js", ".js"]
     
     def work(self):
         self.set_instance_variables()
@@ -42,7 +43,7 @@ class GulpCommand(BaseCommand):
         if len(self.gulp_files) > 0:
             self.choose_file()
         else:
-            self.error_message("gulpfile.js not found!")
+            self.error_message("gulpfile not found!")
 
     def append_paths(self):
         self.folders = []
@@ -53,7 +54,7 @@ class GulpCommand(BaseCommand):
 
 
     def append_to_gulp_files(self, folder_path):
-        gulpfile_path = os.path.join(folder_path, "gulpfile.js")
+        gulpfile_path = self.get_gulpfile_path(folder_path)
         self.folders.append(folder_path)
         if os.path.exists(gulpfile_path):
             self.gulp_files.append(gulpfile_path)
@@ -96,7 +97,7 @@ class GulpCommand(BaseCommand):
     # Refactor
     def fetch_json(self):
         jsonfilename = os.path.join(self.working_dir, self.cache_file_name)
-        gulpfile = os.path.join(self.working_dir, "gulpfile.js") # .coffee ?
+        gulpfile = self.get_gulpfile_path(self.working_dir)
         data = None
 
         if os.path.exists(jsonfilename):
@@ -119,6 +120,13 @@ class GulpCommand(BaseCommand):
             raise Exception("Could not write to cache gulpfile.")
 
         raise Exception("Sha1 from gulp cache ({0}) is not equal to calculated ({1}).\nTry erasing the cache and running Gulp again.".format(data[gulpfile]["sha1"], filesha1))
+
+    def get_gulpfile_path(self, base_path):
+        for extension in GulpCommand.allowed_extensions:
+            gulpfile_path = os.path.join(base_path, "gulpfile" + extension)
+            if os.path.exists(gulpfile_path):
+                return gulpfile_path
+        return gulpfile_path
 
     def write_to_cache(self):
         package_path = os.path.join(sublime.packages_path(), self.package_name)
