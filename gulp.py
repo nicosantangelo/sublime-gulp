@@ -2,9 +2,9 @@ import sys
 import traceback
 import sublime
 import sublime_plugin
-import datetime
 import codecs
 import os, os.path
+from datetime import datetime
 from threading import Thread
 import signal, subprocess
 import json
@@ -126,43 +126,6 @@ class GulpCommand(BaseCommand):
         return gulpfile_path
 
     def write_to_cache(self):
-        process = CrossPlatformProcess(self)
-        (stdout, stderr) = process.run_sync(r'gulp -v')
-
-        if process.returncode == 127 or stderr:
-            return self.write_to_cache_js()
-
-        try:
-            re.search("CLI version (\d+\.\d+\.\d+)", stdout).group(1) # CLI version
-            re.search("Local version (\d+\.\d+\.\d+)", stdout).group(1) # LOCAL version
-
-            (stdout, stderr) = process.run_sync(r'gulp --tasks-simple')
-
-            gulpfile = self.get_gulpfile_path(self.working_dir)
-            filesha1 = Security.hashfile(gulpfile)
-            cache = {}
-            tasks = {}
-
-            for task in stdout.split("\n"):
-                if task:
-                    tasks[task] = { "name": task, "dependencies": ""}
-
-            cache[gulpfile] = {
-                "sha1": filesha1,
-                "tasks": tasks
-            }
-
-            cache_path = self.working_dir + "/" + GulpCommand.cache_file_name
-            with codecs.open(cache_path, "w", "utf-8", errors='replace') as cache_path:
-                json_cache = json.dumps(cache, ensure_ascii=False)
-                cache_path.write(json_cache)
-
-            return self.fetch_json()
-        except:
-            print("Gulp: An error ocurred trying to list gulp tasks (`gulp --tasks-simple`). Continuing with node...")
-            return self.write_to_cache_js()
-
-    def write_to_cache_js(self):
         package_path = os.path.join(sublime.packages_path(), self.package_name)
 
         command = r'node "%s/write_tasks_to_cache.js"' % package_path
@@ -170,20 +133,55 @@ class GulpCommand(BaseCommand):
         process = CrossPlatformProcess(self)
         (stdout, stderr) = process.run_sync(command)
 
-        if process.returncode == 127:
-            raise Exception("\"node\" command not found.\nPlease be sure to have nodejs installed on your system and in your PATH (more info in the README).")
-        elif stderr:
-            self.log_errors(stderr)
-            raise Exception("There was an error running gulp, make sure gulp is running correctly in your project.\nFor more info check the sublime-gulp.log file")
+        if process.failed:
+            try:
+                self.write_to_cache_no_js()
+            except:
+                if process.returncode() == 127:
+                    raise Exception("\"node\" command not found.\nPlease be sure to have nodejs installed on your system and in your PATH (more info in the README).")
+                elif stderr:
+                    self.log_errors(stderr)
+                    raise Exception("There was an error running gulp, make sure gulp is running correctly in your project.\nFor more info check the sublime-gulp.log file")
 
         return self.fetch_json()
+
+    def write_to_cache_no_js(self):
+        process = CrossPlatformProcess(self)
+        (stdout, stderr) = process.run_sync(r'gulp -v')
+
+        if process.failed:
+            raise Exception("Gulp: Could not get the current gulp version")
+
+        re.search("CLI version (\d+\.\d+\.\d+)", stdout).group(1) # CLI version
+        re.search("Local version (\d+\.\d+\.\d+)", stdout).group(1) # LOCAL version
+
+        (stdout, stderr) = process.run_sync(r'gulp --tasks-simple')
+
+        gulpfile = self.get_gulpfile_path(self.working_dir)
+        filesha1 = Security.hashfile(gulpfile)
+        cache = {}
+        tasks = {}
+
+        for task in stdout.split("\n"):
+            if task:
+                tasks[task] = { "name": task, "dependencies": ""}
+
+        cache[gulpfile] = {
+            "sha1": filesha1,
+            "tasks": tasks
+        }
+
+        cache_path = self.working_dir + "/" + GulpCommand.cache_file_name
+        with codecs.open(cache_path, "w", "utf-8", errors='replace') as cache_path:
+            json_cache = json.dumps(cache, ensure_ascii=False)
+            cache_path.write(json_cache)
 
     def log_errors(self, text):
         if not self.settings.get("log_errors", True):
             return
         log_path = self.working_dir + "/" + GulpCommand.log_file_name
         header = "Remember that you can report errors and get help in https://github.com/NicoSantangelo/sublime-gulp" if not os.path.isfile(log_path) else ""
-        timestamp = str(datetime.datetime.now().strftime("%m-%d-%Y %H:%M"))
+        timestamp = str(datetime.now().strftime("%m-%d-%Y %H:%M"))
 
         with codecs.open(log_path, "a", "utf-8", errors='replace') as log_file:
             log_file.write(header + "\n\n" + timestamp + ":\n" + text)
@@ -310,7 +308,7 @@ class CrossPlatformProcess():
         self.nonblocking = sublime_command.nonblocking
         self.path = Env.get_path(sublime_command.exec_args)
         self.last_command = ""
-        self.returncode = None
+        self.failed = False
 
     def run(self, command):
         with Dir.cd(self.working_dir):
@@ -324,10 +322,9 @@ class CrossPlatformProcess():
         command = CrossPlaformCodecs.encode_process_command(command)
 
         with Dir.cd(self.working_dir):
-            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, shell=True)
-            (stdout, stderr) = process.communicate()
-
-        self.returncode = process.returncode
+            self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, shell=True)
+            (stdout, stderr) = self.process.communicate()
+            self.failed = self.process.returncode == 127 or stderr
 
         return (CrossPlaformCodecs.force_decode(stdout), CrossPlaformCodecs.force_decode(stderr))
 
@@ -368,6 +365,9 @@ class CrossPlatformProcess():
 
     def is_alive(self):
         return self.process.poll() is None
+
+    def returncode(self):
+        return self.process.returncode
 
     def kill(self):
         pid = self.process.pid
@@ -434,13 +434,16 @@ class Env():
 
 class Security():
     @classmethod
-    def hashfile(cls, filename):
-        with open(filename, mode='rb') as f:
-            filehash = sha1()
-            content = f.read();
-            filehash.update(str("blob " + str(len(content)) + "\0").encode('UTF-8'))
-            filehash.update(content)
-            return filehash.hexdigest()
+    def hashfile(self, filename):
+        filehash = sha1()
+        if os.path.isdir(filename):
+            filehash.update(str("blob " + str(os.stat(filename)) + "\0").encode('UTF-8'))
+        else:
+            with open(filename, mode='rb') as f:
+                content = f.read();
+                filehash.update(str("blob " + str(len(content)) + "\0").encode('UTF-8'))
+                filehash.update(content)
+        return filehash.hexdigest()
 
 
 class PluginList():
