@@ -32,12 +32,8 @@ class GulpCommand(BaseCommand):
     allowed_extensions = [".babel.js", ".js"]
     
     def work(self):
-        self.set_instance_variables()
-        self.list_gulp_files()
-
-    def set_instance_variables(self):
         self.gulp_files = []
-        self.env = Env(self.settings)
+        self.list_gulp_files()
 
     def list_gulp_files(self):
         self.append_paths()
@@ -130,28 +126,24 @@ class GulpCommand(BaseCommand):
         return gulpfile_path
 
     def write_to_cache(self):
-        package_path = os.path.join(sublime.packages_path(), self.package_name)
+        process = CrossPlatformProcess(self)
+        (stdout, stderr) = process.run_sync(r'gulp -v')
 
-        arg = CrossPlaformCodecs.encode_process_command(r'gulp -v')
-
-        with Dir.cd(self.working_dir):
-            out = subprocess.check_output(arg, env=self.env.get_path_with_exec_args(), shell=True)
+        if process.returncode == 127 or stderr:
+            return self.write_to_cache_js()
 
         try:
-            re.search("CLI version (\d+\.\d+\.\d+)", out.decode('utf8')).group(1) # CLI version
-            re.search("Local version (\d+\.\d+\.\d+)", out.decode('utf8')).group(1) # LOCAL version
+            re.search("CLI version (\d+\.\d+\.\d+)", stdout).group(1) # CLI version
+            re.search("Local version (\d+\.\d+\.\d+)", stdout).group(1) # LOCAL version
 
-            arg = CrossPlaformCodecs.encode_process_command(r'gulp --tasks-simple')
-
-            with Dir.cd(self.working_dir):
-                out = subprocess.check_output(arg, env=self.env.get_path_with_exec_args(), shell=True)
+            (stdout, stderr) = process.run_sync(r'gulp --tasks-simple')
 
             gulpfile = self.get_gulpfile_path(self.working_dir)
             filesha1 = Security.hashfile(gulpfile)
             cache = {}
             tasks = {}
 
-            for task in out.decode('utf8').split("\n"):
+            for task in stdout.split("\n"):
                 if task:
                     tasks[task] = { "name": task, "dependencies": ""}
 
@@ -173,14 +165,12 @@ class GulpCommand(BaseCommand):
     def write_to_cache_js(self):
         package_path = os.path.join(sublime.packages_path(), self.package_name)
 
-        args = r'node "%s/write_tasks_to_cache.js"' % package_path
-        args = CrossPlaformCodecs.encode_process_command(args)
+        command = r'node "%s/write_tasks_to_cache.js"' % package_path
 
-        with Dir.cd(self.working_dir):
-            process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.env.get_path_with_exec_args(), shell=True)
-            (stdout, stderr) = process.communicate()
+        process = CrossPlatformProcess(self)
+        (stdout, stderr) = process.run_sync(command)
 
-        if 127 == process.returncode:
+        if process.returncode == 127:
             raise Exception("\"node\" command not found.\nPlease be sure to have nodejs installed on your system and in your PATH (more info in the README).")
         elif stderr:
             self.log_errors(stderr)
@@ -196,8 +186,7 @@ class GulpCommand(BaseCommand):
         timestamp = str(datetime.datetime.now().strftime("%m-%d-%Y %H:%M"))
 
         with codecs.open(log_path, "a", "utf-8", errors='replace') as log_file:
-            decoded_stderr = CrossPlaformCodecs.force_decode(text)
-            log_file.write(header + "\n\n" + timestamp + ":\n" + decoded_stderr)
+            log_file.write(header + "\n\n" + timestamp + ":\n" + text)
 
     def task_list_callback(self, task_index):
         if task_index > -1:
@@ -214,7 +203,7 @@ class GulpCommand(BaseCommand):
         return r"gulp %s %s" % (self.task_name, self.task_flag)
 
     def run_process(self, task):
-        process = CrossPlatformProcess(self, self.nonblocking)
+        process = CrossPlatformProcess(self)
         process.run(task)
         stdout, stderr = process.communicate(self.append_to_output_view_in_main_thread)
         self.defer_sync(lambda: self.finish(stdout, stderr))
@@ -316,11 +305,12 @@ class GulpExitCommand(sublime_plugin.WindowCommand):
             
 
 class CrossPlatformProcess():
-    def __init__(self, command, nonblocking=True):
-        self.path = command.env.get_path_with_exec_args()
-        self.working_dir = command.working_dir
+    def __init__(self, sublime_command):
+        self.working_dir = sublime_command.working_dir
+        self.nonblocking = sublime_command.nonblocking
+        self.path = Env.get_path(sublime_command.exec_args)
         self.last_command = ""
-        self.nonblocking = nonblocking
+        self.returncode = None
 
     def run(self, command):
         with Dir.cd(self.working_dir):
@@ -329,6 +319,17 @@ class CrossPlatformProcess():
         self.last_command = command
         ProcessCache.add(self)
         return self
+
+    def run_sync(self, command):
+        command = CrossPlaformCodecs.encode_process_command(command)
+
+        with Dir.cd(self.working_dir):
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, shell=True)
+            (stdout, stderr) = process.communicate()
+
+        self.returncode = process.returncode
+
+        return (CrossPlaformCodecs.force_decode(stdout), CrossPlaformCodecs.force_decode(stderr))
 
     def _preexec_val(self):
         return os.setsid if sublime.platform() != "windows" else None
@@ -377,7 +378,6 @@ class CrossPlatformProcess():
             os.killpg(pid, signal.SIGTERM)
         ProcessCache.remove(self)
 
-
 class Dir():
     @classmethod
     @contextmanager
@@ -422,19 +422,11 @@ class ProcessCache():
 
 
 class Env():
-    def __init__(self, settings):
-        self.exec_args = settings.get('exec_args', False)
-
-    def get_path(self):
-        path = os.environ['PATH']
-        if self.exec_args:
-            path = self.exec_args.get('path', os.environ['PATH'])
-        return str(path)
-
-    def get_path_with_exec_args(self):
+    @classmethod
+    def get_path(self, exec_args=False):
         env = os.environ.copy()
-        if self.exec_args:
-            path = str(self.exec_args.get('path', ''))
+        if exec_args:
+            path = str(exec_args.get('path', ''))
             if path:
                 env['PATH'] = path
         return env

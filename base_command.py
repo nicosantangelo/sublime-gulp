@@ -26,6 +26,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.settings = sublime.load_settings("Gulp.sublime-settings")
         self.results_in_new_tab = self.settings.get("results_in_new_tab", False)
         self.nonblocking  = self.settings.get("nonblocking", True)
+        self.exec_args = self.settings.get('exec_args', False)
 
     def get_flag_from_task_name(self):
         flags = self.settings.get("flags", {})
