@@ -9,6 +9,7 @@ from threading import Thread
 import signal, subprocess
 import json
 import webbrowser
+import re
 from hashlib import sha1 
 from contextlib import contextmanager
 
@@ -96,7 +97,7 @@ class GulpCommand(BaseCommand):
 
     # Refactor
     def fetch_json(self):
-        jsonfilename = os.path.join(self.working_dir, self.cache_file_name)
+        jsonfilename = os.path.join(self.working_dir, GulpCommand.cache_file_name)
         gulpfile = self.get_gulpfile_path(self.working_dir)
         data = None
 
@@ -131,6 +132,47 @@ class GulpCommand(BaseCommand):
     def write_to_cache(self):
         package_path = os.path.join(sublime.packages_path(), self.package_name)
 
+        arg = CrossPlaformCodecs.encode_process_command(r'gulp -v')
+
+        with Dir.cd(self.working_dir):
+            out = subprocess.check_output(arg, env=self.env.get_path_with_exec_args(), shell=True)
+
+        try:
+            re.search("CLI version (\d+\.\d+\.\d+)", out.decode('utf8')).group(1) # CLI version
+            re.search("Local version (\d+\.\d+\.\d+)", out.decode('utf8')).group(1) # LOCAL version
+
+            arg = CrossPlaformCodecs.encode_process_command(r'gulp --tasks-simple')
+
+            with Dir.cd(self.working_dir):
+                out = subprocess.check_output(arg, env=self.env.get_path_with_exec_args(), shell=True)
+
+            gulpfile = self.get_gulpfile_path(self.working_dir)
+            filesha1 = Security.hashfile(gulpfile)
+            cache = {}
+            tasks = {}
+
+            for task in out.decode('utf8').split("\n"):
+                if task:
+                    tasks[task] = { "name": task, "dependencies": ""}
+
+            cache[gulpfile] = {
+                "sha1": filesha1,
+                "tasks": tasks
+            }
+
+            cache_path = self.working_dir + "/" + GulpCommand.cache_file_name
+            with codecs.open(cache_path, "w", "utf-8", errors='replace') as cache_path:
+                json_cache = json.dumps(cache, ensure_ascii=False)
+                cache_path.write(json_cache)
+
+            return self.fetch_json()
+        except:
+            print("Gulp: An error ocurred trying to list gulp tasks (`gulp --tasks-simple`). Continuing with node...")
+            return self.write_to_cache_js()
+
+    def write_to_cache_js(self):
+        package_path = os.path.join(sublime.packages_path(), self.package_name)
+
         args = r'node "%s/write_tasks_to_cache.js"' % package_path
         args = CrossPlaformCodecs.encode_process_command(args)
 
@@ -149,7 +191,7 @@ class GulpCommand(BaseCommand):
     def log_errors(self, text):
         if not self.settings.get("log_errors", True):
             return
-        log_path = self.working_dir + "/" + self.log_file_name
+        log_path = self.working_dir + "/" + GulpCommand.log_file_name
         header = "Remember that you can report errors and get help in https://github.com/NicoSantangelo/sublime-gulp" if not os.path.isfile(log_path) else ""
         timestamp = str(datetime.datetime.now().strftime("%m-%d-%Y %H:%M"))
 
