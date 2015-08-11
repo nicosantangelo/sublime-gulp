@@ -10,6 +10,7 @@ import signal, subprocess
 import json
 import webbrowser
 import re
+from distutils.version import StrictVersion
 from hashlib import sha1 
 from contextlib import contextmanager
 
@@ -25,6 +26,10 @@ else:
     from progress_notifier import ProgressNotifier
     from cross_platform_codecs import CrossPlaformCodecs
     import urllib2
+
+#
+# Commands
+#
 
 class GulpCommand(BaseCommand):
     cache_file_name = ".sublime-gulp.cache"
@@ -149,11 +154,8 @@ class GulpCommand(BaseCommand):
         process = CrossPlatformProcess(self)
         (stdout, stderr) = process.run_sync(r'gulp -v')
 
-        if process.failed:
-            raise Exception("Gulp: Could not get the current gulp version")
-
-        re.search("CLI version (\d+\.\d+\.\d+)", stdout).group(1) # CLI version
-        re.search("Local version (\d+\.\d+\.\d+)", stdout).group(1) # LOCAL version
+        if process.failed or not GulpVersion(stdout).supports_tasks_simple():
+            raise Exception("Gulp: Could not get the current gulp version or your gulp CLI version is lower than 3.7.0")
 
         (stdout, stderr) = process.run_sync(r'gulp --tasks-simple')
 
@@ -301,6 +303,29 @@ class GulpExitCommand(sublime_plugin.WindowCommand):
         finally:
             self.window.run_command("exit")
             
+
+#
+# General purpose Classes.
+# These should be on their own files, but it's a bit of a pain to include them for both ST2 and ST3
+#
+
+class GulpVersion():
+    def __init__(self, version_string):
+        self.version_string = version_string or ""
+
+    def supports_tasks_simple(self):
+        return StrictVersion(self.cli_version()) >= StrictVersion("3.7.0")
+
+    def cli_version(self):
+        return self.get("CLI")
+
+    def local_version(self):
+        return self.get("Local")
+
+    def get(self, version_name):
+        re_match = re.search(version_name + " version (\d+\.\d+\.\d+)", self.version_string)
+        return re_match.group(1) if re_match else "3.6.0"
+
 
 class CrossPlatformProcess():
     def __init__(self, sublime_command):
