@@ -1,4 +1,3 @@
-import sys
 import traceback
 import sublime
 import sublime_plugin
@@ -123,24 +122,15 @@ class GulpCommand(BaseCommand):
 
         raise Exception("Sha1 from gulp cache ({0}) is not equal to calculated ({1}).\nTry erasing the cache and running Gulp again.".format(data[gulpfile]["sha1"], filesha1))
 
-    def get_gulpfile_path(self, base_path):
-        for extension in GulpCommand.allowed_extensions:
-            gulpfile_path = os.path.join(base_path, "gulpfile" + extension)
-            if os.path.exists(gulpfile_path):
-                return gulpfile_path
-        return gulpfile_path
-
     def write_to_cache(self):
         package_path = os.path.join(sublime.packages_path(), self.package_name)
 
-        command = r'node "%s/write_tasks_to_cache.js"' % package_path
-
         process = CrossPlatformProcess(self)
-        (stdout, stderr) = process.run_sync(command)
+        (stdout, stderr) = process.run_sync(r'node "%s/write_tasks_to_cache.js"' % package_path)
 
         if process.failed:
             try:
-                self.write_to_cache_no_js()
+                self.write_to_cache_without_js()
             except:
                 if process.returncode() == 127:
                     raise Exception("\"node\" command not found.\nPlease be sure to have nodejs installed on your system and in your PATH (more info in the README).")
@@ -150,7 +140,7 @@ class GulpCommand(BaseCommand):
 
         return self.fetch_json()
 
-    def write_to_cache_no_js(self):
+    def write_to_cache_without_js(self):
         process = CrossPlatformProcess(self)
         (stdout, stderr) = process.run_sync(r'gulp -v')
 
@@ -160,28 +150,31 @@ class GulpCommand(BaseCommand):
         (stdout, stderr) = process.run_sync(r'gulp --tasks-simple')
 
         gulpfile = self.get_gulpfile_path(self.working_dir)
-        filesha1 = Security.hashfile(gulpfile)
-        cache = {}
-        tasks = {}
 
-        for task in stdout.split("\n"):
-            if task:
-                tasks[task] = { "name": task, "dependencies": ""}
+        self.write_cache_file({
+            gulpfile: {
+                "sha1": Security.hashfile(gulpfile),
+                "tasks": { task:{ "name": task, "dependencies": "" } for task in stdout.split("\n") if task }
+            }
+        })
 
-        cache[gulpfile] = {
-            "sha1": filesha1,
-            "tasks": tasks
-        }
-
-        cache_path = self.working_dir + "/" + GulpCommand.cache_file_name
-        with codecs.open(cache_path, "w", "utf-8", errors='replace') as cache_path:
+    def write_cache_file(self, cache):
+        cache_path = os.path.join(self.working_dir, GulpCommand.cache_file_name)
+        with codecs.open(cache_path, "w", "utf-8", errors='replace') as cache_file:
             json_cache = json.dumps(cache, ensure_ascii=False)
-            cache_path.write(json_cache)
+            cache_file.write(json_cache)
+
+    def get_gulpfile_path(self, base_path):
+        for extension in GulpCommand.allowed_extensions:
+            gulpfile_path = os.path.join(base_path, "gulpfile" + extension)
+            if os.path.exists(gulpfile_path):
+                return gulpfile_path
+        return gulpfile_path
 
     def log_errors(self, text):
         if not self.settings.get("log_errors", True):
             return
-        log_path = self.working_dir + "/" + GulpCommand.log_file_name
+        log_path = os.path.join(self.working_dir, GulpCommand.log_file_name)
         header = "Remember that you can report errors and get help in https://github.com/NicoSantangelo/sublime-gulp" if not os.path.isfile(log_path) else ""
         timestamp = str(datetime.now().strftime("%m-%d-%Y %H:%M"))
 
@@ -402,6 +395,7 @@ class CrossPlatformProcess():
         else:
             os.killpg(pid, signal.SIGTERM)
         ProcessCache.remove(self)
+
 
 class Dir():
     @classmethod
