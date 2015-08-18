@@ -13,7 +13,7 @@ class Hasher():
 
     @classmethod
     def hashfile(self, filepath):
-        filehash = sha1()
+        filehash = hashlib.sha1()
         with open(filepath, mode='rb') as f:
             content = f.read();
             filehash.update(str("blob " + str(len(content)) + "\0").encode('UTF-8'))
