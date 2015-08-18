@@ -156,7 +156,7 @@ class GulpCommand(BaseCommand):
         self.write_cache_file({
             gulpfile: {
                 "sha1": Hasher.sha1(gulpfile),
-                "tasks": { task:{ "name": task, "dependencies": "" } for task in stdout.split("\n") if task }
+                "tasks": dict((task, { "name": task, "dependencies": "" }) for task in stdout.split("\n") if task)
             }
         })
 
