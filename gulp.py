@@ -19,11 +19,13 @@ if is_sublime_text_3:
     from .base_command import BaseCommand
     from .progress_notifier import ProgressNotifier
     from .cross_platform_codecs import CrossPlaformCodecs
+    from .hasher import Hasher
     import urllib.request as urllib2
 else:
     from base_command import BaseCommand
     from progress_notifier import ProgressNotifier
     from cross_platform_codecs import CrossPlaformCodecs
+    from hasher import Hasher
     import urllib2
 
 #
@@ -102,7 +104,7 @@ class GulpCommand(BaseCommand):
         data = None
 
         if os.path.exists(jsonfilename):
-            filesha1 = Security.hashfile(gulpfile)
+            filesha1 = Hasher.sha1(gulpfile)
             json_data = codecs.open(jsonfilename, "r", "utf-8", errors='replace')
 
             try:
@@ -153,7 +155,7 @@ class GulpCommand(BaseCommand):
 
         self.write_cache_file({
             gulpfile: {
-                "sha1": Security.hashfile(gulpfile),
+                "sha1": Hasher.sha1(gulpfile),
                 "tasks": { task:{ "name": task, "dependencies": "" } for task in stdout.split("\n") if task }
             }
         })
@@ -449,20 +451,6 @@ class Env():
             if path:
                 env['PATH'] = path
         return env
-
-
-class Security():
-    @classmethod
-    def hashfile(self, filename):
-        filehash = sha1()
-        if os.path.isdir(filename):
-            filehash.update(str("blob " + str(os.stat(filename)) + "\0").encode('UTF-8'))
-        else:
-            with open(filename, mode='rb') as f:
-                content = f.read();
-                filehash.update(str("blob " + str(len(content)) + "\0").encode('UTF-8'))
-                filehash.update(content)
-        return filehash.hexdigest()
 
 
 class PluginList():
