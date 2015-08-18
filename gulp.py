@@ -2,13 +2,12 @@ import sublime
 import sublime_plugin
 import traceback
 import codecs
-import os, os.path
+import os
 from datetime import datetime
 from threading import Thread
 import signal, subprocess
 import json
 import webbrowser
-from contextlib import contextmanager
 
 is_sublime_text_3 = int(sublime.version()) >= 3000
 
@@ -18,6 +17,7 @@ if is_sublime_text_3:
     from .cross_platform_codecs import CrossPlaformCodecs
     from .hasher import Hasher
     from .gulp_version import GulpVersion
+    from .dir_context import Dir
     import urllib.request as urllib2
 else:
     from base_command import BaseCommand
@@ -25,6 +25,7 @@ else:
     from cross_platform_codecs import CrossPlaformCodecs
     from hasher import Hasher
     from gulp_version import GulpVersion
+    from dir_context import Dir
     import urllib2
 
 #
@@ -378,18 +379,6 @@ class CrossPlatformProcess():
         else:
             os.killpg(pid, signal.SIGTERM)
         ProcessCache.remove(self)
-
-
-class Dir():
-    @classmethod
-    @contextmanager
-    def cd(cls, newdir):
-        prevdir = os.getcwd()
-        os.chdir(newdir)
-        try:
-            yield
-        finally:
-            os.chdir(prevdir)
 
 
 class ProcessCache():
