@@ -62,12 +62,12 @@ Sublime Gulp supports the following commands accessible from `Tools>Command Pale
 
 |     Command       |  From Command Palette | From Menu                 |
 |:-----------------:|:---------------------:|:------------------------:|
-| [gulp](running-a-gulp-task) | Gulp or Gulp (silent) |  List Tasks to Run |  
+| [gulp](#running-a-gulp-task) | Gulp or Gulp (silent) |  List Tasks to Run |  
 | [gulp-kill](#killing-tasks) | Gulp: Kill All Gulp Tasks  | Gulp: Kill running tasks |
 | [gulp-delete-cache](#deleting-the-cache) | Gulp: Delete Cache  |   Gulp: Delete Cache|
 | [gulp_plugins](#listing-gulp-plugins)      | Gulp: List plugins | List Gulp Plugins  |
-| [gulp_show_panel](#show/hide-the-panel)   | Gulp: Show panel| Show Gulp Panel |
-| [gulp_hide_panel](#show/hide-the-panel)   | Gulp: Hide panel|  Hide Gulp Panel |
+| [gulp_show_panel](#show-or-hide-the-panel)   | Gulp: Show panel| Show Gulp Panel |
+| [gulp_hide_panel](#show-or-hide-the-panel)   | Gulp: Hide panel|  Hide Gulp Panel |
 | [gulp_exit](#quitting-sublime-killing-running-gulp-tasks)         | Gulp: Exit editor killing running tasks | Quit Killing All Gulp Tasks |
 
 * The first four commands are available via `Tools>Gulp` in the main menu and in `Gulp` in the sidebar context menu.
@@ -116,7 +116,7 @@ To kill running tasks like `watch` you can pick the command `Gulp: Kill running 
 
 If you're running Windows, the package will use [taskkill](http://technet.microsoft.com/en-us/library/cc725602.aspx) so every child process is correctly terminated. If the executable isn't on your system, you'll need to add it for this command to work correctly.
 
-###  Show/Hide the Panel
+###  Show or Hide the Panel
 `Gulp: Show Panel` shows the closed output panel (just the panel, it won't re-open the tab if you're using the [`results_in_new_tab` setting](#settings)).
 
 ### Listing Gulp Plugins
