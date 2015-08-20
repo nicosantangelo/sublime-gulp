@@ -117,7 +117,7 @@ To kill running tasks like `watch` you can pick the command `Gulp: Kill running 
 If you're running Windows, the package will use [taskkill](http://technet.microsoft.com/en-us/library/cc725602.aspx) so every child process is correctly terminated. If the executable isn't on your system, you'll need to add it for this command to work correctly.
 
 ###  Show or Hide the Panel
-`Gulp: Show Panel` shows the closed output panel (just the panel, it won't re-open the tab if you're using the [`results_in_new_tab` setting](#settings)).
+`Gulp: Show Panel` shows the closed output panel (just the panel, it won't re-open the tab if you're using the `results_in_new_tab` [setting](#settings)).  Alternatively typing `<esc>` will also close/hide an open panel.
 
 ### Listing Gulp Plugins
 Running `Gulp: List plugins` from the command palette will display all gulp plugins available on a searcheable list. Picking one will open its github repo on your default browser.
@@ -181,8 +181,6 @@ gulp.watch('file', function(event) {
 });
 ```
 
-
-<a href="#settings">settings</a>
 ## Settings
 
 The file `SublimeGulp.sublime-settings` is used for configuration, you can change your user settings in `Preferences -> Package Settings -> Gulp -> Settings - User`.
