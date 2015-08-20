@@ -31,7 +31,6 @@ else:
 #
 # Commands
 #
-
 class GulpCommand(BaseCommand):
     cache_file_name = ".sublime-gulp.cache"
     log_file_name = 'sublime-gulp.log'
@@ -97,7 +96,6 @@ class GulpCommand(BaseCommand):
     def dependencies_text(self, task):
         return "Dependencies: " + task['dependencies'] if task['dependencies'] else ""
 
-    # Refactor
     def fetch_json(self):
         jsonfilename = os.path.join(self.working_dir, GulpCommand.cache_file_name)
         gulpfile = self.get_gulpfile_path(self.working_dir)
@@ -191,7 +189,7 @@ class GulpCommand(BaseCommand):
 
     def run_gulp_task(self):
         task = self.construct_gulp_task()
-        Thread(target = self.run_process, args = (task, )).start() # Option to kill on timeout?
+        Thread(target = self.run_process, args = (task, )).start()
 
     def construct_gulp_task(self):
         self.show_running_status_in_output_panel()
@@ -260,13 +258,13 @@ class GulpPluginsCommand(BaseCommand):
                 self.error_message(self.error_text_for(thread))
 
     def error_text_for(self, thread):
-        tuple = (
+        error_tuple = (
             "The plugin repository seems to be down.",
-            "If the site at http://gulpjs.com/plugins is working, please report this issue at the Sublime Gulp repo.",
+            "If http://gulpjs.com/plugins is working, please report this issue at the Sublime Gulp repo (https://github.com/NicoSantangelo/sublime-gulp).",
             "Thanks!",
             thread.error
         )
-        return "\n\n%s\n\n%s\n\n%s\n\n%s" % tuple
+        return "\n\n%s\n\n%s\n\n%s\n\n%s" % error_tuple
 
     def open_in_browser(self, index = -1):
         if index >= 0 and index < self.plugins.length:

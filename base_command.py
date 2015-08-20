@@ -1,4 +1,5 @@
-import sublime, sublime_plugin
+import sublime
+import sublime_plugin
 import os.path
 
 is_sublime_text_3 = int(sublime.version()) >= 3000
