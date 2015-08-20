@@ -218,6 +218,19 @@ class GulpCommand(BaseCommand):
         self.show_output_panel("Running '%s'%s...\n" % (self.task_name, with_flag_text))
 
 
+class GulpArbitraryCommand(GulpCommand):
+    def show_tasks_from_gulp_file(self, file_index):
+        if file_index > -1:
+            self.working_dir = os.path.dirname(self.gulp_files[file_index])
+            self.show_input_panel(caption="gulp", on_done=self.after_task_input)
+
+    def after_task_input(self, task_name=None):
+        if task_name:
+            self.task_name = task_name
+            self.task_flag = ''
+            self.run_gulp_task()
+
+
 class GulpKillCommand(BaseCommand):
     def work(self):
         if ProcessCache.empty():

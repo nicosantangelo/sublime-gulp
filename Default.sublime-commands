@@ -9,6 +9,10 @@
       "args": { "silent": true }
     },
     {
+      "caption": "Gulp: Run arbitrary task",
+      "command": "gulp_arbitrary"
+    },
+    {
       "caption": "Gulp: Show panel",
       "command": "gulp_show_panel"
     },
