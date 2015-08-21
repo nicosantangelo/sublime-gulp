@@ -1,29 +1,30 @@
 # Sublime Gulp
 
-A Gulp task runner with snippets for Sublime Text.
+A plugin to run your Gulp tasks from within Sublime plus some handy [Gulp Snippets](#snippets) too.
 
-This package is a merge between [Gulp Snippets](https://github.com/filipelinhares/gulp-sublime-snippets) from [@filipelinhares](https://github.com/filipelinhares) and [Gulp](https://github.com/NicoSantangelo/sublime-gulp) from [NicoSantangelo](https://github.com/NicoSantangelo) (this last one, inspired by the awesome [sublime-grunt](https://github.com/tvooo/sublime-grunt)).
+## Quickstart
 
-## Usage
+1. Install Via [Package Control](https://packagecontrol.io) `Gulp`
+2. Open your repo containing either a gulpfile.js file or directory
+3. If you don't already have a `default` gulp task make one
+4. Menu to Tools>Gulp>Run Default Task
+5. Enjoy
 
-### 1. Run Tasks
-To run a task, first choose `Gulp` from the command pallete, the package will search for a gulpfile.js in an open folder and create a cache (`.sublime-gulp.cache`) with it (the first run might be a little slow).
+## Installation
 
-The package will display all the tasks in a list, selecting one will run it (if you want, you can [run specific tasks with a keyboard shortcut](#bind-specific-tasks)).
+### via PackageControl
+If you have [PackageControl](http://wbond.net/sublime_packages/package_control) installed, you can use it to install the package.
 
-To show the task output the package uses a panel or a new tab (depends on your [settings](#settings)), you can add a [key binding](http://docs.sublimetext.info/en/latest/reference/key_bindings.html) to open the panel (check the [`Gulp: Show Panel`](#4-show-panel) command).
+Just type `cmd-shift-p`/`ctrl-shift-p` to bring up the command pallete and pick `Package Control: Install Package` from the dropdown, search and select the package there and you're all set.
 
-Keep in mind that, the package creates the first cache using [node](http://nodejs.org/), so for it to work you might need to add your node_modules path to NODE_PATH, for example (for Unix):
+### Manually
 
-`export NODE_PATH=/usr/local/lib/node_modules`
+You can clone the repo in your `/Packages` (*Preferences -> Browse Packages...*) folder and start using/hacking it.
+    
+    cd ~/path/to/Packages
+    git clone git://github.com/NicoSantangelo/sublime-gulp.git Gulp
 
-**Troubleshooting**
-
-The plugin wont work unless you have `gulp` defined on your gulpfile.
-
-So if you can't find why Sublime Gulp isn't working be sure to at least have `var gulp = require('gulp');` defined. [More info](https://github.com/NicoSantangelo/sublime-gulp/issues/12) (thanks [@smeijer](https://github.com/smeijer) for the help)
-
-**CoffeeScript**
+### CoffeeScript Support
 
 If you want to use a `gulpfile.coffee` you need to do two things:
 
@@ -35,32 +36,96 @@ require('coffee-script/register');
 var gulp = require('./gulpfile.coffee');
 ```
 
-That's it!. Thanks to [@guillaume86](https://github.com/guillaume86) for the help in the [issue #5](https://github.com/NicoSantangelo/sublime-gulp/issues/5)
+### Troubleshooting
 
-**Mac OS X**
+The Sublime Gulp plugin makes use of [node](http://nodejs.org/) which should already be installed if you are using Gulp. The plugin creates the cache using node, so in some systems you might need to add your node_modules path to NODE_PATH, for example (for Unix):
 
-It's possible that your path isn't being reported by your shell so if you're having troubles running the package, give [SublimeFixMacPath](https://github.com/int3h/SublimeFixMacPath) a try.
+`export NODE_PATH=/usr/local/lib/node_modules`
 
-### 2. Run Tasks (silent)
-Works the same way as the normal `Gulp` command, but `Gulp (silent)` will not write the results on the output panel or tab.
+Sublime Gulp won't work with at least `var gulp = require('gulp');` defined in each task file if using multiple files. [More info](https://github.com/NicoSantangelo/sublime-gulp/issues/12) (thanks [@smeijer](https://github.com/smeijer) for the help)
 
-### 3. Kill tasks
+If you are having trouble running the plugin in **Mac OSX** it's possible that your path isn't being reported by your shell. In which case give the plugin SublimeFixMacPath a try.  It may resolve our issue.
+
+Still can't get it the plugin to run properly. First make sure your Gulp tasks run from a terminal (i.e. outside of sublime) and if so then submit an issue.
+
+### Gulpfile.js
+
+The Sublime Gulp plugin was made for those using the [Gulp Streaming Build - Task Runner System](https://github.com/gulpjs/gulp) within [Node.js](https://nodejs.org/) for their workflow.
+
+Sublime Gulp now supports not only a basic gulpfile.js file in the root of your project but also recognizes your tasks within a directory set by the RequireDir module or within a gulpfile.js directory.  So no matter how your gulp tasks are organized Sublime Gulp will find them.
+
+## Usage
+
+### Available Commands
+
+Sublime Gulp supports the following commands accessible from `Tools>Command Palette` by typing in "Gulp".  They are also accesible from menus as indicated below the table.  `Default.sublime-commands` also lists them.
+
+|     Command       |  From Command Palette | From Menu                 |
+|:-----------------:|:---------------------:|:------------------------:|
+| [gulp](#running-a-gulp-task) | Gulp or Gulp (silent) |  List Tasks to Run |  
+| [gulp-kill](#killing-tasks) | Gulp: Kill All Gulp Tasks  | Gulp: Kill running tasks |
+| [gulp-delete-cache](#deleting-the-cache) | Gulp: Delete Cache  |   Gulp: Delete Cache|
+| [gulp_plugins](#listing-gulp-plugins)      | Gulp: List plugins | List Gulp Plugins  |
+| [gulp_show_panel](#show-or-hide-the-panel)   | Gulp: Show panel| Show Gulp Panel |
+| [gulp_hide_panel](#show-or-hide-the-panel)   | Gulp: Hide panel|  Hide Gulp Panel |
+| [gulp_exit](#quitting-sublime-killing-running-gulp-tasks)         | Gulp: Exit editor killing running tasks | Quit Killing All Gulp Tasks |
+
+* The first four commands are available via `Tools>Gulp` in the main menu and in `Gulp` in the sidebar context menu.
+* The the 5th and 6th are available via `View>Gulp` in the main menu 
+* The last command is available via `File` at the bottom in the main menu
+
+
+### Running a Gulp Task
+To run a task, first choose `Gulp` from the command pallete or `List Tasks to Run` from the menu, the package will search for your tasks in the open folder/project and create a cache (`.sublime-gulp.cache`) in the root. The first run will be slow as the cache builds but then the cache will speed up future access.  You can use the `gulp-delete_cache` command to rebuild the cache if you are not seeing your newly added Gulp Tasks or some have gone missing.
+
+The plugin will then display all the Gulp tasks in a list.  Selecting one will run that task.  To show the task's standard output the plugin uses a panel or a new tab (depends on your [settings](#settings)).  After a first task has been run you can use the hide and show panel commands as desired. (see table above) 
+
+If you want to run the normal `Gulp` command without standard output to the panel use instead `Gulp (silent)`. 
+
+### Customized Task Access
+
+Out of the box Sublime Gulp has a menu item `Run Default Task`  under `Tools>Gulp` that will run your `default` Gulp task.  Most Gulp users have a default task defined (like running their development tasks) if you don't then might as well make one.
+
+If you want to run other of your tasks from a menu item or keyboard shortcut you can customize both.  
+
+For example to add a menu item in the tools menu for a `sass` task do this.  In your sublime user directory add following json in the `Main.sublime-menu` file (create one if you don't have one).
+
+```json
+{
+    "id": "tools",
+    "children": [
+     { "caption": "Run Sass Task", "command": "gulp", "args": {"task_name": "sass"} }
+     ]
+}
+```
+
+Note:  You can run any command silently by adding `"silent": true` to the `args`
+
+or you also can use a keyboard shortcut to do the same.  Edit `Preferences>Key-Bindings-User` to access the user key bindings file to which add this line 
+
+````json
+{ "keys": ["ctrl+shift+s"], "command": "gulp", "args": { "task_name": "sass" } }
+````
+
+For more detailed information on [shortcut keys](#shortcut-keys) and [binding specific tasks](#bind-specific-tasks) below.
+
+### Killing Tasks
 To kill running tasks like `watch` you can pick the command `Gulp: Kill running tasks`. 
 
 **Windows**
 
 If you're running Windows, the package will use [taskkill](http://technet.microsoft.com/en-us/library/cc725602.aspx) so every child process is correctly terminated. If the executable isn't on your system, you'll need to add it for this command to work correctly.
 
-### 4. Show Panel
-`Gulp: Show Panel` shows the closed output panel (just the panel, it won't re-open the tab if you're using the [`results_in_new_tab` setting](#settings)).
+###  Show or Hide the Panel
+`Gulp: Show Panel` shows the closed output panel (just the panel, it won't re-open the tab if you're using the `results_in_new_tab` [setting](#settings)).  Alternatively typing `<esc>` will also close/hide an open panel.
 
-### 5. List plugins
-Running `Gulp: List plugins` from the command palette will display the gulp plugins on a searcheable list. Picking one will open it on your default browser.
+### Listing Gulp Plugins
+Running `Gulp: List plugins` from the command palette will display all gulp plugins available on a searcheable list. Picking one will open its github repo on your default browser.
 
-### 6. Delete cache
+### Deleting The Cache
 Running `Gulp: Delete cache` will delete the `.sublime-gulp.cache` file for you, forcing a re-parse of the `gulpfile.js`.
 
-### 7. Gulp exit
+### Quitting Sublime Killing Running Gulp Tasks
 This command will close Sublime Text, but first it'll kill any running tasks. It's the same as running `Gulp: Kill running tasks` and immediately exiting the editor. If error occurs killing the tasks or no running tasks are found, the editor will close anyways.
 
 You can select `Gulp: Exit editor killing running tasks` from the command palette or create a [keybinding](#shortcut-keys) like this:
@@ -70,6 +135,9 @@ You can select `Gulp: Exit editor killing running tasks` from the command palett
 ````
 
 You can bind it to `alt+f4` or `super+q` so you don't have to remember it. Sadly it **won't run** if you close the editor using the close button.
+
+
+
 
 ## Snippets
 
@@ -112,7 +180,6 @@ gulp.watch('file', function(event) {
   console.log(' File '+event.path+' was '+event.type+', running tasks...');
 });
 ```
-
 
 ## Settings
 
@@ -221,13 +288,9 @@ This package doesn't bind any command to a keyboard shortcut, but you can add it
 ````
 
 #### Bind specific tasks
-You also can use a shortcut for running a specific task like this:
 
-````json
-{ "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch" } }
-````
 
-and if you want to run it in [`silent`](#2-run-tasks-silent) mode, you can add `"silent"` to the `args`
+
 
 ````json
 { "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "watch", "silent": true } }
@@ -239,16 +302,6 @@ Lastly, you can add a flag to the command using `task_flag`. This option will ov
 { "keys": ["KEYS"], "command": "gulp", "args": { "task_name": "build", "task_flag": "--watch" } }
 ````
 
-## Installation
+##Acknowledgments
 
-### PackageControl
-If you have [PackageControl](http://wbond.net/sublime_packages/package_control) installed, you can use it to install the package.
-
-Just type `cmd-shift-p`/`ctrl-shift-p` to bring up the command pallete and pick `Package Control: Install Package` from the dropdown, search and select the package there and you're all set.
-
-### Manual
-
-You can clone the repo in your `/Packages` (*Preferences -> Browse Packages...*) folder and start using/hacking it.
-    
-    cd ~/path/to/Packages
-    git clone git://github.com/NicoSantangelo/sublime-gulp.git Gulp
+This package is a merge between [Gulp Snippets](https://github.com/filipelinhares/gulp-sublime-snippets) from [@filipelinhares](https://github.com/filipelinhares) and [Gulp](https://github.com/NicoSantangelo/sublime-gulp) from [NicoSantangelo](https://github.com/NicoSantangelo) (this last one, inspired by the awesome [sublime-grunt](https://github.com/tvooo/sublime-grunt)).

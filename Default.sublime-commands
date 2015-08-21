@@ -13,6 +13,10 @@
       "command": "gulp_show_panel"
     },
     {
+      "caption": "Gulp: Hide panel",
+      "command": "gulp_hide_panel"
+    },
+    {
       "caption": "Gulp: Kill running tasks",
       "command": "gulp_kill"
     },

@@ -235,6 +235,9 @@ class GulpShowPanelCommand(BaseCommand):
     def work(self):
         self.show_panel()
 
+class GulpHidePanelCommand(BaseCommand):
+    def work(self):
+        self.close_panel()        
 
 class GulpPluginsCommand(BaseCommand):
     def work(self):
