@@ -46,11 +46,12 @@ class GulpCommand(BaseCommand):
         if len(self.gulp_files) > 0:
             self.choose_file()
         else:
-            self.error_message("gulpfile not found!")
+            sufix = "on:\n- %s" % "\n- ".join(self.sercheable_folders) if len(self.sercheable_folders) > 0 else ""
+            self.error_message("gulpfile not found %s" % sufix)
 
     def append_paths(self):
         self.folders = []
-        for folder_path in self.window.folders():
+        for folder_path in self.sercheable_folders:
             self.append_to_gulp_files(folder_path)
             for inner_folder in self.settings.get("gulpfile_paths", []):
                 self.append_to_gulp_files(os.path.join(folder_path, inner_folder))
@@ -271,7 +272,7 @@ class GulpPluginsCommand(BaseCommand):
         )
         return "\n\n%s\n\n%s\n\n%s\n\n%s" % tuple
 
-    def open_in_browser(self, index = -1):
+    def open_in_browser(self, index=-1):
         if index >= 0 and index < self.plugins.length:
             webbrowser.open_new(self.plugins.get(index).get('homepage'))
 

@@ -12,7 +12,7 @@ class ProgressNotifier():
         The message to display once the thread is complete
     """
 
-    def __init__(self, message, success_message = ''):
+    def __init__(self, message, success_message=''):
         self.message = message
         self.success_message = success_message
         self.stopped = False

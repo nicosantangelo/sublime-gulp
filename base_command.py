@@ -14,12 +14,13 @@ else:
 class BaseCommand(sublime_plugin.WindowCommand):
     package_name = "Gulp"
     
-    def run(self, task_name = None, task_flag = None, silent = False):
+    def run(self, task_name=None, task_flag=None, silent=False, paths=[]):
         self.setup_data_from_settings()
         self.task_name = task_name
         self.task_flag = task_flag if task_name is not None and task_flag is not None else self.get_flag_from_task_name()
         self.silent = silent
         self.working_dir = ""
+        self.sercheable_folders = [os.path.dirname(path) for path in paths] if len(paths) > 0 else self.window.folders()
         self.work()
 
     def setup_data_from_settings(self):
@@ -37,10 +38,10 @@ class BaseCommand(sublime_plugin.WindowCommand):
         pass
 
     # Panels and message
-    def show_quick_panel(self, items, on_done = None, font = sublime.MONOSPACE_FONT):
+    def show_quick_panel(self, items, on_done=None, font=sublime.MONOSPACE_FONT):
         self.defer_sync(lambda: self.window.show_quick_panel(items, on_done, font))
 
-    def show_input_panel(self, caption, initial_text = "", on_done = None, on_change = None, on_cancel = None):
+    def show_input_panel(self, caption, initial_text="", on_done=None, on_change=None, on_cancel=None):
         self.window.show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
 
     def status_message(self, text):
