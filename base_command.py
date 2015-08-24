@@ -21,6 +21,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.silent = silent
         self.working_dir = ""
         self.sercheable_folders = [os.path.dirname(path) for path in paths] if len(paths) > 0 else self.window.folders()
+        self.output_view = None
         self.work()
 
     def setup_data_from_settings(self):
@@ -69,7 +70,10 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.append_to_output_view(text)
 
     def gulp_results_path(self):
-        return next(folder_path for folder_path in self.window.folders() if self.working_dir.find(folder_path) != -1) if self.working_dir else ""
+        return next(folder_path for folder_path in self.sercheable_folders if self.working_dir.find(folder_path) != -1) if self.working_dir else ""
+
+    def gulp_results_view(self):
+        return next(view for view in sublime.active_window().views() if view.file_name() and os.path.basename(view.file_name()) == "Gulp Results") if self.output_view is None else self.output_view
 
     def add_syntax(self):
         syntax_file = self.settings.get("syntax", "Packages/Gulp/syntax/GulpResults.tmLanguage")
@@ -85,7 +89,10 @@ class BaseCommand(sublime_plugin.WindowCommand):
             self._insert(self.output_view, decoded_text)
 
     def _insert(self, view, content):
-        if self.results_in_new_tab and self.output_view.is_loading():
+        if view is None:
+            return
+
+        if self.results_in_new_tab and view.is_loading():
             self.set_timeout(lambda: self._insert(view, content), 10)
         else:
             view.set_read_only(False)
@@ -100,8 +107,10 @@ class BaseCommand(sublime_plugin.WindowCommand):
 
     def close_panel(self):
         if self.results_in_new_tab:
-            self.window.focus_view(self.output_view)
-            self.window.run_command('close_file')
+            self.output_view = self.gulp_results_view()
+            if self.output_view:
+                self.window.focus_view(self.output_view)
+                self.window.run_command('close_file')
         else:
             self.window.run_command("hide_panel", { "panel": "output.gulp_output" })
 
