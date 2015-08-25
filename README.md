@@ -65,8 +65,8 @@ Sublime Gulp supports the following commands accessible from `Tools -> Command P
 |:-----------------:|:---------------------:|:------------------------:|
 | [gulp](#running-a-gulp-task)                | Gulp or Gulp (silent)     | List Tasks to Run |  
 | [gulp_arbitrary](#arbitrary-task)           | Gulp: Run arbitrary task  | Run Arbitrary Task |  
-| [gulp_kill](#killing-tasks)                 | Gulp: Kill All Gulp Tasks | Gulp: Kill running tasks |
-| [gulp_delete-cache](#deleting-the-cache)    | Gulp: Delete Cache        | Gulp: Delete Cache |
+| [gulp_kill](#killing-tasks)                 | Gulp: Kill All Gulp Tasks | Kill running tasks |
+| [gulp_delete-cache](#deleting-the-cache)    | Gulp: Delete Cache        | Delete Cache |
 | [gulp_plugins](#listing-gulp-plugins)       | Gulp: List plugins        | List Gulp Plugins |
 | [gulp_show_panel](#show-or-hide-the-panel)  | Gulp: Show panel          | Show Gulp Panel |
 | [gulp_hide_panel](#show-or-hide-the-panel)  | Gulp: Hide panel          | Hide Gulp Panel |
