@@ -19,7 +19,7 @@ Give it a try selecting `Gulp: Run arbitrary task`, more info: https://github.co
 
 2) The package now has support for babel using a `gulpfile.babel.js` file. Thanks @peduxe for the heads up!.
 
-3) Support for running gulp using require-dir, or a gulpfile.js dir has been added!
+3) Support for running gulp using require-dir or a gulpfile.js dir has been added!
 The only caveat for now is that if you use a `gulpfile.js` that only contains:
 
 `require('require-dir')('build/tasks');`

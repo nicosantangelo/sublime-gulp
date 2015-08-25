@@ -74,7 +74,11 @@ class BaseCommand(sublime_plugin.WindowCommand):
         return next(folder_path for folder_path in self.sercheable_folders if self.working_dir.find(folder_path) != -1) if self.working_dir else ""
 
     def gulp_results_view(self):
-        return next(view for view in sublime.active_window().views() if view.file_name() and os.path.basename(view.file_name()) == "Gulp Results") if self.output_view is None else self.output_view
+        if self.output_view is None:
+            gulp_results = [view for view in sublime.active_window().views() if view.file_name() and os.path.basename(view.file_name()) == "Gulp Results"]
+            return gulp_results[0] if len(gulp_results) > 0 else None
+        else:
+            return self.output_view
 
     def add_syntax(self):
         syntax_file = self.settings.get("syntax", "Packages/Gulp/syntax/GulpResults.tmLanguage")
@@ -109,7 +113,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
     def close_panel(self):
         if self.results_in_new_tab:
             self.output_view = self.gulp_results_view()
-            if self.output_view:
+            if self.output_view and self.output_view.file_name():
                 self.window.focus_view(self.output_view)
                 self.window.run_command('close_file')
         else:
