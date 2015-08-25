@@ -12,7 +12,7 @@ Recent Changes
 
 Hello!
 
-The lastest version of sublime-gulp now has support for command flags (arguments)!
+The latest version of sublime-gulp now has support for command flags (arguments)!
 
 If you want to run a gulp task with a flag like `--watch` or even `--version` you can set it on the settings file or on a specific keybinding. For more info take a look at the README here: https://github.com/NicoSantangelo/sublime-gulp#settings
 

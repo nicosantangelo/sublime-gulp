@@ -12,7 +12,7 @@ Recent Changes
 
 Hello!
 
-The lastest version of sublime-gulp now has experimental support for gulp4.0-alpha!
+The latest version of sublime-gulp now has experimental support for gulp4.0-alpha!
 
 If you tried to list the tasks using gulp4.0, try removing the `.sublime-gulp.cache` file (you can use `Gulp: Delete cache`) and running `Gulp` again.
 
