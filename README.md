@@ -63,16 +63,17 @@ Sublime Gulp supports the following commands accessible from `Tools -> Command P
 
 |     Command       |  From Command Palette | From Menu                 |
 |:-----------------:|:---------------------:|:------------------------:|
-| [gulp](#running-a-gulp-task) | Gulp or Gulp (silent) |  List Tasks to Run |  
-| [gulp-kill](#killing-tasks) | Gulp: Kill All Gulp Tasks  | Gulp: Kill running tasks |
-| [gulp-delete-cache](#deleting-the-cache) | Gulp: Delete Cache  |   Gulp: Delete Cache|
-| [gulp_plugins](#listing-gulp-plugins)      | Gulp: List plugins | List Gulp Plugins  |
-| [gulp_show_panel](#show-or-hide-the-panel)   | Gulp: Show panel| Show Gulp Panel |
-| [gulp_hide_panel](#show-or-hide-the-panel)   | Gulp: Hide panel|  Hide Gulp Panel |
-| [gulp_exit](#quitting-sublime-killing-running-gulp-tasks)         | Gulp: Exit editor killing running tasks | Quit Killing All Gulp Tasks |
+| [gulp](#running-a-gulp-task)                | Gulp or Gulp (silent)     | List Tasks to Run |  
+| [gulp_arbitrary](#arbitrary-task)           | Gulp: Run arbitrary task  | Run Arbitrary Task |  
+| [gulp_kill](#killing-tasks)                 | Gulp: Kill All Gulp Tasks | Gulp: Kill running tasks |
+| [gulp_delete-cache](#deleting-the-cache)    | Gulp: Delete Cache        | Gulp: Delete Cache |
+| [gulp_plugins](#listing-gulp-plugins)       | Gulp: List plugins        | List Gulp Plugins |
+| [gulp_show_panel](#show-or-hide-the-panel)  | Gulp: Show panel          | Show Gulp Panel |
+| [gulp_hide_panel](#show-or-hide-the-panel)  | Gulp: Hide panel          | Hide Gulp Panel |
+| [gulp_exit](#quitting-sublime-killing-running-gulp-tasks)  | Gulp: Exit editor killing running tasks | Quit Killing All Gulp Tasks |
 
-* The first four commands are available via `Tools -> Gulp` in the main menu and in `Gulp` in the sidebar context menu.
-* The the 5th and 6th are available via `View -> Gulp` in the main menu.
+* The first five commands are available via `Tools -> Gulp` in the main menu and in `Gulp` in the sidebar context menu.
+* The the 6th and 7th are available via `View -> Gulp` in the main menu.
 * The last command is available via `File` at the bottom in the main menu.
 
 
@@ -82,6 +83,10 @@ To run a task, first choose `Gulp` from the command pallete or `List Tasks to Ru
 The plugin will then display all the Gulp tasks in a list. Selecting one will run that task. To show the task's standard output the plugin uses a panel or a new tab (depends on your [settings](#settings)). After a first task has been run you can use the hide and show panel commands as desired. (see table above) 
 
 If you want to run the normal `Gulp` command without standard output to the panel use instead `Gulp (silent)`. 
+
+#### Arbitrary task
+
+When running an arbitrary task you need to choose `Gulp: Run arbitrary task` from the command pallete or `Run arbitrary task` from the menu. The package will then prompt an input panel where you can write what you want to add as a sufix to `gulp`.
 
 ### Customized Task Access
 
