@@ -1,12 +1,14 @@
 import sublime
 import sys
+import re
 
 class CrossPlaformCodecs():
     @classmethod
     def decode_line(self, line):
         line = line.rstrip()
         decoded_line = self.force_decode(line) if sys.version_info >= (3, 0) else line
-        return str(decoded_line) + "\n"
+        decoded_line = re.sub(r'\033\[(\d{1,2}m|\d\w)', '', str(decoded_line))
+        return decoded_line + "\n"
 
     @classmethod
     def force_decode(self, text):
