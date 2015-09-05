@@ -152,6 +152,9 @@ class GulpCommand(BaseCommand):
 
         gulpfile = self.get_gulpfile_path(self.working_dir)
 
+        if not stdout:
+            raise Exception("Gulp: The result of `gulp --tasks-simple` was empty")
+
         self.write_cache_file({
             gulpfile: {
                 "sha1": Hasher.sha1(gulpfile),
