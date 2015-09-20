@@ -20,7 +20,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.task_name = task_name
         self.task_flag = task_flag if task_name is not None and task_flag is not None else self.get_flag_from_task_name()
         self.silent = silent
-        self.working_dir = ""
+        self._working_dir = ""
         self.sercheable_folders = [os.path.dirname(path) for path in paths] if len(paths) > 0 else self.window.folders()
         self.output_view = None
         self.work()
@@ -30,10 +30,24 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.results_in_new_tab = self.settings.get("results_in_new_tab", False)
         self.nonblocking  = self.settings.get("nonblocking", True)
         self.exec_args = self.settings.get('exec_args', False)
+        self.check_for_gulpfile = self.settings.get('check_for_gulpfile', True)
+
 
     def get_flag_from_task_name(self):
         flags = self.settings.get("flags", {})
         return flags[self.task_name] if self.task_name in flags else ""
+
+    # Properties
+    @property
+    def working_dir(self): 
+        return self._working_dir
+
+    @working_dir.setter
+    def working_dir(self, value): 
+        if self.check_for_gulpfile:
+            self._working_dir = os.path.dirname(value)
+        else:
+            self._working_dir = value
 
     # Main method, override
     def work(self):

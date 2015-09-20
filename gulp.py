@@ -37,11 +37,16 @@ class GulpCommand(BaseCommand):
     allowed_extensions = [".babel.js", ".js"]
     
     def work(self):
+        self.folders = []
         self.gulp_files = []
         self.list_gulp_files()
 
     def list_gulp_files(self):
         self.append_paths()
+
+        if not self.check_for_gulpfile:
+            self.gulp_files = self.folders
+
         if len(self.gulp_files) > 0:
             self.choose_file()
         else:
@@ -49,7 +54,6 @@ class GulpCommand(BaseCommand):
             self.error_message("gulpfile not found %s" % sufix)
 
     def append_paths(self):
-        self.folders = []
         for folder_path in self.sercheable_folders:
             self.append_to_gulp_files(folder_path)
             for inner_folder in self.settings.get("gulpfile_paths", []):
@@ -70,7 +74,7 @@ class GulpCommand(BaseCommand):
 
     def show_tasks_from_gulp_file(self, file_index):
         if file_index > -1:
-            self.working_dir = os.path.dirname(self.gulp_files[file_index])
+            self.working_dir = self.gulp_files[file_index]
             if self.task_name is not None:
                 self.run_gulp_task()
             else:
@@ -225,7 +229,7 @@ class GulpCommand(BaseCommand):
 class GulpArbitraryCommand(GulpCommand):
     def show_tasks_from_gulp_file(self, file_index):
         if file_index > -1:
-            self.working_dir = os.path.dirname(self.gulp_files[file_index])
+            self.working_dir = self.gulp_files[file_index]
             self.show_input_panel(caption="gulp", on_done=self.after_task_input)
 
     def after_task_input(self, task_name=None):
@@ -299,7 +303,7 @@ class GulpDeleteCacheCommand(GulpCommand):
 
     def delete_cache(self, file_index):
         if file_index > -1:
-            self.working_dir = os.path.dirname(self.gulp_files[file_index])
+            self.working_dir = self.gulp_files[file_index]
             try:
                 jsonfilename = os.path.join(self.working_dir, GulpCommand.cache_file_name)
                 if os.path.exists(jsonfilename):
