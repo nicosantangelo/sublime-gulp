@@ -28,5 +28,9 @@
     // Add a custom flag to a particular gulp command. Format: { "task_name": "flags" }
     // For example: { "concat": "--silent" }
     "flags": {
-    }
+    },
+
+    // If `false` the package will run even if no `gulpfile.js` is found on the root folders currently open.
+    // You might want to set it to false if you're using the `--gulpfile` flag, or if you want to leave the error reporting to gulp.
+    "check_for_gulpfile": true
 }

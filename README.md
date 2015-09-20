@@ -203,7 +203,8 @@ The defaults are:
     "log_errors": true,
     "syntax": "Packages/Gulp/syntax/GulpResults.tmLanguage",
     "nonblocking": true,
-    "flags": {}
+    "flags": {},
+    "check_for_gulpfile": true
 }
 ````
 
@@ -272,6 +273,14 @@ For example if you have to run `build` with the `--watch` flag, like this `gulp 
 ````
 
 If you want to add a flag to a task just for a project, you can try [binding a specific task](#bind-specific-tasks).
+
+#### check_for_gulpfile
+
+If `false` the package will run even if no `gulpfile.js` is found on the root folders currently open.
+
+So for example, if you have *5* root folders on your Sublime sidebar and only *3* of them have a `gulpfile`, when you run `Sublime Gulp` with `check_for_gulpfile: true` it'll only show the *3* that have a `gulpfile.js`, but if you set `check_for_gulpfile` to false, it'll list _all_ *5* folders.
+
+You might want to set it to false if you're using the `--gulpfile` flag, or if you want to leave the error reporting to gulp.
 
 ## Shortcut Keys
 
