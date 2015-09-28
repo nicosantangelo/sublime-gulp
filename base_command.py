@@ -97,7 +97,11 @@ class BaseCommand(sublime_plugin.WindowCommand):
             return self.output_view
 
     def add_syntax(self):
-        syntax_file = self.settings.get("syntax", "Packages/Gulp/syntax/GulpResults.tmLanguage")
+        if self.settings.has("syntax_override"):
+            syntax_file = self.settings.get("syntax_override")
+        else:
+            syntax_file = self.settings.get_from_user_settings("syntax", "Packages/Gulp/syntax/GulpResults.tmLanguage")
+            
         if syntax_file:
             self.output_view.set_syntax_file(syntax_file)
 
