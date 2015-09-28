@@ -6,9 +6,11 @@ is_sublime_text_3 = int(sublime.version()) >= 3000
 
 if is_sublime_text_3:
     from .progress_notifier import ProgressNotifier
+    from .settings import Settings
     from .cross_platform_codecs import CrossPlaformCodecs
 else:
     from progress_notifier import ProgressNotifier
+    from settings import Settings
     from cross_platform_codecs import CrossPlaformCodecs
 
 # A base for each command
@@ -26,7 +28,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.work()
 
     def setup_data_from_settings(self):
-        self.settings = sublime.load_settings("Gulp.sublime-settings")
+        self.settings = Settings()
         self.results_in_new_tab = self.settings.get("results_in_new_tab", False)
         self.nonblocking  = self.settings.get("nonblocking", True)
         self.exec_args = self.settings.get('exec_args', False)
