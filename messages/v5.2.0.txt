@@ -1,0 +1,39 @@
+   _____       _       
+  / ____|     | |      
+ | |  __ _   _| |_ __  
+ | | |_ | | | | | '_ \ 
+ | |__| | |_| | | |_) |
+  \_____|\__,_|_| .__/ 
+                | |    
+                |_|    
+
+Recent Changes
+==============
+
+Hello!
+
+You can now add settings to each of your projects!
+
+If you want to have a per project settings, you first need to create a Sublime Project (https://www.sublimetext.com/docs/2/projects.html) going to `Project -> Save Project As` and then edit your project file (you can use `Project -> Edit Project`).
+
+In there you can override Gulp settings like so:
+
+````json
+{
+    "settings": {
+        "results_in_new_tab": true
+    },
+
+    // Or, Sublime Text 3 only:
+    "Gulp": {
+        "check_for_gulpfile": false
+    }
+}
+````
+
+The package will search first on then on `"settings": {}`, `"Gulp": {}` (ST3 only) and lastly on the `Gulp.sublime-settings` file.
+
+Keep in mind that the only *caveat* is that if you want to override the `syntax` key, you'll need to use `syntax_override` as key.
+
+That is all!
+As always if you have any issues or feature requests go to https://github.com/NicoSantangelo/sublime-gulp/issues

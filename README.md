@@ -189,7 +189,7 @@ gulp.watch('file', function(event) {
 
 ## Settings
 
-The file `SublimeGulp.sublime-settings` is used for configuration, you can change your user settings in `Preferences -> Package Settings -> Gulp -> Settings - User`.
+The file `Gulp.sublime-settings` is used for configuration, you can change your user settings in `Preferences -> Package Settings -> Gulp -> Settings - User`.
 
 The defaults are:
 
@@ -281,6 +281,29 @@ If `false` the package will run even if no `gulpfile.js` is found on the root fo
 So for example, if you have *5* root folders on your Sublime sidebar and only *3* of them have a `gulpfile`, when you run `Sublime Gulp` with `check_for_gulpfile: true` it'll only show the *3* that have a `gulpfile.js`, but if you set `check_for_gulpfile` to false, it'll list _all_ *5* folders.
 
 You might want to set it to false if you're using the `--gulpfile` flag, or if you want to leave the error reporting to gulp.
+
+### Per project settings
+
+If you want to have a per project settings, you first need to create a [project](https://www.sublimetext.com/docs/2/projects.html) going to `Project -> Save Project As` and then edit your project file (you can use `Project -> Edit Project`).
+In there you can override Gulp settings like so:
+
+````json
+{
+    "settings": {
+        "results_in_new_tab": true
+    },
+
+    // Or, Sublime Text 3 only:
+    "Gulp": {
+        "check_for_gulpfile": false
+    }
+}
+````
+
+The package will search first on then on `"settings": {}`, `"Gulp": {}` (ST3 only) and lastly on the `Gulp.sublime-settings` file.
+
+Keep in mind that the only *caveat* is that if you want to override the `syntax` key, you'll need to use `syntax_override` as key.
+
 
 ## Shortcut Keys
 
