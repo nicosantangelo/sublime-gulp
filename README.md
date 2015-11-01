@@ -300,7 +300,7 @@ In there you can override Gulp settings like so:
 }
 ````
 
-The package will search first on then on `"settings": {}`, `"Gulp": {}` (ST3 only) and lastly on the `Gulp.sublime-settings` file.
+The package will search first on `"settings": {}`, then on `"Gulp": {}` (ST3 only) and lastly on the `Gulp.sublime-settings` file.
 
 Keep in mind that the only *caveat* is that if you want to override the `syntax` key, you'll need to use `syntax_override` as key.
 
