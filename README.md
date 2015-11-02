@@ -287,7 +287,8 @@ You might want to set it to false if you're using the `--gulpfile` flag, or if y
 If you want to have a per project settings, you first need to create a [project](https://www.sublimetext.com/docs/2/projects.html) going to `Project -> Save Project As` and then edit your project file (you can use `Project -> Edit Project`).
 In there you can override Gulp settings like so:
 
-````json
+
+````javascript
 {
     "settings": {
         "results_in_new_tab": true
@@ -303,6 +304,8 @@ In there you can override Gulp settings like so:
 The package will search first on `"settings": {}`, then on `"Gulp": {}` (ST3 only) and lastly on the `Gulp.sublime-settings` file.
 
 Keep in mind that the only *caveat* is that if you want to override the `syntax` key, you'll need to use `syntax_override` as key.
+
+For a visual example go to [this comment on issue 53](https://github.com/NicoSantangelo/sublime-gulp/issues/53#issuecomment-153012155)
 
 
 ## Shortcut Keys
