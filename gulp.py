@@ -57,6 +57,8 @@ class GulpCommand(BaseCommand):
         for folder_path in self.sercheable_folders:
             self.append_to_gulp_files(folder_path)
             for inner_folder in self.settings.get("gulpfile_paths", []):
+                if(os.name == 'nt'):
+                    inner_folder = inner_folder.replace("/","\\")
                 self.append_to_gulp_files(os.path.join(folder_path, inner_folder))
 
 
