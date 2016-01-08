@@ -3,5 +3,5 @@
 var ${1:plugin} = require('gulp-${2:name}');
 ]]></content>
     <tabTrigger>vargulp</tabTrigger>
-  <scope>source.js</scope>
+  <scope>source.js, source.gulpfile.js</scope>
 </snippet>

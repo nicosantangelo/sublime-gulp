@@ -5,5 +5,5 @@ gulp.watch(${1:'file'}, function(event) {
 });
 ]]></content>
   <tabTrigger>gulpwcb</tabTrigger>
-  <scope>source.js</scope>
+  <scope>source.js, source.gulpfile.js</scope>
 </snippet>

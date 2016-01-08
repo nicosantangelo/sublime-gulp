@@ -3,5 +3,5 @@
 gulp.watch('${1:files}', ['${2:tasks}']);
 ]]></content>
   <tabTrigger>gulpw</tabTrigger>
-  <scope>source.js</scope>
+  <scope>source.js, source.gulpfile.js</scope>
 </snippet>

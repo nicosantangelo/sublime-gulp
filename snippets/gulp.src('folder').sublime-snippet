@@ -4,5 +4,5 @@ gulp.src('${1:files}')
   .pipe(${2:name}('${3:}'))
 ]]></content>
    	<tabTrigger>gulps</tabTrigger>
- 	<scope>source.js</scope>
+   	<scope>source.js, source.gulpfile.js</scope>
 </snippet>
