@@ -3,5 +3,5 @@
 .pipe(gulp.dest('${1:folder}'));
 ]]></content>
   <tabTrigger>gulpd</tabTrigger>
-  <scope>source.js</scope>
+  <scope>source.js, source.gulpfile.js</scope>
 </snippet>
