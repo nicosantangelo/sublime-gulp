@@ -60,7 +60,10 @@ var _forEachTask3x = function(fn) {
 };
 
 var _forEachTask4x = function(fn) {
-    gulp.tree({ deep: true }).forEach(function(task) {
+    var tasksTree = gulp.tree({ deep: true })
+    var iterable = tasksTree.forEach ? tasksTree : tasksTree.nodes
+
+    iterable.forEach(function(task) {
         if (task.type === "task") {
             var deps = [];
             task.nodes.forEach(function(node) {
