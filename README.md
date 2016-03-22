@@ -288,7 +288,7 @@ Allows you to run task(s) when you save a file. The key is the name of the task 
 
 The base folder for glob pattern is the first folder in you project. So, if you have multiple folder, the glob pattern will only match on the first folder.
 
-````json
+````javascript
 {
     "tasks_on_save": {
         // Run browserify task when you save javasript file
