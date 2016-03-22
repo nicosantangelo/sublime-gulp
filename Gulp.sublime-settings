@@ -33,6 +33,8 @@
     // You might want to set it to false if you're using the `--gulpfile` flag, or if you want to leave the error reporting to gulp.
     "check_for_gulpfile": false,
 
-    // Run a task when you save a file
-    "task_on_save": {}
+    // Run a task when you save a file. Format: { "task_name": "glob_pattern" }
+    // For example: { "browserify": "*.js" }
+    // Or using array:  { "task": [ "*.ext1", "*.ext2" ] }
+    "tasks_on_save": {}
 }

@@ -144,7 +144,6 @@ You can bind it to `alt+f4` or `super+q` so you don't have to remember it. Sadly
 
 
 
-
 ## Snippets
 
 #### vargulp
@@ -204,7 +203,8 @@ The defaults are:
     "syntax": "Packages/Gulp/syntax/GulpResults.tmLanguage",
     "nonblocking": true,
     "flags": {},
-    "check_for_gulpfile": true
+    "check_for_gulpfile": true,
+    "tasks_on_save": {}
 }
 ````
 
@@ -281,6 +281,25 @@ If `false` the package will run even if no `gulpfile.js` is found on the root fo
 So for example, if you have *5* root folders on your Sublime sidebar and only *3* of them have a `gulpfile`, when you run `Sublime Gulp` with `check_for_gulpfile: true` it'll only show the *3* that have a `gulpfile.js`, but if you set `check_for_gulpfile` to false, it'll list _all_ *5* folders.
 
 You might want to set it to false if you're using the `--gulpfile` flag, or if you want to leave the error reporting to gulp.
+
+#### tasks_on_save
+
+Allows you to run task(s) when you save a file. The key is the name of the task and the value is the string or array of glob pattern.
+
+The base folder for glob pattern is the first folder in you project. So, if you have multiple folder, the glob pattern will only match on the first folder.
+
+````json
+{
+    "tasks_on_save": {
+        // Run browserify task when you save javasript file
+        "browserify": "*.js",
+        // Run sass task when you save sass file under "sass" folder
+        "sass": "sass/*.scss",
+        // Array of glob pattern
+        "other": ["*.ext1", "*.ext2"]
+    }
+}
+````
 
 ### Per project settings
 
