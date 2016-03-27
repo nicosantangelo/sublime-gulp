@@ -203,8 +203,9 @@ The defaults are:
     "syntax": "Packages/Gulp/syntax/GulpResults.tmLanguage",
     "nonblocking": true,
     "flags": {},
-    "check_for_gulpfile": true,
-    "tasks_on_save": {}
+    "check_for_gulpfile": false,
+    "tasks_on_save": {},
+    "silent_tasks_on_save": {}
 }
 ````
 
@@ -300,6 +301,10 @@ The base folder for glob pattern is the first folder in you project. So, if you 
     }
 }
 ````
+
+#### silent_tasks_on_save
+
+Works the same way as [tasks_on_save](https://github.com/NicoSantangelo/sublime-gulp#tasks_on_save) but it runs the tasks on `silent` mode (using `Gulp (silent)`).
 
 ### Per project settings
 
