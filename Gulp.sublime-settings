@@ -36,5 +36,8 @@
     // Run a task when you save a file. Format: { "task_name": "glob_pattern" }
     // For example: { "browserify": "*.js" }
     // Or using array:  { "task": [ "*.ext1", "*.ext2" ] }
-    "tasks_on_save": {}
+    "tasks_on_save": {},
+
+    // Same as above but running in silent mode (no prompt)
+    "silent_tasks_on_save": {}
 }
