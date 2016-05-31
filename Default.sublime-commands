@@ -9,6 +9,10 @@
       "args": { "silent": true }
     },
     {
+      "caption": "Gulp: Run last task",
+      "command": "gulp_last"
+    },
+    {
       "caption": "Gulp: Run arbitrary task",
       "command": "gulp_arbitrary"
     },
