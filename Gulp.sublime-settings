@@ -39,5 +39,9 @@
     "tasks_on_save": {},
 
     // Same as above but running in silent mode (no prompt)
-    "silent_tasks_on_save": {}
+    "silent_tasks_on_save": {},
+
+    // If any task is defined on `tasks_on_save` or `silent_tasks_on_save`
+    // setting this option to true will run `gulp_kill` before running any of them
+    "kill_before_save_tasks": false
 }
