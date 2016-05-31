@@ -20,8 +20,7 @@ except:
 
         def parse (self, vstring):
             self.vstring = vstring
-            components = [x for x in self.component_re.split(vstring)
-                                  if x and x != '.']
+            components = [x for x in self.component_re.split(vstring) if x and x != '.']
             for i, obj in enumerate(components):
                 try:
                     components[i] = int(obj)
@@ -45,6 +44,7 @@ except:
 # Actual class
 #
 
+
 class GulpVersion():
     def __init__(self, version_string):
         self.version_string = version_string or ""
@@ -61,4 +61,3 @@ class GulpVersion():
     def get(self, version_name):
         re_match = re.search(version_name + " version (\d+\.\d+\.\d+)", self.version_string)
         return re_match.group(1) if re_match else "3.6.0"
-

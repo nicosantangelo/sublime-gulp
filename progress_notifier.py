@@ -1,6 +1,7 @@
 # Adapted from Will Bonds Package Control (thread_progress.py)
 import sublime
 
+
 class ProgressNotifier():
     """
     Animates an indicator, [=   ]

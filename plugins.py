@@ -19,6 +19,7 @@ class PluginList():
     def quick_panel_list(self):
         return [ [plugin.name + ' (' + plugin.version + ')', plugin.description] for plugin in self.plugins ]
 
+
 class Plugin():
     def __init__(self, plugin_json):
         self.plugin = plugin_json
@@ -39,7 +40,7 @@ class Plugin():
 class PluginRegistryCall(Thread):
     url = "http://npmsearch.com/query?fields=name,description,homepage,version,rating&q=keywords:gulpfriendly&q=keywords:gulpplugin&size=1755&sort=rating:desc&start=20"
 
-    def __init__(self, timeout = 5):
+    def __init__(self, timeout=5):
         self.timeout = timeout
         self.result = None
         self.error = None
@@ -47,8 +48,8 @@ class PluginRegistryCall(Thread):
 
     def run(self):
         try:
-            request = urllib2.Request(self.url, None, headers = { "User-Agent": "Sublime Text" })
-            http_file = urllib2.urlopen(request, timeout = self.timeout)
+            request = urllib2.Request(self.url, None, headers={ "User-Agent": "Sublime Text" })
+            http_file = urllib2.urlopen(request, timeout=self.timeout)
             self.result = http_file.read()
             return
 
@@ -59,5 +60,3 @@ class PluginRegistryCall(Thread):
 
         self.error = err
         self.result = None
-
-

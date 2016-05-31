@@ -6,6 +6,7 @@ import os
 import hashlib
 import re
 
+
 class Hasher():
     @classmethod
     def sha1(self, filepath):
@@ -15,7 +16,7 @@ class Hasher():
     def hashfile(self, filepath):
         filehash = hashlib.sha1()
         with open(filepath, mode='rb') as f:
-            content = f.read();
+            content = f.read()
             filehash.update(str("blob " + str(len(content)) + "\0").encode('UTF-8'))
             filehash.update(content)
         return filehash.hexdigest()

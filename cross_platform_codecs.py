@@ -2,6 +2,7 @@ import sublime
 import sys
 import re
 
+
 class CrossPlaformCodecs():
     @classmethod
     def decode_line(self, line):
@@ -23,7 +24,8 @@ class CrossPlaformCodecs():
     @classmethod
     def decode_windows_line(self, text):
         # Import only for Windows
-        import locale, subprocess
+        import locale
+        import subprocess
 
         # STDERR gets the wrong encoding, use chcp to get the real one
         proccess = subprocess.Popen(["chcp"], shell=True, stdout=subprocess.PIPE)

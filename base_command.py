@@ -13,10 +13,14 @@ else:
     from settings import Settings
     from cross_platform_codecs import CrossPlaformCodecs
 
+#
 # A base for each command
+#
+
+
 class BaseCommand(sublime_plugin.WindowCommand):
     package_name = "Gulp"
-    
+
     def run(self, task_name=None, task_flag=None, silent=False, paths=[]):
         self.setup_data_from_settings()
         self.task_name = task_name
@@ -30,10 +34,9 @@ class BaseCommand(sublime_plugin.WindowCommand):
     def setup_data_from_settings(self):
         self.settings = Settings()
         self.results_in_new_tab = self.settings.get("results_in_new_tab", False)
-        self.nonblocking  = self.settings.get("nonblocking", True)
+        self.nonblocking = self.settings.get("nonblocking", True)
         self.exec_args = self.settings.get('exec_args', False)
         self.check_for_gulpfile = self.settings.get('check_for_gulpfile', True)
-
 
     def get_flag_from_task_name(self):
         flags = self.settings.get("flags", {})
@@ -41,11 +44,11 @@ class BaseCommand(sublime_plugin.WindowCommand):
 
     # Properties
     @property
-    def working_dir(self): 
+    def working_dir(self):
         return self._working_dir
 
     @working_dir.setter
-    def working_dir(self, value): 
+    def working_dir(self, value):
         if self.check_for_gulpfile:
             self._working_dir = os.path.dirname(value)
         else:
@@ -73,7 +76,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         if self.silent:
             self.status_message(text)
             return
-        
+
         if self.results_in_new_tab:
             new_tab_path = os.path.join(self.gulp_results_path(), "Gulp Results")
             self.output_view = self.window.open_file(new_tab_path)
@@ -81,7 +84,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         else:
             self.output_view = self.window.get_output_panel("gulp_output")
             self.show_panel()
-            
+
         self.output_view.settings().set("scroll_past_end", False)
         self.add_syntax()
         self.append_to_output_view(text)
@@ -101,7 +104,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
             syntax_file = self.settings.get("syntax_override")
         else:
             syntax_file = self.settings.get_from_user_settings("syntax", "Packages/Gulp/syntax/GulpResults.tmLanguage")
-            
+
         if syntax_file:
             self.output_view.set_syntax_file(syntax_file)
 
@@ -151,7 +154,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
 
     def set_timeout(self, fn, delay):
         sublime.set_timeout(fn, delay)
-        
+
     def async(self, fn, delay):
         if is_sublime_text_3:
             progress = ProgressNotifier('Gulp: Working')

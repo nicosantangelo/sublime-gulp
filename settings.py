@@ -1,5 +1,6 @@
 import sublime
 
+
 class Settings():
     def __init__(self):
         active_view = sublime.active_window().active_view()
