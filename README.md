@@ -118,6 +118,14 @@ For more detailed information on [shortcut keys](#shortcut-keys) and [binding sp
 ### Killing Tasks
 To kill running tasks like `watch` you can pick the command `Gulp: Kill running tasks`. 
 
+If you want to supress the command output, you can map it to a keyboard shortcut and pass `true` to the `silent` argument like this:
+
+```json
+{ "keys": ["KEYS"], "command": "gulp_kill", "args": { "silent": true } }
+```
+
+For more detailed information on [shortcut keys](#shortcut-keys) and [binding specific tasks](#bind-specific-tasks) below.
+
 **Windows**
 
 If you're running Windows, the package will use [taskkill](http://technet.microsoft.com/en-us/library/cc725602.aspx) so every child process is correctly terminated. If the executable isn't on your system, you'll need to add it for this command to work correctly.
