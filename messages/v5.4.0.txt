@@ -1,0 +1,23 @@
+   _____       _       
+  / ____|     | |      
+ | |  __ _   _| |_ __  
+ | | |_ | | | | | '_ \ 
+ | |__| | |_| | | |_) |
+  \_____|\__,_|_| .__/ 
+                | |    
+                |_|    
+
+Recent Changes
+==============
+
+Hello!
+Two new things:
+
+- `Gulp: Run last task` which will run the last ran task again
+
+- The setting: `kill_before_save_tasks` which (if set to `true`) will run `gulp_kill` before running any task set on save. 
+Useful if you want to re-run `watch` when saving certain files. It defaults to `false`
+
+
+That is all!
+As always if you have any issues or feature requests go to https://github.com/NicoSantangelo/sublime-gulp/issues
