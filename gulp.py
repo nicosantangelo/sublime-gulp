@@ -130,7 +130,10 @@ class GulpCommand(BaseCommand):
         if data is None:
             raise Exception("Could not write to cache gulpfile.")
 
-        raise Exception("Sha1 from gulp cache ({0}) is not equal to calculated ({1}).\nTry erasing the cache and running Gulp again.".format(data[gulpfile]["sha1"], filesha1))
+        if gulpfile in data:
+            raise Exception("Sha1 from gulp cache ({0}) is not equal to calculated ({1}).\nTry erasing the cache and running Gulp again.".format(data[gulpfile]["sha1"], filesha1))
+        else:
+            raise Exception("Have you renamed a folder?.\nSometimes Sublime doesn't update the project path, try removing the folder from the project and adding it again.")
 
     def write_to_cache(self):
         package_path = os.path.join(sublime.packages_path(), self.package_name)
