@@ -30,6 +30,7 @@
                 "children": [
                     { "caption": "Run Default Task", "command": "gulp", "args": {"task_name": "default"} },
                     { "caption": "Run Arbitrary Task", "command": "gulp_arbitrary" },
+                    { "caption": "Run Last Task", "command": "gulp_last" },
                     { "caption": "-" },
                     { "caption": "List Tasks to Run", "command": "gulp" },
                     { "caption": "Kill All Gulp Tasks", "command": "gulp_kill" },
