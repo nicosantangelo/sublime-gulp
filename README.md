@@ -213,7 +213,8 @@ The defaults are:
     "flags": {},
     "check_for_gulpfile": false,
     "tasks_on_save": {},
-    "silent_tasks_on_save": {}
+    "silent_tasks_on_save": {},
+    "kill_before_save_tasks": false
 }
 ````
 
@@ -313,6 +314,11 @@ The base folder for glob pattern is the first folder in you project. So, if you 
 #### silent_tasks_on_save
 
 Works the same way as [tasks_on_save](https://github.com/NicoSantangelo/sublime-gulp#tasks_on_save) but it runs the tasks on `silent` mode (using `Gulp (silent)`).
+
+#### kill_before_save_tasks
+
+If any task is defined on [tasks_on_save](https://github.com/NicoSantangelo/sublime-gulp#tasks_on_save) or [silent_tasks_on_save](https://github.com/NicoSantangelo/sublime-gulp#silent_tasks_on_save) setting this option to `true` will run [gulp_kill](#killing-tasks) before running any of them.
+
 
 ### Per project settings
 
