@@ -247,6 +247,16 @@ class GulpArbitraryCommand(GulpCommand):
             self.run_gulp_task()
 
 
+class GulpLastCommand(BaseCommand):
+    def work(self):
+        if ProcessCache.last:
+            last_command = ProcessCache.last.last_command
+            task_name = last_command.replace('gulp ', '').strip()
+            self.window.run_command("gulp", { "task_name": task_name })
+        else:
+            self.status_message("You need to run a task first")
+
+
 class GulpKillCommand(BaseCommand):
     def work(self):
         if ProcessCache.empty():
@@ -417,10 +427,12 @@ class CrossPlatformProcess():
 
 class ProcessCache():
     _procs = []
+    last = None
 
     @classmethod
     def add(cls, process):
-       cls._procs.append(process)
+        cls._procs.append(process)
+        cls.last = process
 
     @classmethod
     def remove(cls, process):
