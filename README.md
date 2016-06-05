@@ -65,6 +65,7 @@ Sublime Gulp supports the following commands accessible from `Tools -> Command P
 |:-----------------:|:---------------------:|:------------------------:|
 | [gulp](#running-a-gulp-task)                | Gulp or Gulp (silent)     | List Tasks to Run |  
 | [gulp_arbitrary](#arbitrary-task)           | Gulp: Run arbitrary task  | Run Arbitrary Task |  
+| [gulp_last](#run-last-task)                 | Gulp: Run last task       | Run Last Task |  
 | [gulp_kill](#killing-tasks)                 | Gulp: Kill All Gulp Tasks | Kill running tasks |
 | [gulp_delete_cache](#deleting-the-cache)    | Gulp: Delete Cache        | Delete Cache |
 | [gulp_plugins](#listing-gulp-plugins)       | Gulp: List plugins        | List Gulp Plugins |
@@ -86,7 +87,11 @@ If you want to run the normal `Gulp` command without standard output to the pane
 
 #### Arbitrary task
 
-When running an arbitrary task you need to choose `Gulp: Run arbitrary task` from the command pallete or `Run arbitrary task` from the menu. The package will then prompt an input panel where you can write what you want to add as a sufix to `gulp`.
+If you want to run an arbitrary task you need to choose `Gulp: Run arbitrary task` from the command pallete or `Run arbitrary task` from the menu. The package will then prompt an input panel where you can write what you want to add as a sufix to `gulp`.
+
+#### Run last task
+
+The command will re-run the last task ran by any of the package commands (if there's one).
 
 ### Customized Task Access
 
@@ -349,6 +354,8 @@ This package doesn't bind any command to a keyboard shortcut, but you can add it
     { "keys": ["KEYS"], "command": "gulp" },
 
     { "keys": ["KEYS"], "command": "gulp_arbitrary" },
+
+    { "keys": ["KEYS"], "command": "gulp_last" },
 
     { "keys": ["KEYS"], "command": "gulp_kill" },
 
