@@ -245,12 +245,10 @@ class GulpArbitraryCommand(GulpCommand):
 
 
 class GulpLastCommand(BaseCommand):
-    # TODO:
-    #   Docs
     def work(self):
         if ProcessCache.last:
             last_command = ProcessCache.last.last_command
-            task_name = last_command.replace('gulp ', '')
+            task_name = last_command.replace('gulp ', '').strip()
             self.window.run_command("gulp", { "task_name": task_name })
         else:
             self.status_message("You need to run a task first")
