@@ -15,15 +15,12 @@ class EventTask(sublime_plugin.EventListener):
     def on_post_save(self, view):
         settings = Settings()
         self.view = view
-        run_kill = settings.get('kill_before_save_tasks', False)
-        self.run_tasks(settings.get("tasks_on_save", {}), run_kill=run_kill)
-        self.run_tasks(settings.get("silent_tasks_on_save", {}), silent=True, run_kill=run_kill)
+        self.run_kill = settings.get('kill_before_save_tasks', False)
+        self.run_tasks(settings.get("tasks_on_save", {}))
+        self.run_tasks(settings.get("silent_tasks_on_save", {}), silent=True)
 
-    def run_tasks(self, tasks_on_save, silent=False, run_kill=False):
+    def run_tasks(self, tasks_on_save, silent=False):
         if tasks_on_save:
-            if run_kill:
-                self.view.window().run_command("gulp_kill", { "silent": True })
-
             for key in tasks_on_save:
                 value = tasks_on_save[key]
                 if isinstance(value, list):
@@ -35,4 +32,10 @@ class EventTask(sublime_plugin.EventListener):
     def run(self, task, pattern, silent):
         folders = self.view.window().folders() or []
         if any(fnmatch(self.view.file_name(), os.path.join(folder, pattern)) for folder in folders):
+            self.kill_once()
             self.view.window().run_command("gulp", { "task_name": task, "silent": silent })
+
+    def kill_once(self):
+        if self.run_kill:
+            self.view.window().run_command("gulp_kill", { "silent": True })
+            self.run_kill = False
