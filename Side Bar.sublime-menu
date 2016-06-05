@@ -5,6 +5,7 @@
         [
             { "caption": "Run Default Task", "command": "gulp", "args": { "task_name": "default", "paths": [] } },
             { "caption": "Run Arbitrary Task", "command": "gulp_arbitrary", "args": { "paths": [] } },
+            { "caption": "Run Last Task", "command": "gulp_last", "args": { "paths": [] } },
             { "caption": "-" },
             { "caption": "List Tasks to Run","command": "gulp", "args": { "paths": [] } },
             { "caption": "Delete Cache","command": "gulp_delete_cache", "args": { "paths": [] } },
