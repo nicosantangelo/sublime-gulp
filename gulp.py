@@ -418,7 +418,7 @@ class CrossPlatformProcess():
     def kill(self):
         pid = self.process.pid
         if sublime.platform() == "windows":
-            kill_process = subprocess.Popen(['taskkill', '/F', '/T', '/PID', str(pid)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            kill_process = subprocess.Popen(['C:\\Windows\\system32\\taskkill.exe', '/F', '/T', '/PID', str(pid)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             kill_process.communicate()
         else:
             os.killpg(pid, signal.SIGTERM)
