@@ -446,7 +446,7 @@ class ProcessCache():
 
     @classmethod
     def each(cls, fn):
-        for process in cls._procs:
+        for process in cls._procs[:]:
             fn(process)
 
     @classmethod
