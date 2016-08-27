@@ -102,12 +102,14 @@ If you want to run other of your tasks from a menu item or [keyboard shortcut](#
 For example to add a menu item in the tools menu for a `sass` task do this. In your sublime user directory add following json in the `Main.sublime-menu` file (create one if you don't have one).
 
 ```json
-{
-    "id": "tools",
-    "children": [
-         { "caption": "Run Sass Task", "command": "gulp", "args": { "task_name": "sass" } }
-     ]
-}
+[
+    {
+        "id": "tools",
+        "children": [
+             { "caption": "Run Sass Task", "command": "gulp", "args": { "task_name": "sass" } }
+         ]
+    }
+]
 ```
 
 _Note_: You can run any command silently by adding `"silent": true` to the `args`.
