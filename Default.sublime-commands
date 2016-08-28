@@ -25,6 +25,10 @@
       "command": "gulp_hide_panel"
     },
     {
+      "caption": "Gulp: Kill specific running task",
+      "command": "gulp_kill_task"
+    },
+    {
       "caption": "Gulp: Kill running tasks",
       "command": "gulp_kill"
     },
