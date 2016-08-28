@@ -90,6 +90,30 @@
 			<key>match</key>
 			<string>^(Finishing the following running tasks:|All running tasks killed!)$</string>
 		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.class</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string> (killed!)</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>comment</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string> (# .+)$</string>
+		</dict>
 	</array>
 	<key>scopeName</key>
 	<string>source.gulp_results</string>
