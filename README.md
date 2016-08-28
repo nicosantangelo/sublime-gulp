@@ -67,6 +67,7 @@ Sublime Gulp supports the following commands accessible from `Tools -> Command P
 | [gulp_arbitrary](#arbitrary-task)           | Gulp: Run arbitrary task  | Run Arbitrary Task |  
 | [gulp_last](#run-last-task)                 | Gulp: Run last task       | Run Last Task |  
 | [gulp_kill](#killing-tasks)                 | Gulp: Kill All Gulp Tasks | Kill running tasks |
+| [gulp_kill_task](#killing-tasks)            | Gulp: Kill specific running task | Kill a currently running task |
 | [gulp_delete_cache](#deleting-the-cache)    | Gulp: Delete Cache        | Delete Cache |
 | [gulp_plugins](#listing-gulp-plugins)       | Gulp: List plugins        | List Gulp Plugins |
 | [gulp_show_panel](#show-or-hide-the-panel)  | Gulp: Show panel          | Show Gulp Panel |
@@ -123,12 +124,14 @@ or you also can use a [keyboard shortcut](#shortcut-keys) to do the same. Edit `
 For more detailed information on [shortcut keys](#shortcut-keys) and [binding specific tasks](#bind-specific-tasks) below.
 
 ### Killing Tasks
-To kill running tasks like `watch` you can pick the command `Gulp: Kill running tasks`. 
+To kill running tasks like `watch` you have two options, you can pick the command `Gulp: Kill running tasks` to kill all currently running tasks or `Gulp: Kill specific running task` to choose from the command pallete which task to kill. 
 
 If you want to supress the command output, you can map it to a keyboard shortcut and pass `true` to the `silent` argument like this:
 
 ```json
 { "keys": ["KEYS"], "command": "gulp_kill", "args": { "silent": true } }
+
+{ "keys": ["KEYS"], "command": "gulp_kill_task", "args": { "silent": true } }
 ```
 
 For more detailed information on [shortcut keys](#shortcut-keys) and [binding specific tasks](#bind-specific-tasks) below.
@@ -366,6 +369,8 @@ This package doesn't bind any command to a keyboard shortcut, but you can add it
     { "keys": ["KEYS"], "command": "gulp_last" },
 
     { "keys": ["KEYS"], "command": "gulp_kill" },
+
+    { "keys": ["KEYS"], "command": "gulp_kill_task" },
 
     { "keys": ["KEYS"], "command": "gulp_show_panel" },
 
