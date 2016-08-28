@@ -257,15 +257,35 @@ class GulpLastCommand(BaseCommand):
             self.status_message("You need to run a task first")
 
 
+class GulpKillTaskCommand(BaseCommand):
+    def work(self):
+        if ProcessCache.empty():
+            self.status_message("There are no running tasks")
+        else:
+            self.procs = ProcessCache.copy()
+            quick_panel_list = [[process.last_command, process.working_dir] for process in self.procs]
+            self.show_quick_panel(quick_panel_list, self.kill_process, font=0)
+
+    def kill_process(self, index=-1):
+        if index >= 0 and index < len(self.procs):
+            process = self.procs[index]
+            process.kill()
+            self.show_output_panel('')
+            self.append_to_output_view("\n%s killed! # %s\n" % (process.last_command, process.working_dir))
+
+
 class GulpKillCommand(BaseCommand):
     def work(self):
         if ProcessCache.empty():
             self.status_message("There are no running tasks")
         else:
-            self.show_output_panel("\nFinishing the following running tasks:\n")
-            ProcessCache.each(lambda process: self.append_to_output_view("$ %s\n" % process.last_command.rstrip()))
+            self.append_processes_to_output_view()
             ProcessCache.kill_all()
             self.append_to_output_view("\nAll running tasks killed!\n")
+
+    def append_processes_to_output_view(self):
+        self.show_output_panel("\nFinishing the following running tasks:\n")
+        ProcessCache.each(lambda process: self.append_to_output_view("$ %s # %s\n" % (process.last_command, process.working_dir)))
 
 
 class GulpShowPanelCommand(BaseCommand):
@@ -359,7 +379,7 @@ class CrossPlatformProcess():
         with Dir.cd(self.working_dir):
             self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, shell=True, preexec_fn=self._preexec_val())
 
-        self.last_command = command
+        self.last_command = command.rstrip()
         ProcessCache.add(self)
         return self
 
@@ -430,6 +450,10 @@ class ProcessCache():
     last = None
 
     @classmethod
+    def copy(cls):
+        return cls._procs[:]
+
+    @classmethod
     def add(cls, process):
         cls._procs.append(process)
         cls.last = process
@@ -446,7 +470,7 @@ class ProcessCache():
 
     @classmethod
     def each(cls, fn):
-        for process in cls._procs[:]:
+        for process in cls.copy():
             fn(process)
 
     @classmethod
