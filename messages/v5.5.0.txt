@@ -14,7 +14,7 @@ Hello!
 
 ** Windows users **
 
-The way `Gulp: Kill running tasks` changed a bit.
+The way `Gulp: Kill running tasks` works changed a bit.
 
 The path to the `taskkill` executable (used to...well kill tasks) changed in this version to make it work in Windows 10.
 
