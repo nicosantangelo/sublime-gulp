@@ -20,6 +20,7 @@ if is_sublime_text_3:
     from .gulp_version import GulpVersion
     from .dir_context import Dir
     from .plugins import PluginList, PluginRegistryCall
+    from .caches import ProcessCache, CacheFile
 else:
     from base_command import BaseCommand
     from progress_notifier import ProgressNotifier
@@ -28,6 +29,7 @@ else:
     from gulp_version import GulpVersion
     from dir_context import Dir
     from plugins import PluginList, PluginRegistryCall
+    from caches import ProcessCache, CacheFile
 
 
 #
@@ -36,7 +38,6 @@ else:
 
 
 class GulpCommand(BaseCommand):
-    cache_file_name = ".sublime-gulp.cache"
     log_file_name = 'sublime-gulp.log'
     allowed_extensions = [".babel.js", ".js"]
 
@@ -107,20 +108,16 @@ class GulpCommand(BaseCommand):
         return "Dependencies: " + task['dependencies'] if task['dependencies'] else ""
 
     def fetch_json(self):
-        jsonfilename = os.path.join(self.working_dir, GulpCommand.cache_file_name)
+        cache_file = CacheFile(self.working_dir)
         gulpfile = self.get_gulpfile_path(self.working_dir)
         data = None
 
-        if os.path.exists(jsonfilename):
+        if cache_file.exists():
             filesha1 = Hasher.sha1(gulpfile)
-            json_data = codecs.open(jsonfilename, "r", "utf-8", errors='replace')
+            data = cache_file.read()
 
-            try:
-                data = json.load(json_data)
-                if gulpfile in data and data[gulpfile]["sha1"] == filesha1:
-                    return data[gulpfile]["tasks"]
-            finally:
-                json_data.close()
+            if gulpfile in data and data[gulpfile]["sha1"] == filesha1:
+                return data[gulpfile]["tasks"]
 
         self.callcount += 1
 
@@ -136,12 +133,10 @@ class GulpCommand(BaseCommand):
             raise Exception("Have you renamed a folder?.\nSometimes Sublime doesn't update the project path, try removing the folder from the project and adding it again.")
 
     def write_to_cache(self):
-        package_path = os.path.join(sublime.packages_path(), self.package_name)
+        process = CrossPlatformProcess.from_instance(self)
+        (stdout, stderr) = process.run_sync(r'node "%s/write_tasks_to_cache.js"' % BaseCommand.package_path)
 
-        process = CrossPlatformProcess(self)
-        (stdout, stderr) = process.run_sync(r'node "%s/write_tasks_to_cache.js"' % package_path)
-
-        if process.failed:
+        if True or process.failed:
             try:
                 self.write_to_cache_without_js()
             except:
@@ -154,7 +149,7 @@ class GulpCommand(BaseCommand):
         return self.fetch_json()
 
     def write_to_cache_without_js(self):
-        process = CrossPlatformProcess(self)
+        process = CrossPlatformProcess.from_instance(self)
         (stdout, stderr) = process.run_sync(r'gulp -v')
 
         if process.failed or not GulpVersion(stdout).supports_tasks_simple():
@@ -167,18 +162,12 @@ class GulpCommand(BaseCommand):
         if not stdout:
             raise Exception("Gulp: The result of `gulp --tasks-simple` was empty")
 
-        self.write_cache_file({
+        CacheFile(self.working_dir).write({
             gulpfile: {
                 "sha1": Hasher.sha1(gulpfile),
                 "tasks": dict((task, { "name": task, "dependencies": "" }) for task in stdout.split("\n") if task)
             }
         })
-
-    def write_cache_file(self, cache):
-        cache_path = os.path.join(self.working_dir, GulpCommand.cache_file_name)
-        with codecs.open(cache_path, "w", "utf-8", errors='replace') as cache_file:
-            json_cache = json.dumps(cache, ensure_ascii=False)
-            cache_file.write(json_cache)
 
     def get_gulpfile_path(self, base_path):
         for extension in GulpCommand.allowed_extensions:
@@ -212,7 +201,7 @@ class GulpCommand(BaseCommand):
         return r"gulp %s %s" % (self.task_name, self.task_flag)
 
     def run_process(self, task):
-        process = CrossPlatformProcess(self)
+        process = CrossPlatformProcess.from_instance(self)
         process.run(task)
         stdout, stderr = process.communicate(self.append_to_output_view_in_main_thread)
         self.defer_sync(lambda: self.finish(stdout, stderr))
@@ -249,9 +238,8 @@ class GulpArbitraryCommand(GulpCommand):
 
 class GulpLastCommand(BaseCommand):
     def work(self):
-        if ProcessCache.last:
-            last_command = ProcessCache.last.last_command
-            task_name = last_command.replace('gulp ', '').strip()
+        if ProcessCache.last_command:
+            task_name = ProcessCache.last_command.replace('gulp ', '').strip()
             self.window.run_command("gulp", { "task_name": task_name })
         else:
             self.status_message("You need to run a task first")
@@ -259,6 +247,8 @@ class GulpLastCommand(BaseCommand):
 
 class GulpKillTaskCommand(BaseCommand):
     def work(self):
+        ProcessCache.refresh()
+
         if ProcessCache.empty():
             self.status_message("There are no running tasks")
         else:
@@ -276,6 +266,8 @@ class GulpKillTaskCommand(BaseCommand):
 
 class GulpKillCommand(BaseCommand):
     def work(self):
+        ProcessCache.refresh()
+
         if ProcessCache.empty():
             self.status_message("There are no running tasks")
         else:
@@ -346,9 +338,9 @@ class GulpDeleteCacheCommand(GulpCommand):
         if file_index > -1:
             self.working_dir = self.gulp_files[file_index]
             try:
-                jsonfilename = os.path.join(self.working_dir, GulpCommand.cache_file_name)
-                if os.path.exists(jsonfilename):
-                    os.remove(jsonfilename)
+                cache_file = CacheFile(self.working_dir)
+                if cache_file.exists():
+                    cache_file.remove()
                     self.status_message('Cache removed successfully')
             except Exception as e:
                 self.status_message("Could not remove cache: %s" % str(e))
@@ -368,16 +360,18 @@ class GulpExitCommand(sublime_plugin.WindowCommand):
 
 
 class CrossPlatformProcess():
-    def __init__(self, sublime_command):
-        self.working_dir = sublime_command.working_dir
-        self.nonblocking = sublime_command.nonblocking
-        self.path = Env.get_path(sublime_command.exec_args)
-        self.last_command = ""
+    def __init__(self, settings):
+        self.working_dir = settings.get('working_dir')
+        self.nonblocking = settings.get('nonblocking')
+        self.path = Env.get_path(settings.get('exec_args'))
+        self.pid = settings.get('pid')
+        self.last_command = settings.get('last_command', "")
         self.failed = False
 
     def run(self, command):
         with Dir.cd(self.working_dir):
             self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, shell=True, preexec_fn=self._preexec_val())
+            self.pid = self.process.pid
 
         self.last_command = command.rstrip()
         ProcessCache.add(self)
@@ -388,6 +382,7 @@ class CrossPlatformProcess():
 
         with Dir.cd(self.working_dir):
             self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, shell=True)
+            self.pid = self.process.pid
             (stdout, stderr) = self.process.communicate()
             self.failed = self.process.returncode == 127 or stderr
 
@@ -436,50 +431,27 @@ class CrossPlatformProcess():
         return self.process.returncode
 
     def kill(self):
-        pid = self.process.pid
         if sublime.platform() == "windows":
-            kill_process = subprocess.Popen(['C:\\Windows\\system32\\taskkill.exe', '/F', '/T', '/PID', str(pid)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            kill_process = subprocess.Popen(['C:\\Windows\\system32\\taskkill.exe', '/F', '/T', '/PID', str(self.pid)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             kill_process.communicate()
         else:
-            os.killpg(pid, signal.SIGTERM)
+            os.killpg(self.pid, signal.SIGTERM)
         ProcessCache.remove(self)
 
-
-class ProcessCache():
-    _procs = []
-    last = None
-
-    @classmethod
-    def copy(cls):
-        return cls._procs[:]
+    def to_json(self):
+        return {
+            'working_dir': self.working_dir,
+            'last_command': self.last_command,
+            'pid': self.pid
+        }
 
     @classmethod
-    def add(cls, process):
-        cls._procs.append(process)
-        cls.last = process
-
-    @classmethod
-    def remove(cls, process):
-        if process in cls._procs:
-            cls._procs.remove(process)
-
-    @classmethod
-    def kill_all(cls):
-        cls.each(lambda process: process.kill())
-        cls.clear()
-
-    @classmethod
-    def each(cls, fn):
-        for process in cls.copy():
-            fn(process)
-
-    @classmethod
-    def empty(cls):
-        return len(cls._procs) == 0
-
-    @classmethod
-    def clear(cls):
-        del cls._procs[:]
+    def from_instance(cls, instance):
+        return CrossPlatformProcess({
+            'working_dir': instance.working_dir,
+            'nonblocking': instance.nonblocking,
+            'exec_args': instance.exec_args
+        })
 
 
 class Env():
