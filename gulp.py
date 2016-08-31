@@ -15,7 +15,7 @@ is_sublime_text_3 = int(sublime.version()) >= 3000
 if is_sublime_text_3:
     from .base_command import BaseCommand
     from .progress_notifier import ProgressNotifier
-    from .cross_platform_codecs import CrossPlaformCodecs
+    from .cross_platform_codecs import CrossPlatformCodecs
     from .hasher import Hasher
     from .gulp_version import GulpVersion
     from .dir_context import Dir
@@ -24,7 +24,7 @@ if is_sublime_text_3:
 else:
     from base_command import BaseCommand
     from progress_notifier import ProgressNotifier
-    from cross_platform_codecs import CrossPlaformCodecs
+    from cross_platform_codecs import CrossPlatformCodecs
     from hasher import Hasher
     from gulp_version import GulpVersion
     from dir_context import Dir
@@ -376,14 +376,14 @@ class CrossPlatformProcess():
         return self
 
     def run_sync(self, command):
-        command = CrossPlaformCodecs.encode_process_command(command)
+        command = CrossPlatformCodecs.encode_process_command(command)
 
         with Dir.cd(self.working_dir):
             self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, shell=True)
             (stdout, stderr) = self.process.communicate()
             self.failed = self.process.returncode == 127 or stderr
 
-        return (CrossPlaformCodecs.force_decode(stdout), CrossPlaformCodecs.force_decode(stderr))
+        return (CrossPlatformCodecs.force_decode(stdout), CrossPlatformCodecs.force_decode(stderr))
 
     def _preexec_val(self):
         return os.setsid if sublime.platform() != "windows" else None
@@ -411,7 +411,7 @@ class CrossPlatformProcess():
             line = stream.readline()
             if not line:
                 break
-            output_line = CrossPlaformCodecs.decode_line(line)
+            output_line = CrossPlatformCodecs.decode_line(line)
             output_text += output_line
             fn(output_line)
         return output_text

@@ -7,11 +7,11 @@ is_sublime_text_3 = int(sublime.version()) >= 3000
 if is_sublime_text_3:
     from .progress_notifier import ProgressNotifier
     from .settings import Settings
-    from .cross_platform_codecs import CrossPlaformCodecs
+    from .cross_platform_codecs import CrossPlatformCodecs
 else:
     from progress_notifier import ProgressNotifier
     from settings import Settings
-    from cross_platform_codecs import CrossPlaformCodecs
+    from cross_platform_codecs import CrossPlatformCodecs
 
 #
 # A base for each command
@@ -113,7 +113,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
 
     def append_to_output_view(self, text):
         if not self.silent:
-            decoded_text = text if is_sublime_text_3 else CrossPlaformCodecs.force_decode(text)
+            decoded_text = text if is_sublime_text_3 else CrossPlatformCodecs.force_decode(text)
             self._insert(self.output_view, decoded_text)
 
     def _insert(self, view, content):
