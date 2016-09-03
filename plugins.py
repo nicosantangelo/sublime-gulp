@@ -1,7 +1,9 @@
 import sublime
 from threading import Thread
 
-if int(sublime.version()) >= 3000:
+is_sublime_text_3 = int(sublime.version()) >= 3000
+
+if is_sublime_text_3:
     import urllib.request as urllib2
 else:
     import urllib2
