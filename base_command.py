@@ -7,10 +7,12 @@ is_sublime_text_3 = int(sublime.version()) >= 3000
 if is_sublime_text_3:
     from .progress_notifier import ProgressNotifier
     from .settings import Settings
+    from .configuration import Configuration
     from .cross_platform_codecs import CrossPlatformCodecs
 else:
     from progress_notifier import ProgressNotifier
     from settings import Settings
+    from configuration import Configuration
     from cross_platform_codecs import CrossPlatformCodecs
 
 #
@@ -19,8 +21,6 @@ else:
 
 
 class BaseCommand(sublime_plugin.WindowCommand):
-    package_name = "Gulp"
-
     def run(self, task_name=None, task_flag=None, silent=False, paths=[]):
         self.setup_data_from_settings()
         self.task_name = task_name
@@ -66,10 +66,10 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.window.show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
 
     def status_message(self, text):
-        sublime.status_message("%s: %s" % (self.package_name, text))
+        sublime.status_message("%s: %s" % (Configuration.PACKAGE_NAME, text))
 
     def error_message(self, text):
-        sublime.error_message("%s: %s" % (self.package_name, text))
+        sublime.error_message("%s: %s" % (Configuration.PACKAGE_NAME, text))
 
     # Output view
     def show_output_panel(self, text):
