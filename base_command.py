@@ -8,17 +8,17 @@ if is_sublime_text_3:
     from .progress_notifier import ProgressNotifier
     from .settings import Settings
     from .configuration import Configuration
-    from .cross_platform_codecs import CrossPlatformCodecs
+    from .insert_in_output_view import insert_in_output_view
 else:
     from progress_notifier import ProgressNotifier
     from settings import Settings
     from configuration import Configuration
-    from cross_platform_codecs import CrossPlatformCodecs
+    from insert_in_output_view import insert_in_output_view
+
 
 #
 # A base for each command
 #
-
 
 class BaseCommand(sublime_plugin.WindowCommand):
     def run(self, task_name=None, task_flag=None, silent=False, paths=[]):
@@ -113,20 +113,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
 
     def append_to_output_view(self, text):
         if not self.silent:
-            decoded_text = text if is_sublime_text_3 else CrossPlatformCodecs.force_decode(text)
-            self._insert(self.output_view, decoded_text)
-
-    def _insert(self, view, content):
-        if view is None:
-            return
-
-        if self.results_in_new_tab and view.is_loading():
-            self.set_timeout(lambda: self._insert(view, content), 10)
-        else:
-            view.set_read_only(False)
-            view.run_command("view_insert", { "size": view.size(), "content": content })
-            view.set_viewport_position((0, view.size()), True)
-            view.set_read_only(True)
+            insert_in_output_view(self.output_view, text, self.results_in_new_tab)
 
     def set_output_close_on_timeout(self):
         timeout = self.settings.get("results_autoclose_timeout_in_milliseconds", False)
@@ -165,8 +152,3 @@ class BaseCommand(sublime_plugin.WindowCommand):
     def call(self, fn, progress):
         fn()
         progress.stop()
-
-
-class ViewInsertCommand(sublime_plugin.TextCommand):
-    def run(self, edit, size, content):
-        self.view.insert(edit, int(size), content)
