@@ -4,7 +4,9 @@ import signal
 import os
 from threading import Thread
 
-if int(sublime.version()) >= 3000:
+is_sublime_text_3 = int(sublime.version()) >= 3000
+
+if is_sublime_text_3:
     from .dir_context import Dir
     from .cross_platform_codecs import CrossPlatformCodecs
     from .caches import ProcessCache, CacheFile
@@ -15,16 +17,19 @@ else:
 
 
 class CrossPlatformProcess():
-    def __init__(self, settings):
-        self.working_dir = settings.working_dir
-        self.nonblocking = settings.nonblocking
-        self.path = Env.get_path(settings.exec_args)
-        self.last_command = ""
+    def __init__(self, working_dir="", nonblocking=False, exec_args={}, last_command="", pid=None):
+        self.working_dir = working_dir
+        self.nonblocking = nonblocking
+        self.path = Env.get_path(exec_args)
+        self.pid = pid
+        self.last_command = last_command
+        self.process = None
         self.failed = False
 
     def run(self, command):
         with Dir.cd(self.working_dir):
             self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, shell=True, preexec_fn=self._preexec_val())
+            self.pid = self.process.pid
 
         self.last_command = command.rstrip()
         ProcessCache.add(self)
@@ -35,6 +40,7 @@ class CrossPlatformProcess():
 
         with Dir.cd(self.working_dir):
             self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, shell=True)
+            self.pid = self.process.pid
             (stdout, stderr) = self.process.communicate()
             self.failed = self.process.returncode == 127 or stderr
 
@@ -77,19 +83,25 @@ class CrossPlatformProcess():
         ProcessCache.remove(self)
 
     def is_alive(self):
-        return self.process.poll() is None
+        return (self.process is None and self.pid is not None) or self.process.poll() is None
 
     def returncode(self):
         return self.process.returncode
 
     def kill(self):
-        pid = self.process.pid
         if sublime.platform() == "windows":
-            kill_process = subprocess.Popen(['C:\\Windows\\system32\\taskkill.exe', '/F', '/T', '/PID', str(pid)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            kill_process = subprocess.Popen(['C:\\Windows\\system32\\taskkill.exe', '/F', '/T', '/PID', str(self.pid)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             kill_process.communicate()
         else:
-            os.killpg(pid, signal.SIGTERM)
+            os.killpg(self.pid, signal.SIGTERM)
         ProcessCache.remove(self)
+
+    def to_json(self):
+        return {
+            'workding_dir': self.working_dir,
+            'command': self.last_command,
+            'pid': self.pid,
+        }
 
 
 class Env():

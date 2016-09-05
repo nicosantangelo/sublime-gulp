@@ -3,13 +3,29 @@ import json
 import codecs
 import os
 
+is_sublime_text_3 = int(sublime.version()) >= 3000
+
+if is_sublime_text_3:
+    from .configuration import Configuration
+else:
+    from configuration import Configuration
+
 
 class ProcessCache():
     _procs = []
+    _persist_processes = True
     last_command = None
 
     @classmethod
-    def copy(cls):
+    def set_persist_processes(cls, value):
+        cls._persist_processes = value
+
+    @classmethod
+    def get_persisted(cls):
+        return cls.cache_file().read() or []
+
+    @classmethod
+    def get(cls):
         return cls._procs[:]
 
     @classmethod
@@ -21,13 +37,18 @@ class ProcessCache():
 
     @classmethod
     def add(cls, process):
-        cls._procs.append(process)
         cls.last_command = process.last_command
+        if process not in cls._procs:
+            cls._procs.append(process)
+
+        process = process.to_json()
+        cls.cache_file().update(lambda procs: procs + [process] if process not in procs else procs)
 
     @classmethod
     def remove(cls, process):
         if process in cls._procs:
             cls._procs.remove(process)
+        cls.cache_file().update(lambda procs: [proc for proc in procs if proc['pid'] != process.pid])
 
     @classmethod
     def kill_all(cls):
@@ -36,7 +57,7 @@ class ProcessCache():
 
     @classmethod
     def each(cls, fn):
-        for process in cls.copy():
+        for process in cls.get():
             fn(process)
 
     @classmethod
@@ -46,14 +67,40 @@ class ProcessCache():
     @classmethod
     def clear(cls):
         del cls._procs[:]
+        cls.cache_file().write([])
+
+    @classmethod
+    def cache_file(cls):
+        if cls._persist_processes: 
+            return CacheFile(Configuration.PACKAGE_PATH) 
+        else:
+            return Cache()
 
 
-class CacheFile():
-    cache_file_name = ".sublime-gulp.cache"
+class Cache():
+    def exists(self):
+        pass
 
+    def remove(self):
+        pass
+
+    def open(self, mode="r"):
+        pass
+
+    def read(self):
+        pass
+
+    def write(self, data):
+        pass
+
+    def update(self, fn):
+        pass
+
+
+class CacheFile(Cache):
     def __init__(self, working_dir):
         self.working_dir = working_dir
-        self.cache_path = os.path.join(self.working_dir, CacheFile.cache_file_name)
+        self.cache_path = os.path.join(self.working_dir, Configuration.CACHE_FILE_NAME)
 
     def exists(self):
         return os.path.exists(self.cache_path)

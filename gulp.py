@@ -129,10 +129,8 @@ class GulpCommand(BaseCommand):
             raise Exception("Have you renamed a folder?.\nSometimes Sublime doesn't update the project path, try removing the folder from the project and adding it again.")
 
     def write_to_cache(self):
-        package_path = os.path.join(sublime.packages_path(), self.package_name)
- 
-        process = CrossPlatformProcess(self)
-        (stdout, stderr) = process.run_sync(r'node "%s/write_tasks_to_cache.js"' % package_path)
+        process = CrossPlatformProcess(self.working_dir, self.nonblocking, self.exec_args)
+        (stdout, stderr) = process.run_sync(r'node "%s/write_tasks_to_cache.js"' % Configuration.PACKAGE_PATH)
 
         if process.failed:
             try:
@@ -147,7 +145,7 @@ class GulpCommand(BaseCommand):
         return self.fetch_json()
 
     def write_to_cache_without_js(self):
-        process = CrossPlatformProcess(self)
+        process = CrossPlatformProcess(self.working_dir, self.nonblocking, self.exec_args)
         (stdout, stderr) = process.run_sync(r'gulp -v')
 
         if process.failed or not GulpVersion(stdout).supports_tasks_simple():
@@ -199,7 +197,7 @@ class GulpCommand(BaseCommand):
         return r"gulp %s %s" % (self.task_name, self.task_flag)
 
     def run_process(self, task):
-        process = CrossPlatformProcess(self)
+        process = CrossPlatformProcess(self.working_dir, self.nonblocking, self.exec_args)
         process.run(task)
         stdout, stderr = process.communicate(self.append_to_output_view_in_main_thread)
         self.defer_sync(lambda: self.finish(stdout, stderr))
@@ -250,14 +248,18 @@ class GulpKillTaskCommand(BaseCommand):
         if ProcessCache.empty():
             self.status_message("There are no running tasks")
         else:
-            self.procs = ProcessCache.copy()
-            quick_panel_list = [[process.last_command, process.working_dir] for process in self.procs]
+            self.procs = ProcessCache.get()
+            quick_panel_list = [[process.last_command, process.working_dir, 'Pid: %d' % process.pid] for process in self.procs]
             self.show_quick_panel(quick_panel_list, self.kill_process, font=0)
 
     def kill_process(self, index=-1):
         if index >= 0 and index < len(self.procs):
             process = self.procs[index]
-            process.kill()
+            try:
+                process.kill()
+            except ProcessLookupError as e:
+                print('Process %d seems to be dead already' % process.pid)
+
             self.show_output_panel('')
             self.append_to_output_view("\n%s killed! # %s\n" % (process.last_command, process.working_dir))
 
@@ -350,3 +352,17 @@ class GulpExitCommand(sublime_plugin.WindowCommand):
             self.window.run_command("gulp_kill")
         finally:
             self.window.run_command("exit")
+
+
+def plugin_loaded():
+    def load_process_cache():
+        for process in ProcessCache.get_persisted():
+            ProcessCache.add(
+                CrossPlatformProcess(process['workding_dir'], last_command=process['command'], pid=process['pid'])
+            )
+
+    sublime.set_timeout(load_process_cache, 2000)
+
+
+if not is_sublime_text_3:
+    plugin_loaded()
