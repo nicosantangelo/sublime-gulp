@@ -5,8 +5,10 @@ is_sublime_text_3 = int(sublime.version()) >= 3000
 
 if is_sublime_text_3:
     from .cross_platform_codecs import CrossPlatformCodecs
+    from .timeout import set_timeout
 else:
     from cross_platform_codecs import CrossPlatformCodecs
+    from .timeout import set_timeout
 
 
 def insert_in_output_view(view, content, in_new_tab):
@@ -14,7 +16,7 @@ def insert_in_output_view(view, content, in_new_tab):
         return
 
     if in_new_tab and view.is_loading():
-        sublime.set_timeout(lambda: insert_in_output_view(view, content, in_new_tab), 10)
+        set_timeout(lambda: insert_in_output_view(view, content, in_new_tab), 10)
     else:
         decoded_contenet = content if is_sublime_text_3 else CrossPlatformCodecs.force_decode(content)
 

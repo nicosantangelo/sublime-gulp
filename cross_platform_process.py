@@ -25,8 +25,8 @@ class CrossPlatformProcess():
         self.pid = pid
         
         settings = Settings()
-        self.nonblocking = self.settings.get("nonblocking", True)
-        self.path = Env.get_path(self.settings.get('exec_args', False))
+        self.nonblocking = settings.get("nonblocking", True)
+        self.path = Env.get_path(settings.get('exec_args', False))
 
         self.process = None
         self.failed = False

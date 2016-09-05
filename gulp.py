@@ -19,6 +19,7 @@ if is_sublime_text_3:
     from .gulp_version import GulpVersion
     from .plugins import PluginList, PluginRegistryCall
     from .caches import ProcessCache, CacheFile
+    from .timeout import set_timeout, defer, defer_sync, async
 else:
     from base_command import BaseCommand
     from settings import Settings
@@ -28,6 +29,7 @@ else:
     from gulp_version import GulpVersion
     from plugins import PluginList, PluginRegistryCall
     from caches import ProcessCache, CacheFile
+    from timeout import set_timeout, defer, defer_sync, async
 
 
 #
@@ -82,7 +84,7 @@ class GulpCommand(BaseCommand):
             if self.task_name is not None:
                 self.run_gulp_task()
             else:
-                self.defer(self.show_tasks)
+                defer(self.show_tasks)
 
     def show_tasks(self):
         self.tasks = self.list_tasks()
@@ -202,7 +204,7 @@ class GulpCommand(BaseCommand):
         process = CrossPlatformProcess(self.working_dir)
         process.run(task)
         stdout, stderr = process.communicate(self.append_to_output_view_in_main_thread)
-        self.defer_sync(lambda: self.finish(stdout, stderr))
+        defer_sync(lambda: self.finish(stdout, stderr))
 
     def finish(self, stdout, stderr):
         finish_message = "gulp %s %s finished %s" % (self.task_name, self.task_flag, "with some errors." if stderr else "!")
@@ -298,14 +300,14 @@ class GulpPluginsCommand(BaseCommand):
         self.request_plugin_list()
 
     def request_plugin_list(self):
-        progress = ProgressNotifier("Gulp: Working")
+        progress = ProgressNotifier("%s: Working" % Settings.PACKAGE_NAME)
         thread = PluginRegistryCall()
         thread.start()
         self.handle_thread(thread, progress)
 
     def handle_thread(self, thread, progress):
         if thread.is_alive() and not thread.error:
-            sublime.set_timeout(lambda: self.handle_thread(thread, progress), 100)
+            set_timeout(lambda: self.handle_thread(thread, progress), 100)
         else:
             progress.stop()
             if thread.result:
@@ -363,7 +365,7 @@ def plugin_loaded():
                 CrossPlatformProcess(process['workding_dir'], process['last_command'], process['pid'])
             )
 
-    sublime.set_timeout(load_process_cache, 2000)
+    async(load_process_cache, 1200, silent=True)
 
 
 if not is_sublime_text_3:
