@@ -12,6 +12,7 @@ is_sublime_text_3 = int(sublime.version()) >= 3000
 
 if is_sublime_text_3:
     from .base_command import BaseCommand
+    from .settings import Settings
     from .progress_notifier import ProgressNotifier
     from .cross_platform_process import CrossPlatformProcess
     from .hasher import Hasher
@@ -20,6 +21,7 @@ if is_sublime_text_3:
     from .caches import ProcessCache, CacheFile
 else:
     from base_command import BaseCommand
+    from settings import Settings
     from progress_notifier import ProgressNotifier
     from cross_platform_process import CrossPlatformProcess
     from hasher import Hasher
@@ -129,8 +131,8 @@ class GulpCommand(BaseCommand):
             raise Exception("Have you renamed a folder?.\nSometimes Sublime doesn't update the project path, try removing the folder from the project and adding it again.")
 
     def write_to_cache(self):
-        process = CrossPlatformProcess(self.working_dir, self.nonblocking, self.exec_args)
-        (stdout, stderr) = process.run_sync(r'node "%s/write_tasks_to_cache.js"' % Configuration.PACKAGE_PATH)
+        process = CrossPlatformProcess(self.working_dir)
+        (stdout, stderr) = process.run_sync(r'node "%s/write_tasks_to_cache.js"' % Settings.PACKAGE_PATH)
 
         if process.failed:
             try:
@@ -145,7 +147,7 @@ class GulpCommand(BaseCommand):
         return self.fetch_json()
 
     def write_to_cache_without_js(self):
-        process = CrossPlatformProcess(self.working_dir, self.nonblocking, self.exec_args)
+        process = CrossPlatformProcess(self.working_dir)
         (stdout, stderr) = process.run_sync(r'gulp -v')
 
         if process.failed or not GulpVersion(stdout).supports_tasks_simple():
@@ -197,7 +199,7 @@ class GulpCommand(BaseCommand):
         return r"gulp %s %s" % (self.task_name, self.task_flag)
 
     def run_process(self, task):
-        process = CrossPlatformProcess(self.working_dir, self.nonblocking, self.exec_args)
+        process = CrossPlatformProcess(self.working_dir)
         process.run(task)
         stdout, stderr = process.communicate(self.append_to_output_view_in_main_thread)
         self.defer_sync(lambda: self.finish(stdout, stderr))
@@ -356,9 +358,9 @@ class GulpExitCommand(sublime_plugin.WindowCommand):
 
 def plugin_loaded():
     def load_process_cache():
-        for process in ProcessCache.get_persisted():
+        for process in ProcessCache.get_from_storage():
             ProcessCache.add(
-                CrossPlatformProcess(process['workding_dir'], last_command=process['command'], pid=process['pid'])
+                CrossPlatformProcess(process['workding_dir'], process['last_command'], process['pid'])
             )
 
     sublime.set_timeout(load_process_cache, 2000)

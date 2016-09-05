@@ -7,12 +7,10 @@ is_sublime_text_3 = int(sublime.version()) >= 3000
 if is_sublime_text_3:
     from .progress_notifier import ProgressNotifier
     from .settings import Settings
-    from .configuration import Configuration
     from .insert_in_output_view import insert_in_output_view
 else:
     from progress_notifier import ProgressNotifier
     from settings import Settings
-    from configuration import Configuration
     from insert_in_output_view import insert_in_output_view
 
 
@@ -34,8 +32,6 @@ class BaseCommand(sublime_plugin.WindowCommand):
     def setup_data_from_settings(self):
         self.settings = Settings()
         self.results_in_new_tab = self.settings.get("results_in_new_tab", False)
-        self.nonblocking = self.settings.get("nonblocking", True)
-        self.exec_args = self.settings.get('exec_args', False)
         self.check_for_gulpfile = self.settings.get('check_for_gulpfile', True)
 
     def get_flag_from_task_name(self):
@@ -66,10 +62,10 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.window.show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
 
     def status_message(self, text):
-        sublime.status_message("%s: %s" % (Configuration.PACKAGE_NAME, text))
+        sublime.status_message("%s: %s" % (Settings.PACKAGE_NAME, text))
 
     def error_message(self, text):
-        sublime.error_message("%s: %s" % (Configuration.PACKAGE_NAME, text))
+        sublime.error_message("%s: %s" % (Settings.PACKAGE_NAME, text))
 
     # Output view
     def show_output_panel(self, text):

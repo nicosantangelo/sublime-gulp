@@ -7,22 +7,27 @@ from threading import Thread
 is_sublime_text_3 = int(sublime.version()) >= 3000
 
 if is_sublime_text_3:
+    from .settings import Settings
     from .dir_context import Dir
     from .cross_platform_codecs import CrossPlatformCodecs
     from .caches import ProcessCache, CacheFile
 else:
+    from settings import Settings
     from dir_context import Dir
     from cross_platform_codecs import CrossPlatformCodecs
     from caches import ProcessCache, CacheFile
 
 
 class CrossPlatformProcess():
-    def __init__(self, working_dir="", nonblocking=False, exec_args={}, last_command="", pid=None):
+    def __init__(self, working_dir="", last_command="", pid=None):
         self.working_dir = working_dir
-        self.nonblocking = nonblocking
-        self.path = Env.get_path(exec_args)
-        self.pid = pid
         self.last_command = last_command
+        self.pid = pid
+        
+        settings = Settings()
+        self.nonblocking = self.settings.get("nonblocking", True)
+        self.path = Env.get_path(self.settings.get('exec_args', False))
+
         self.process = None
         self.failed = False
 
@@ -99,8 +104,8 @@ class CrossPlatformProcess():
     def to_json(self):
         return {
             'workding_dir': self.working_dir,
-            'command': self.last_command,
-            'pid': self.pid,
+            'last_command': self.last_command,
+            'pid': self.pid
         }
 
 

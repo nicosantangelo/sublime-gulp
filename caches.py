@@ -6,23 +6,18 @@ import os
 is_sublime_text_3 = int(sublime.version()) >= 3000
 
 if is_sublime_text_3:
-    from .configuration import Configuration
+    from .settings import Settings
 else:
-    from configuration import Configuration
+    from settings import Settings
 
 
 class ProcessCache():
     _procs = []
-    _persist_processes = True
     last_command = None
 
     @classmethod
-    def set_persist_processes(cls, value):
-        cls._persist_processes = value
-
-    @classmethod
-    def get_persisted(cls):
-        return cls.cache_file().read() or []
+    def get_from_storage(cls):
+        return cls.storage().read() or []
 
     @classmethod
     def get(cls):
@@ -42,13 +37,13 @@ class ProcessCache():
             cls._procs.append(process)
 
         process = process.to_json()
-        cls.cache_file().update(lambda procs: procs + [process] if process not in procs else procs)
+        cls.storage().update(lambda procs: procs + [process] if process not in procs else procs)
 
     @classmethod
     def remove(cls, process):
         if process in cls._procs:
             cls._procs.remove(process)
-        cls.cache_file().update(lambda procs: [proc for proc in procs if proc['pid'] != process.pid])
+        cls.storage().update(lambda procs: [proc for proc in procs if proc['pid'] != process.pid])
 
     @classmethod
     def kill_all(cls):
@@ -67,12 +62,12 @@ class ProcessCache():
     @classmethod
     def clear(cls):
         del cls._procs[:]
-        cls.cache_file().write([])
+        cls.storage().write([])
 
     @classmethod
-    def cache_file(cls):
-        if cls._persist_processes: 
-            return CacheFile(Configuration.PACKAGE_PATH) 
+    def storage(cls):
+        if Settings().get("persist_processes", True):
+            return CacheFile(Settings.PACKAGE_PATH) 
         else:
             return Cache()
 
@@ -100,7 +95,7 @@ class Cache():
 class CacheFile(Cache):
     def __init__(self, working_dir):
         self.working_dir = working_dir
-        self.cache_path = os.path.join(self.working_dir, Configuration.CACHE_FILE_NAME)
+        self.cache_path = os.path.join(self.working_dir, Settings.CACHE_FILE_NAME)
 
     def exists(self):
         return os.path.exists(self.cache_path)
