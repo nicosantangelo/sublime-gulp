@@ -134,7 +134,7 @@ class GulpCommand(BaseCommand):
 
     def write_to_cache(self):
         process = CrossPlatformProcess(self.working_dir)
-        (stdout, stderr) = process.run_sync(r'node "%s/write_tasks_to_cache.js"' % Settings.PACKAGE_PATH)
+        (stdout, stderr) = process.run_sync(r'node "%s/write_tasks_to_cache.js"' % self.settings.package_path())
 
         if process.failed:
             try:

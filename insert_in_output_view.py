@@ -8,7 +8,7 @@ if is_sublime_text_3:
     from .timeout import set_timeout
 else:
     from cross_platform_codecs import CrossPlatformCodecs
-    from .timeout import set_timeout
+    from timeout import set_timeout
 
 
 def insert_in_output_view(view, content, in_new_tab):

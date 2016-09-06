@@ -30,6 +30,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.work()
 
     def setup_data_from_settings(self):
+        Settings.gather_shared_data()
         self.settings = Settings()
         self.results_in_new_tab = self.settings.get("results_in_new_tab", False)
         self.check_for_gulpfile = self.settings.get('check_for_gulpfile', True)
