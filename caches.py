@@ -66,7 +66,7 @@ class ProcessCache():
 
     @classmethod
     def storage(cls):
-        if Settings.get_from_shared_data("persist_processes", True):
+        if Settings.get_from_shared_data("track_processes", True):
             return CacheFile(Settings.package_path()) 
         else:
             return Cache()

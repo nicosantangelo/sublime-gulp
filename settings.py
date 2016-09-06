@@ -19,7 +19,7 @@ class Settings():
     def gather_shared_data(cls):
         settings = Settings()
         Settings.SHARED_DATA = ProjectData({
-            'persist_processes': settings.get("persist_processes", True),
+            'track_processes': settings.get("track_processes", True),
             'nonblocking': settings.get("nonblocking", True),
             'exec_args': settings.get("exec_args", False)
         })

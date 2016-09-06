@@ -1,0 +1,43 @@
+   _____       _       
+  / ____|     | |      
+ | |  __ _   _| |_ __  
+ | | |_ | | | | | '_ \ 
+ | |__| | |_| | | |_) |
+  \_____|\__,_|_| .__/ 
+                | |    
+                |_|    
+
+Recent Changes
+==============
+
+Hello!
+
+Killing tasks has been revamped!
+
+## Command
+
+Now you can kill a specific long running task!
+
+Using the command `Gulp: Kill specific running task` will display all the long running tasks that Sublime is tracking on the command pallete, choosing one of them will kill it. 
+
+Also, the package now prints the path that created the task when killed, useful if you're running multiple `gulp`s on different projects.
+
+## Tracking long running tasks
+
+Until now the package kept track of tasks in memory, meaning that if you ran a long running task like `gulp watch` and restarted Sublime Text, the process wasn't dead but you couldn't kill it from the editor anymore.
+
+This shouldn't be a problem anymore!
+
+The package now keeps track of long running tasks using an internal `.sublime-gulp.cache`. So even if you close your editor and re-open it, you should still be able to list and kill running tasks.
+Event if the tracking succeds, there's a chance that the OS won't let Sublime kill the task (mostly in Windows). But at least `Gulp: Kill specific running task` will show the pid so you can kill it by hand.
+
+
+In case you don't want Sublime writing the long running processes pids you can disable it on the settings, setting `track_processes` to false. And you can still use `Gulp: Exit editor killing running tasks` if you want a "clean" exit.
+
+
+Thanks a lot to @kikandrew for kickstarting this.
+
+That is all!
+As always if you have any issues or feature requests go to https://github.com/NicoSantangelo/sublime-gulp/issues
+
+Thanks!

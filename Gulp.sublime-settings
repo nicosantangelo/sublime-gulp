@@ -25,6 +25,9 @@
     // Read from stdout and stderr without blocking (both at the same time)
     "nonblocking": true,
 
+    // Persist the long running task pids to a local file to keep track even if the editor is closed
+    "track_processes": true,
+
     // Add a custom flag to a particular gulp command. Format: { "task_name": "flags" }
     // For example: { "concat": "--silent" }
     "flags": {},

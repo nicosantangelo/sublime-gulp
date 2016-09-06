@@ -220,6 +220,7 @@ The defaults are:
     "log_errors": true,
     "syntax": "Packages/Gulp/syntax/GulpResults.tmLanguage",
     "nonblocking": true,
+    "track_processes": true,
     "flags": {},
     "check_for_gulpfile": false,
     "tasks_on_save": {},
@@ -262,7 +263,7 @@ If false (or 0) it will remain open, so if what you want is to keep it closed ch
 
 If true it will open the output panel when running [`Gulp (silent)`](#running-a-gulp-task) only if the task failed
 
-#### log_erros
+#### log_errors
 
 Toggles the creation of `sublime-gulp.log` if any error occurs.
 
@@ -277,6 +278,15 @@ Set the setting to `false` if you don't want any colors (you may need to restart
 When enabled, the package will read the streams from the task process using two threads, one for `stdout` and another for `stderr`. This allows all the output to be piped to Sublime live without having to wait for the task to finish.
 
 If set to `false`, it will read first from `stdout` and then from `stderr`.
+
+#### track_processes
+
+Persist the long running task pids to a local file to keep track even if the editor is closed.
+
+If `false` package will keep track of tasks in memory, meaning that if you ran a long running task like `gulp watch` and restart Sublime Text, the process wont't die but you won't be able to kill it from the editor anymore.
+
+If `true` the package will keep track of long running tasks using an internal `.sublime-gulp.cache`. So even if you close your editor and re-open it, you should still be able to list and kill running tasks.
+
 
 #### flags
 
