@@ -1,7 +1,9 @@
 import sublime
 import subprocess
 import signal
+import errno
 import os
+import sys
 from threading import Thread
 
 is_sublime_text_3 = int(sublime.version()) >= 3000
@@ -87,7 +89,35 @@ class CrossPlatformProcess():
         ProcessCache.remove(self)
 
     def is_alive(self):
-        return (self.process is None and self.pid is not None) or self.process.poll() is None
+        if (self.process is not None and self.pid is not None):
+            return self.process.poll() is None
+        else:
+            return self._pid_exists()
+
+    def _pid_exists(self):
+        if not self.pid:
+            return False
+
+        if sublime.platform() == "windows":
+            taskkill = subprocess.Popen(['C:\\Windows\\system32\\tasklist.exe', '/FI', 'PID eq %s' % self.pid, '/FO', 'CSV'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            (stdout, stderr) = taskkill.communicate()
+            
+            failed = taskkill.returncode == 127 or stderr
+            found = self.pid in CrossPlatformCodecs.force_decode(stdout)
+            
+            return found or failed
+        else:
+            try:
+                os.kill(self.pid, 0)
+            except OSError as err:
+                if err.errno == errno.ESRCH:
+                    return False
+                elif err.errno == errno.EPERM:
+                    return True
+                else:
+                    raise
+            else:
+                return True
 
     def returncode(self):
         return self.process.returncode
