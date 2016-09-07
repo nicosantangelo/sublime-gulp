@@ -253,7 +253,7 @@ class GulpKillTaskCommand(BaseCommand):
             self.status_message("There are no running tasks")
         else:
             self.procs = ProcessCache.get()
-            quick_panel_list = [[process.last_command, process.working_dir, 'Pid: %d' % process.pid] for process in self.procs]
+            quick_panel_list = [[process.last_command, process.working_dir, 'PID: %d' % process.pid] for process in self.procs]
             self.show_quick_panel(quick_panel_list, self.kill_process, font=0)
 
     def kill_process(self, index=-1):
@@ -265,7 +265,7 @@ class GulpKillTaskCommand(BaseCommand):
                 print('Process %d seems to be dead already' % process.pid)
 
             self.show_output_panel('')
-            self.append_to_output_view("\n%s killed! # %s\n" % (process.last_command, process.working_dir))
+            self.append_to_output_view("\n%s killed! # %s | PID: %d\n" % process.to_tuple())
 
 
 class GulpKillCommand(BaseCommand):
@@ -281,7 +281,7 @@ class GulpKillCommand(BaseCommand):
 
     def append_processes_to_output_view(self):
         self.show_output_panel("\nFinishing the following running tasks:\n")
-        ProcessCache.each(lambda process: self.append_to_output_view("$ %s # %s\n" % (process.last_command, process.working_dir)))
+        ProcessCache.each(lambda process: self.append_to_output_view("$ %s # %s | PID: %d\n" % process.to_tuple()))
 
 
 class GulpShowPanelCommand(BaseCommand):

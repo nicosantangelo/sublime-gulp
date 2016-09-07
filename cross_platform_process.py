@@ -102,10 +102,13 @@ class CrossPlatformProcess():
 
     def to_json(self):
         return {
-            'workding_dir': self.working_dir,
             'last_command': self.last_command,
+            'workding_dir': self.working_dir,
             'pid': self.pid
         }
+
+    def to_tuple(self):
+        return (self.last_command, self.working_dir, self.pid)
 
 
 class Env():
