@@ -34,7 +34,7 @@ class Settings():
         self.sources = [active_view.settings(), ProjectData(), self.user_settings]
 
     def get(self, key, default=None):
-        return next((settings.get(key, default) for settings in self.sources if settings.has(key)), None) or default
+        return next((settings.get(key, default) for settings in self.sources if settings.has(key)), None)
 
     def get_from_user_settings(self, key, default=None):
         return self.user_settings.get(key, default)
