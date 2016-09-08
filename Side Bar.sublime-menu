@@ -10,6 +10,7 @@
             { "caption": "List Tasks to Run","command": "gulp", "args": { "paths": [] } },
             { "caption": "Delete Cache","command": "gulp_delete_cache", "args": { "paths": [] } },
             { "caption": "Kill All Gulp Tasks", "command": "gulp_kill" },
+            { "caption": "Kill Specific Gulp Tasks", "command": "gulp_kill_task" },
             { "caption": "-" },
             { "caption": "List Gulp Plugins","command": "gulp_plugins" }
         ]

@@ -1,10 +1,36 @@
 import sublime
+import os.path
+
+is_sublime_text_3 = int(sublime.version()) >= 3000
 
 
 class Settings():
+    PACKAGE_NAME = "Gulp"
+    PACKAGE_SETTINGS = "Gulp.sublime-settings"
+    CACHE_FILE_NAME = ".sublime-gulp.cache"
+
+    SHARED_DATA = {}
+
+    @classmethod
+    def package_path(cls):
+        return os.path.join(sublime.packages_path(), Settings.PACKAGE_NAME)
+
+    @classmethod
+    def gather_shared_data(cls):
+        settings = Settings()
+        Settings.SHARED_DATA = ProjectData({
+            'track_processes': settings.get("track_processes", True),
+            'nonblocking': settings.get("nonblocking", True),
+            'exec_args': settings.get("exec_args", False)
+        })
+
+    @classmethod
+    def get_from_shared_data(cls, key, default=None):
+        return Settings.SHARED_DATA.get(key, default)
+
     def __init__(self):
         active_view = sublime.active_window().active_view()
-        self.user_settings = sublime.load_settings("Gulp.sublime-settings")
+        self.user_settings = sublime.load_settings(Settings.PACKAGE_SETTINGS)
         self.sources = [active_view.settings(), ProjectData(), self.user_settings]
 
     def get(self, key, default=None):
@@ -18,8 +44,15 @@ class Settings():
 
 
 class ProjectData():
-    def __init__(self):
-        self._project_data = sublime.active_window().project_data().get('Gulp', {}) if int(sublime.version()) >= 3000 else {}
+    def __init__(self, data=None):
+        if data is not None:
+            self._project_data = data
+        else:
+            if is_sublime_text_3:
+                self._project_data = sublime.active_window().project_data().get(Settings.PACKAGE_NAME, {})
+            else:
+                self._project_data = {}
+
 
     def get(self, key, default):
         return self._project_data.get(key, default)

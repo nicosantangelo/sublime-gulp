@@ -5,8 +5,6 @@ import codecs
 import os
 from datetime import datetime
 from threading import Thread
-import signal
-import subprocess
 import json
 import webbrowser
 
@@ -14,20 +12,24 @@ is_sublime_text_3 = int(sublime.version()) >= 3000
 
 if is_sublime_text_3:
     from .base_command import BaseCommand
+    from .settings import Settings
     from .progress_notifier import ProgressNotifier
-    from .cross_platform_codecs import CrossPlaformCodecs
+    from .cross_platform_process import CrossPlatformProcess
     from .hasher import Hasher
     from .gulp_version import GulpVersion
-    from .dir_context import Dir
     from .plugins import PluginList, PluginRegistryCall
+    from .caches import ProcessCache, CacheFile
+    from .timeout import set_timeout, defer, defer_sync, async
 else:
     from base_command import BaseCommand
+    from settings import Settings
     from progress_notifier import ProgressNotifier
-    from cross_platform_codecs import CrossPlaformCodecs
+    from cross_platform_process import CrossPlatformProcess
     from hasher import Hasher
     from gulp_version import GulpVersion
-    from dir_context import Dir
     from plugins import PluginList, PluginRegistryCall
+    from caches import ProcessCache, CacheFile
+    from timeout import set_timeout, defer, defer_sync, async
 
 
 #
@@ -36,7 +38,6 @@ else:
 
 
 class GulpCommand(BaseCommand):
-    cache_file_name = ".sublime-gulp.cache"
     log_file_name = 'sublime-gulp.log'
     allowed_extensions = [".babel.js", ".js"]
 
@@ -83,7 +84,7 @@ class GulpCommand(BaseCommand):
             if self.task_name is not None:
                 self.run_gulp_task()
             else:
-                self.defer(self.show_tasks)
+                defer(self.show_tasks)
 
     def show_tasks(self):
         self.tasks = self.list_tasks()
@@ -107,20 +108,16 @@ class GulpCommand(BaseCommand):
         return "Dependencies: " + task['dependencies'] if task['dependencies'] else ""
 
     def fetch_json(self):
-        jsonfilename = os.path.join(self.working_dir, GulpCommand.cache_file_name)
+        cache_file = CacheFile(self.working_dir)
         gulpfile = self.get_gulpfile_path(self.working_dir)
         data = None
 
-        if os.path.exists(jsonfilename):
+        if cache_file.exists():
             filesha1 = Hasher.sha1(gulpfile)
-            json_data = codecs.open(jsonfilename, "r", "utf-8", errors='replace')
+            data = cache_file.read()
 
-            try:
-                data = json.load(json_data)
-                if gulpfile in data and data[gulpfile]["sha1"] == filesha1:
-                    return data[gulpfile]["tasks"]
-            finally:
-                json_data.close()
+            if gulpfile in data and data[gulpfile]["sha1"] == filesha1:
+                return data[gulpfile]["tasks"]
 
         self.callcount += 1
 
@@ -136,10 +133,8 @@ class GulpCommand(BaseCommand):
             raise Exception("Have you renamed a folder?.\nSometimes Sublime doesn't update the project path, try removing the folder from the project and adding it again.")
 
     def write_to_cache(self):
-        package_path = os.path.join(sublime.packages_path(), self.package_name)
-
-        process = CrossPlatformProcess(self)
-        (stdout, stderr) = process.run_sync(r'node "%s/write_tasks_to_cache.js"' % package_path)
+        process = CrossPlatformProcess(self.working_dir)
+        (stdout, stderr) = process.run_sync(r'node "%s/write_tasks_to_cache.js"' % self.settings.package_path())
 
         if process.failed:
             try:
@@ -154,7 +149,7 @@ class GulpCommand(BaseCommand):
         return self.fetch_json()
 
     def write_to_cache_without_js(self):
-        process = CrossPlatformProcess(self)
+        process = CrossPlatformProcess(self.working_dir)
         (stdout, stderr) = process.run_sync(r'gulp -v')
 
         if process.failed or not GulpVersion(stdout).supports_tasks_simple():
@@ -167,18 +162,12 @@ class GulpCommand(BaseCommand):
         if not stdout:
             raise Exception("Gulp: The result of `gulp --tasks-simple` was empty")
 
-        self.write_cache_file({
+        CacheFile(self.working_dir).write({
             gulpfile: {
                 "sha1": Hasher.sha1(gulpfile),
                 "tasks": dict((task, { "name": task, "dependencies": "" }) for task in stdout.split("\n") if task)
             }
         })
-
-    def write_cache_file(self, cache):
-        cache_path = os.path.join(self.working_dir, GulpCommand.cache_file_name)
-        with codecs.open(cache_path, "w", "utf-8", errors='replace') as cache_file:
-            json_cache = json.dumps(cache, ensure_ascii=False)
-            cache_file.write(json_cache)
 
     def get_gulpfile_path(self, base_path):
         for extension in GulpCommand.allowed_extensions:
@@ -212,10 +201,10 @@ class GulpCommand(BaseCommand):
         return r"gulp %s %s" % (self.task_name, self.task_flag)
 
     def run_process(self, task):
-        process = CrossPlatformProcess(self)
+        process = CrossPlatformProcess(self.working_dir)
         process.run(task)
         stdout, stderr = process.communicate(self.append_to_output_view_in_main_thread)
-        self.defer_sync(lambda: self.finish(stdout, stderr))
+        defer_sync(lambda: self.finish(stdout, stderr))
 
     def finish(self, stdout, stderr):
         finish_message = "gulp %s %s finished %s" % (self.task_name, self.task_flag, "with some errors." if stderr else "!")
@@ -249,23 +238,50 @@ class GulpArbitraryCommand(GulpCommand):
 
 class GulpLastCommand(BaseCommand):
     def work(self):
-        if ProcessCache.last:
-            last_command = ProcessCache.last.last_command
-            task_name = last_command.replace('gulp ', '').strip()
+        if ProcessCache.last_command:
+            task_name = ProcessCache.last_command.replace('gulp ', '').strip()
             self.window.run_command("gulp", { "task_name": task_name })
         else:
             self.status_message("You need to run a task first")
 
 
-class GulpKillCommand(BaseCommand):
+class GulpKillTaskCommand(BaseCommand):
     def work(self):
+        ProcessCache.refresh()
+
         if ProcessCache.empty():
             self.status_message("There are no running tasks")
         else:
-            self.show_output_panel("\nFinishing the following running tasks:\n")
-            ProcessCache.each(lambda process: self.append_to_output_view("$ %s\n" % process.last_command.rstrip()))
+            self.procs = ProcessCache.get()
+            quick_panel_list = [[process.last_command, process.working_dir, 'PID: %d' % process.pid] for process in self.procs]
+            self.show_quick_panel(quick_panel_list, self.kill_process, font=0)
+
+    def kill_process(self, index=-1):
+        if index >= 0 and index < len(self.procs):
+            process = self.procs[index]
+            try:
+                process.kill()
+            except ProcessLookupError as e:
+                print('Process %d seems to be dead already' % process.pid)
+
+            self.show_output_panel('')
+            self.append_to_output_view("\n%s killed! # %s | PID: %d\n" % process.to_tuple())
+
+
+class GulpKillCommand(BaseCommand):
+    def work(self):
+        ProcessCache.refresh()
+
+        if ProcessCache.empty():
+            self.status_message("There are no running tasks")
+        else:
+            self.append_processes_to_output_view()
             ProcessCache.kill_all()
             self.append_to_output_view("\nAll running tasks killed!\n")
+
+    def append_processes_to_output_view(self):
+        self.show_output_panel("\nFinishing the following running tasks:\n")
+        ProcessCache.each(lambda process: self.append_to_output_view("$ %s # %s | PID: %d\n" % process.to_tuple()))
 
 
 class GulpShowPanelCommand(BaseCommand):
@@ -284,14 +300,14 @@ class GulpPluginsCommand(BaseCommand):
         self.request_plugin_list()
 
     def request_plugin_list(self):
-        progress = ProgressNotifier("Gulp: Working")
+        progress = ProgressNotifier("%s: Working" % Settings.PACKAGE_NAME)
         thread = PluginRegistryCall()
         thread.start()
         self.handle_thread(thread, progress)
 
     def handle_thread(self, thread, progress):
         if thread.is_alive() and not thread.error:
-            sublime.set_timeout(lambda: self.handle_thread(thread, progress), 100)
+            set_timeout(lambda: self.handle_thread(thread, progress), 100)
         else:
             progress.stop()
             if thread.result:
@@ -326,9 +342,9 @@ class GulpDeleteCacheCommand(GulpCommand):
         if file_index > -1:
             self.working_dir = self.gulp_files[file_index]
             try:
-                jsonfilename = os.path.join(self.working_dir, GulpCommand.cache_file_name)
-                if os.path.exists(jsonfilename):
-                    os.remove(jsonfilename)
+                cache_file = CacheFile(self.working_dir)
+                if cache_file.exists():
+                    cache_file.remove()
                     self.status_message('Cache removed successfully')
             except Exception as e:
                 self.status_message("Could not remove cache: %s" % str(e))
@@ -342,140 +358,15 @@ class GulpExitCommand(sublime_plugin.WindowCommand):
             self.window.run_command("exit")
 
 
-#
-# General purpose Classes.
-#
+def plugin_loaded():
+    def load_process_cache():
+        for process in ProcessCache.get_from_storage():
+            ProcessCache.add(
+                CrossPlatformProcess(process['workding_dir'], process['last_command'], process['pid'])
+            )
+
+    async(load_process_cache, 1200, silent=True)
 
 
-class CrossPlatformProcess():
-    def __init__(self, sublime_command):
-        self.working_dir = sublime_command.working_dir
-        self.nonblocking = sublime_command.nonblocking
-        self.path = Env.get_path(sublime_command.exec_args)
-        self.last_command = ""
-        self.failed = False
-
-    def run(self, command):
-        with Dir.cd(self.working_dir):
-            self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, shell=True, preexec_fn=self._preexec_val())
-
-        self.last_command = command
-        ProcessCache.add(self)
-        return self
-
-    def run_sync(self, command):
-        command = CrossPlaformCodecs.encode_process_command(command)
-
-        with Dir.cd(self.working_dir):
-            self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=self.path, shell=True)
-            (stdout, stderr) = self.process.communicate()
-            self.failed = self.process.returncode == 127 or stderr
-
-        return (CrossPlaformCodecs.force_decode(stdout), CrossPlaformCodecs.force_decode(stderr))
-
-    def _preexec_val(self):
-        return os.setsid if sublime.platform() != "windows" else None
-
-    def communicate(self, fn=lambda x: None):
-        stdout, stderr = self.pipe(fn)
-        self.process.communicate()
-        self.terminate()
-        return (stdout, stderr)
-
-    def pipe(self, fn):
-        streams = [self.process.stdout, self.process.stderr]
-        streams_text = []
-        if self.nonblocking:
-            threads = [ThreadWithResult(target=self._pipe_stream, args=(stream, fn)) for stream in streams]
-            [t.join() for t in threads]
-            streams_text = [t.result for t in threads]
-        else:
-            streams_text = [self._pipe_stream(stream, fn) for stream in streams]
-        return streams_text
-
-    def _pipe_stream(self, stream, fn):
-        output_text = ""
-        while True:
-            line = stream.readline()
-            if not line:
-                break
-            output_line = CrossPlaformCodecs.decode_line(line)
-            output_text += output_line
-            fn(output_line)
-        return output_text
-
-    def terminate(self):
-        if self.is_alive():
-            self.process.terminate()
-        ProcessCache.remove(self)
-
-    def is_alive(self):
-        return self.process.poll() is None
-
-    def returncode(self):
-        return self.process.returncode
-
-    def kill(self):
-        pid = self.process.pid
-        if sublime.platform() == "windows":
-            kill_process = subprocess.Popen(['C:\\Windows\\system32\\taskkill.exe', '/F', '/T', '/PID', str(pid)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-            kill_process.communicate()
-        else:
-            os.killpg(pid, signal.SIGTERM)
-        ProcessCache.remove(self)
-
-
-class ProcessCache():
-    _procs = []
-    last = None
-
-    @classmethod
-    def add(cls, process):
-        cls._procs.append(process)
-        cls.last = process
-
-    @classmethod
-    def remove(cls, process):
-        if process in cls._procs:
-            cls._procs.remove(process)
-
-    @classmethod
-    def kill_all(cls):
-        cls.each(lambda process: process.kill())
-        cls.clear()
-
-    @classmethod
-    def each(cls, fn):
-        for process in cls._procs[:]:
-            fn(process)
-
-    @classmethod
-    def empty(cls):
-        return len(cls._procs) == 0
-
-    @classmethod
-    def clear(cls):
-        del cls._procs[:]
-
-
-class Env():
-    @classmethod
-    def get_path(self, exec_args=False):
-        env = os.environ.copy()
-        if exec_args:
-            path = str(exec_args.get('path', ''))
-            if path:
-                env['PATH'] = path
-        return env
-
-
-class ThreadWithResult(Thread):
-    def __init__(self, target, args):
-        self.result = None
-        self.target = target
-        self.args = args
-        Thread.__init__(self)
-        self.start()
-
-    def run(self):
-        self.result = self.target(*self.args)
+if not is_sublime_text_3:
+    plugin_loaded()

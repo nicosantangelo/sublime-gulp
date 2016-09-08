@@ -3,7 +3,7 @@ import sys
 import re
 
 
-class CrossPlaformCodecs():
+class CrossPlatformCodecs():
     @classmethod
     def decode_line(self, line):
         line = line.rstrip()
