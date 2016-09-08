@@ -365,7 +365,7 @@ def plugin_loaded():
                 CrossPlatformProcess(process['workding_dir'], process['last_command'], process['pid'])
             )
 
-    async(load_process_cache, 1200, silent=True)
+    async(load_process_cache, 200, silent=True)
 
 
 if not is_sublime_text_3:
