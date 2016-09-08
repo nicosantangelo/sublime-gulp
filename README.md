@@ -283,9 +283,12 @@ If set to `false`, it will read first from `stdout` and then from `stderr`.
 
 Persist the long running task pids to a local file to keep track even if the editor is closed.
 
-If `false` package will keep track of tasks in memory, meaning that if you ran a long running task like `gulp watch` and restart Sublime Text, the process wont't die but you won't be able to kill it from the editor anymore.
+If set to `false` package will keep track of tasks in memory, meaning that if you run a long running task like `gulp watch` and restart Sublime Text, the process wont't necessarily die and you won't be able to kill it from the editor anymore.
 
-If `true` the package will keep track of long running tasks using an internal `.sublime-gulp.cache`. So even if you close your editor and re-open it, you should still be able to list and kill running tasks.
+If set to `true` the package will keep track of long running tasks using an internal `.sublime-gulp.cache`. So even if you close your editor and re-open it, you should still be able to list and kill running tasks.
+
+Depending on the OS you're on, the process might die anyways without the package interverting. Sublime Gulp tries to remedy this by checking if the process is still alive before listing it, which works most of the time but it's not a reliable check.
+Worst case scenario, you'll see a dead task, killing it won't do anything. _Worst and really not likely_ case scenario, you'll kill another process if the pid was reused by the OS :raised_hands:.
 
 
 #### flags

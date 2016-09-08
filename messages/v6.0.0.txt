@@ -14,25 +14,22 @@ Hello!
 
 Killing tasks has been revamped!
 
-## Command
+## New command
 
 Now you can kill a specific long running task!
 
-Using the command `Gulp: Kill specific running task` will display all the long running tasks that Sublime is tracking on the command pallete, choosing one of them will kill it. 
-
-Also, the package now prints the path that created the task when killed, useful if you're running multiple `gulp`s on different projects.
+Using the command `Gulp: Kill specific running task` will display all the long running tasks that Sublime is tracking on the command pallete, choosing one of them will kill it. It also serves as a "Tasks currently running" list.
 
 ## Tracking long running tasks
 
-Until now the package kept track of tasks in memory, meaning that if you ran a long running task like `gulp watch` and restarted Sublime Text, the process wasn't dead but you couldn't kill it from the editor anymore.
+Until now the package kept track of tasks in memory, meaning that if you ran a long running task like `gulp watch` and restarted Sublime Text, the process wouldn't necessarily die but you couldn't kill it from the editor anymore.
 
-This shouldn't be a problem anymore!
+Well not anymore (I hope)!
 
-The package now keeps track of long running tasks using an internal `.sublime-gulp.cache`. So even if you close your editor and re-open it, you should still be able to list and kill running tasks.
-Event if the tracking succeds, there's a chance that the OS won't let Sublime kill the task (mostly in Windows). But at least `Gulp: Kill specific running task` will show the pid so you can kill it by hand.
+The package now can keep track of long running tasks using an internal file. So even if you close your editor and re-open it, you should still be able to list and kill running tasks.
+Depending on the OS you're on, the process might die anyways without the package interverting. Sublime Gulp tries to remedy this by checking if the process is still alive before listing it.
 
-
-In case you don't want Sublime writing the long running processes pids you can disable it on the settings, setting `track_processes` to false. And you can still use `Gulp: Exit editor killing running tasks` if you want a "clean" exit.
+In case you don't want Sublime writing the long running processes pids you can disable it on the settings, setting `track_processes` to false which will revert back to in-memory tracking. And you can still use `Gulp: Exit editor killing running tasks` if you want a "clean" exit.
 
 
 Thanks a lot to @kikandrew for kickstarting this.
