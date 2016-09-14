@@ -103,7 +103,7 @@ class CrossPlatformProcess():
             (stdout, stderr) = taskkill.communicate()
             
             failed = taskkill.returncode == 127 or stderr
-            found = self.pid in CrossPlatformCodecs.force_decode(stdout)
+            found = str(self.pid) in CrossPlatformCodecs.force_decode(stdout)
             
             return found or failed
         else:
