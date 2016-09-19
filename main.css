@@ -1,0 +1,32 @@
+body {
+  background-color: #f6f6f6;
+}
+
+.main {
+  margin: 0 auto;
+  max-width: 100em;
+  padding: 5rem 6rem;
+}
+
+header {
+  text-align: center;
+}
+
+.title {
+  font-size: 46pt;
+  font-weight: bold;
+  font-family: 'Open Sans', sans-serif;
+
+  -webkit-text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+  -moz-text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+
+  color: #444;
+
+  display: inline-block;
+}
+
+.gulp-logo {
+  margin-left: 10px;
+  vertical-align: bottom;
+}
