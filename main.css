@@ -1,15 +1,20 @@
 body {
   background-color: #f6f6f6;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.text-center {
+  text-align: center;
 }
 
 .main {
   margin: 0 auto;
   max-width: 100em;
-  padding: 5rem 6rem;
+  padding: 4rem 6rem;
 }
 
 header {
-  text-align: center;
+  padding-right: 20px;
 }
 
 .title {
@@ -27,6 +32,59 @@ header {
 }
 
 .gulp-logo {
-  margin-left: 10px;
+  margin-left: 20px;
   vertical-align: bottom;
+}
+
+.media {
+  margin: 20px 0;
+}
+
+.actions {
+}
+
+.actions > a {
+  margin: 0 8px;
+  width: 90px;
+}
+
+.actions > iframe {
+  vertical-align: middle;
+}
+
+.btn {
+  height: 28px;
+  padding: 5px;
+  line-height: 28px;
+  border-radius: 5px;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  color: #FFF;
+  background-color: #282c39;
+  border: 1px solid #FFF;
+
+  text-decoration: none;
+
+  display: inline-block;
+}
+
+.get-it {
+  background-color: #EB4A4B;
+}
+.get-it:hover {
+  background-color: #EF2A2C;
+}
+
+.docs {
+  color: #444;
+  text-decoration: none;
+}
+.docs:hover {
+  color: #000;
+}
+
+.github-button {
+  display: none;
 }
