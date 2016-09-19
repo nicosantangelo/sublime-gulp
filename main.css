@@ -74,7 +74,7 @@ header {
   max-width: 640px;
   width: 100%;
 }
-.media video {
+.media .demo {
   width: 100%;
 }
 
