@@ -13,6 +13,12 @@ body {
   padding: 4rem 6rem;
 }
 
+@media screen and (max-width: 567px) {
+  .main {
+    padding: 2rem 1rem;
+  }
+}
+
 header {
   padding-right: 20px;
 }
@@ -32,12 +38,44 @@ header {
 }
 
 .gulp-logo {
+  width: 74px;
+  height: 165px;
   margin-left: 20px;
   vertical-align: bottom;
 }
 
+@media screen and (max-width: 567px) {
+  .title {
+    font-size: 40pt;
+  }
+
+  .gulp-logo {
+    width: 53px;
+    height: 118px;
+    vertical-align: top;
+  }
+}
+
+@media screen and (max-width: 409px) {
+  .title {
+    font-size: 30pt;
+  }
+
+  .gulp-logo {
+    width: 49px;
+    height: 110px;
+    vertical-align: top;
+  }
+}
+
+
 .media {
-  margin: 20px 0;
+  margin: 20px auto;
+  max-width: 640px;
+  width: 100%;
+}
+.media video {
+  width: 100%;
 }
 
 .actions {
