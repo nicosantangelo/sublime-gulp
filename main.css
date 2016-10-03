@@ -10,7 +10,7 @@ body {
 .main {
   margin: 0 auto;
   max-width: 100em;
-  padding: 4rem 6rem;
+  padding: 3.7em 6em 3em;
 }
 
 @media screen and (max-width: 567px) {
@@ -123,6 +123,33 @@ header {
   color: #000;
 }
 
+footer {
+  width: 220px;
+  padding-bottom: 10px;
+  margin: auto;
+  text-align: right;
+}
+
+footer iframe {
+  vertical-align: middle;
+}
+
 .github-button {
-  display: none;
+  min-width: 80px;
+  visibility: hidden;
+  display: inline-block;
+}
+
+.bullet {
+  margin: 0 5px;
+  font-weight: 500;
+}
+
+.by {
+  font-size: 14px;
+}
+
+.by a {
+  text-decoration: none;
+  color: #EB4A4B;
 }
