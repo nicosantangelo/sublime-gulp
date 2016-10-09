@@ -36,10 +36,6 @@ body {
   HEADER
 */
 
-header {
-  padding-right: 20px;
-}
-
 .title {
   font-size: 46pt;
   font-weight: bold;
@@ -153,7 +149,7 @@ footer {
   left: 0;
   position: absolute;
 
-  width: 230px;
+  width: 240px;
   margin: auto;
   text-align: right;
 }
@@ -171,6 +167,7 @@ footer iframe {
 .bullet {
   margin: 0 5px;
   font-weight: 500;
+  vertical-align: middle;
 }
 
 .by {
