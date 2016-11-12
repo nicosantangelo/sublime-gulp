@@ -29,9 +29,12 @@ class Settings():
         return Settings.SHARED_DATA.get(key, default)
 
     def __init__(self):
-        active_view = sublime.active_window().active_view()
         self.user_settings = sublime.load_settings(Settings.PACKAGE_SETTINGS)
-        self.sources = [active_view.settings(), ProjectData(), self.user_settings]
+        self.sources = [ProjectData(), self.user_settings]
+
+        active_view = sublime.active_window().active_view()
+        if active_view:
+            self.sources.append(active_view.settings())
 
     def get(self, key, default=None):
         return next((settings.get(key, default) for settings in self.sources if settings.has(key)), None)
