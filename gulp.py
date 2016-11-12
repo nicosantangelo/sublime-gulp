@@ -59,12 +59,21 @@ class GulpCommand(BaseCommand):
             self.error_message("gulpfile not found %s" % sufix)
 
     def append_paths(self):
-        for folder_path in self.sercheable_folders:
-            self.append_to_gulp_files(folder_path)
-            for inner_folder in self.settings.get("gulpfile_paths", []):
-                if(os.name == 'nt'):
-                    inner_folder = inner_folder.replace("/", "\\")
-                self.append_to_gulp_files(os.path.join(folder_path, inner_folder))
+        gulpfile_paths = self.settings.get("gulpfile_paths", [])
+        ignored_gulpfile_paths = self.settings.get("ignored_gulpfile_paths", [])
+
+        if self.settings.get("recursive_gulpfile_paths", True):
+            for folder_path in self.sercheable_folders:
+                for dir, dirnames, files in os.walk(folder_path):
+                    dirnames[:] = [dirname for dirname in dirnames if dirname not in ignored_gulpfile_paths]
+                    self.append_to_gulp_files(dir)
+        else:
+            for folder_path in self.sercheable_folders:
+                self.append_to_gulp_files(folder_path)
+                for inner_folder in gulpfile_paths:
+                    if(os.name == 'nt'):
+                        inner_folder = inner_folder.replace("/", "\\")
+                    self.append_to_gulp_files(os.path.join(folder_path, inner_folder))
 
     def append_to_gulp_files(self, folder_path):
         gulpfile_path = self.get_gulpfile_path(folder_path)

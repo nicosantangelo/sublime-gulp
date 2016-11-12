@@ -2,7 +2,15 @@
     // Override your environment PATH
     "exec_args": {},
 
-    // Additional paths to search the gulpfile in (by default only the root of each project folder is used). Example: ["src", "nested/folder"]
+    //
+    "recursive_gulpfile_paths": true,
+
+    //
+    "ignored_gulpfile_paths": [".git", "node_modules", "dist", "img", "css"],
+
+    // Additional paths to search the gulpfile in (by default only the root of each project folder is used).
+    //
+    // Example: ["src", "nested/folder"]
     "gulpfile_paths": [],
 
     // Use a new tab when showing the results. If it's false it'll use a panel.
