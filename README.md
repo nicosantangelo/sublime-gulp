@@ -213,7 +213,7 @@ The defaults are:
 ````json
 {
     "exec_args": {},
-    "recursive_gulpfile_paths": false,
+    "recursive_gulpfile_search": false,
     "ignored_gulpfile_folders": [".git", "node_modules", "vendor", "tmp", "dist"],
     "gulpfile_paths": [],
     "results_in_new_tab": false,
@@ -247,7 +247,7 @@ You may override your `PATH` environment variable as follows (from [sublime-grun
 
 If gulp is installed locally in the project, you have to specify the path to the gulp executable. Threfore, adjust the path to `/bin:/usr/bin:/usr/local/bin:node_modules/.bin`
 
-#### recursive_gulpfile_paths
+#### recursive_gulpfile_search
 
 If set to `true`, the package will search for a `gulpfile.js` file recursively through each top level folder ignoring the folders defined in `ignored_gulpfile_folders`.
 
@@ -260,7 +260,7 @@ Example: `[".git", "node_modules", "vendor", "tmp", "dist"]`
 
 #### gulpfile_paths
 
-This setting is active *only* if `recursive_gulpfile_paths` is `false`.
+This setting is active *only* if `recursive_gulpfile_search` is `false`.
 
 Each item in the array constitutes an additional paths to search the gulpfile in, by default only the root of each project folder is used.
 Example: `["src", "nested/folder"]`

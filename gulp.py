@@ -56,15 +56,15 @@ class GulpCommand(BaseCommand):
             self.choose_file()
         else:
             sufix = "on:\n- %s" % "\n- ".join(self.sercheable_folders) if len(self.sercheable_folders) > 0 else ""
-            if not self.settings.get("recursive_gulpfile_paths", False):
-                sufix += '\n\nCheck the recursive_gulpfile_paths setting for nested gulpfiles'
+            if not self.settings.get("recursive_gulpfile_search", False):
+                sufix += '\n\nCheck the recursive_gulpfile_search setting for nested gulpfiles'
             self.error_message("gulpfile not found %s" % sufix)
 
     def append_paths(self):
         gulpfile_paths = self.settings.get("gulpfile_paths", [])
         ignored_gulpfile_folders = self.settings.get("ignored_gulpfile_folders", [])
 
-        if self.settings.get("recursive_gulpfile_paths", False):
+        if self.settings.get("recursive_gulpfile_search", False):
             for folder_path in self.sercheable_folders:
                 for dir, dirnames, files in os.walk(folder_path):
                     dirnames[:] = [dirname for dirname in dirnames if dirname not in ignored_gulpfile_folders]
