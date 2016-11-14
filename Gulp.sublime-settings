@@ -6,7 +6,7 @@
     "recursive_gulpfile_paths": true,
 
     //
-    "ignored_gulpfile_paths": [".git", "node_modules", "dist", "img", "css"],
+    "ignored_gulpfile_paths": [".git", "node_modules", "vendor", "tmp", "dist"],
 
     // Additional paths to search the gulpfile in (by default only the root of each project folder is used).
     //
