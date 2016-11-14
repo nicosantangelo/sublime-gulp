@@ -1,0 +1,25 @@
+   _____       _       
+  / ____|     | |      
+ | |  __ _   _| |_ __  
+ | | |_ | | | | | '_ \ 
+ | |__| | |_| | | |_) |
+  \_____|\__,_|_| .__/ 
+                | |    
+                |_|    
+
+Recent Changes
+==============
+
+Hello!
+Sublime gulp has a new setting, `recursive_gulpfile_paths`, which makes the package look for a `gulpfile.js` on every project folder instead of checking only the top level.
+
+If you found `gulpfile_paths` annoying to use, give it a try!
+To read more about it head over to https://github.com/NicoSantangelo/sublime-gulp#recursive_gulpfile_paths or check this package Default Settings.
+
+----------------------------------------------
+
+Thanks a lot to @PixelT for kickstarting this.
+
+As always if you have any issues or feature requests go to https://github.com/NicoSantangelo/sublime-gulp/issues
+
+That is all, thanks!
