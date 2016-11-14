@@ -2,14 +2,16 @@
     // Override your environment PATH
     "exec_args": {},
 
-    //
-    "recursive_gulpfile_paths": true,
+    // If set to true, the package will search for a gulpfile.js file recursively through each top level folder
+    // ignoring the folders defined in `ignored_gulpfile_folders`.
+    // If false, only top level folders and the ones found on `gulpfile_paths` are used.
+    "recursive_gulpfile_paths": false,
 
-    //
-    "ignored_gulpfile_paths": [".git", "node_modules", "vendor", "tmp", "dist"],
+    // Ignored folder names for the recursive search of gulpfile.js files, used to drastically improve performance.
+    "ignored_gulpfile_folders": [".git", "node_modules", "vendor", "tmp", "dist"],
 
+    // Active if `recursive_gulpfile_paths` is false.
     // Additional paths to search the gulpfile in (by default only the root of each project folder is used).
-    //
     // Example: ["src", "nested/folder"]
     "gulpfile_paths": [],
 

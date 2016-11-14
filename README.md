@@ -213,6 +213,8 @@ The defaults are:
 ````json
 {
     "exec_args": {},
+    "recursive_gulpfile_paths": false,
+    "ignored_gulpfile_folders": [".git", "node_modules", "vendor", "tmp", "dist"],
     "gulpfile_paths": [],
     "results_in_new_tab": false,
     "results_autoclose_timeout_in_milliseconds": 0,
@@ -245,14 +247,27 @@ You may override your `PATH` environment variable as follows (from [sublime-grun
 
 If gulp is installed locally in the project, you have to specify the path to the gulp executable. Threfore, adjust the path to `/bin:/usr/bin:/usr/local/bin:node_modules/.bin`
 
-#### results_in_new_tab
+#### recursive_gulpfile_paths
 
-If set to `true`, a new tab will be used instead of a panel to output the results.
+If set to `true`, the package will search for a `gulpfile.js` file recursively through each top level folder ignoring the folders defined in `ignored_gulpfile_folders`.
+
+If `false`, only top level folders and the ones found on `gulpfile_paths` are used.
+
+#### ignored_gulpfile_folders
+
+Ignored folder names for the recursive search of gulpfile.js files, used to drastically improve performance.
+Example: `[".git", "node_modules", "vendor", "tmp", "dist"]`
 
 #### gulpfile_paths
 
-Additional paths to search the gulpfile in, by default only the root of each project folder is used.
+This setting is active *only* if `recursive_gulpfile_paths` is `false`.
+
+Each item in the array constitutes an additional paths to search the gulpfile in, by default only the root of each project folder is used.
 Example: `["src", "nested/folder"]`
+
+#### results_in_new_tab
+
+If set to `true`, a new tab will be used instead of a panel to output the results.
 
 #### results_autoclose_timeout_in_milliseconds
 
