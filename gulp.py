@@ -78,6 +78,10 @@ class GulpCommand(BaseCommand):
                     self.append_to_gulp_files(os.path.join(folder_path, inner_folder))
 
     def append_to_gulp_files(self, folder_path):
+        ignored_gulpfile_folders = self.settings.get("ignored_gulpfile_folders", [])
+        folder = os.path.basename(os.path.normpath(folder_path))
+        if folder in ignored_gulpfile_folders:
+            return
         gulpfile_path = self.get_gulpfile_path(folder_path)
         self.folders.append(folder_path)
         if os.path.exists(gulpfile_path):
