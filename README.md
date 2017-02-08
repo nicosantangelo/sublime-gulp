@@ -46,7 +46,7 @@ If you want to use a `gulpfile.coffee` you need to do two things:
 
 ```javascript
 require('coffee-script/register');
-var gulp = require('./gulpfile.coffee');
+var gulp = module.exports = require('./gulpfile.coffee');
 ```
 
 ### Gulpfile.js
