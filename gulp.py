@@ -68,10 +68,12 @@ class GulpCommand(BaseCommand):
             for folder_path in self.sercheable_folders:
                 for dir, dirnames, files in os.walk(folder_path):
                     dirnames[:] = [dirname for dirname in dirnames if dirname not in ignored_gulpfile_folders]
-                    self.append_to_gulp_files(dir)
+                    if dir not in ignored_gulpfile_folders:
+                        self.append_to_gulp_files(dir)
         else:
             for folder_path in self.sercheable_folders:
-                self.append_to_gulp_files(folder_path)
+                if folder_path not in ignored_gulpfile_folders:
+                    self.append_to_gulp_files(folder_path)
                 for inner_folder in gulpfile_paths:
                     if(os.name == 'nt'):
                         inner_folder = inner_folder.replace("/", "\\")
