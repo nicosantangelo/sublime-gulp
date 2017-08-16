@@ -25,7 +25,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.task_flag = task_flag if task_name is not None and task_flag is not None else self.get_flag_from_task_name()
         self.silent = silent
         self._working_dir = ""
-        self.sercheable_folders = [os.path.dirname(path) for path in paths] if len(paths) > 0 else self.window.folders()
+        self.searcheable_folders = [os.path.dirname(path) for path in paths] if len(paths) > 0 else self.window.folders()
         self.output_view = None
         self.work()
 
@@ -87,7 +87,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self.append_to_output_view(text)
 
     def gulp_results_path(self):
-        return next(folder_path for folder_path in self.sercheable_folders if self.working_dir.find(folder_path) != -1) if self.working_dir else ""
+        return next(folder_path for folder_path in self.searcheable_folders if self.working_dir.find(folder_path) != -1) if self.working_dir else ""
 
     def gulp_results_view(self):
         if self.output_view is None:
