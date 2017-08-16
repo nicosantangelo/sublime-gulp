@@ -67,7 +67,7 @@ class ProcessCache():
     @classmethod
     def storage(cls):
         if Settings.get_from_shared_data("track_processes", True):
-            return CacheFile(Settings.package_path()) 
+            return CacheFile(Settings.package_path())
         else:
             return Cache()
 
@@ -109,24 +109,39 @@ class CacheFile(Cache):
     def read(self):
         data = None
         cache_file = self.open()
+
         try:
             data = json.load(cache_file)
+        except ValueError:
+            data = []
         finally:
             cache_file.close()
+
         return data
 
     def write(self, data):
         cache_file = self.open("w")
+
         try:
             json_data = json.dumps(data, ensure_ascii=False)
+
+            if not json_data:
+                json_data = '[]'
+
             cache_file.write(json_data)
         finally:
             cache_file.close()
 
     def update(self, fn):
         cache_file = codecs.open(self.cache_path, "r+", "utf-8", errors='replace')
+        current_data = None
+
         try:
             current_data = json.load(cache_file)
+        except ValueError:
+            current_data = []
+
+        try:
             cache_file.seek(0)
 
             new_data = fn(current_data)
