@@ -80,7 +80,7 @@ class GulpCommand(BaseCommand):
     def append_to_gulp_files(self, folder_path):
         gulpfile_path = self.get_gulpfile_path(folder_path)
         self.folders.append(folder_path)
-        if os.path.exists(gulpfile_path):
+        if os.path.exists(gulpfile_path) and gulpfile_path not in self.gulp_files:
             self.gulp_files.append(gulpfile_path)
 
     def choose_file(self):
@@ -184,7 +184,7 @@ class GulpCommand(BaseCommand):
         for extension in GulpCommand.allowed_extensions:
             gulpfile_path = os.path.join(base_path, "gulpfile" + extension)
             if os.path.exists(gulpfile_path):
-                return gulpfile_path
+                return os.path.normpath(gulpfile_path)
         return gulpfile_path
 
     def log_errors(self, text):
