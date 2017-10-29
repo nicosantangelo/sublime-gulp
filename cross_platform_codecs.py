@@ -32,7 +32,7 @@ class CrossPlatformCodecs():
         (chcp, _) = proccess.communicate()
 
         # Decode using the locale preferred encoding (for example 'cp1251') and remove newlines
-        chcp = chcp.decode(locale.getpreferredencoding()).strip()
+        chcp = chcp.decode(locale.getpreferredencoding()).strip(".\r\n ")
 
         # Get the actual number
         chcp = chcp.split(" ")[-1]
