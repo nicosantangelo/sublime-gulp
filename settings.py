@@ -52,8 +52,10 @@ class ProjectData():
             self._project_data = data
         else:
             active_window = sublime.active_window()
+
             if is_sublime_text_3 and active_window:
-                self._project_data = active_window.project_data().get(Settings.PACKAGE_NAME, {})
+                project_data = active_window.project_data() or {}
+                self._project_data = project_data.get(Settings.PACKAGE_NAME, {})
             else:
                 self._project_data = {}
 
