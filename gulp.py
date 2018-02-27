@@ -214,6 +214,7 @@ class GulpCommand(BaseCommand):
     def run_process(self, task):
         process = CrossPlatformProcess(self.working_dir)
         process.run(task)
+        self.update_status_bar()
         stdout, stderr = process.communicate(self.append_to_output_view_in_main_thread)
         defer_sync(lambda: self.finish(stdout, stderr))
 
@@ -228,6 +229,24 @@ class GulpCommand(BaseCommand):
             self.append_to_output_view(stdout)
             self.append_to_output_view(stderr)
             self.silent = True
+
+        if ProcessCache.empty():
+            self.erase_status()
+        else:
+            self.update_status_bar()
+
+    def update_status_bar(self):
+        status_bar_tasks = self.settings.get('status_bar_tasks', False)
+
+        if status_bar_tasks:
+            task_names = set([process.get_task_name() for process in ProcessCache.get()])
+
+            if status_bar_tasks == True:
+                status_task_names = task_names
+            else:
+                status_task_names = task_names.intersection(set(status_bar_tasks))
+
+            self.set_status_bar(', '.join(status_task_names))
 
     def show_running_status_in_output_panel(self):
         with_flag_text = (' with %s' % self.task_flag) if self.task_flag else ''
@@ -249,8 +268,8 @@ class GulpArbitraryCommand(GulpCommand):
 
 class GulpLastCommand(BaseCommand):
     def work(self):
-        if ProcessCache.last_command:
-            task_name = ProcessCache.last_command.replace('gulp ', '').strip()
+        if ProcessCache.last_task_name:
+            task_name = ProcessCache.last_task_name
             self.window.run_command("gulp", { "task_name": task_name })
         else:
             self.status_message("You need to run a task first")
@@ -373,7 +392,7 @@ def plugin_loaded():
     def load_process_cache():
         for process in ProcessCache.get_from_storage():
             ProcessCache.add(
-                CrossPlatformProcess(process['workding_dir'], process['last_command'], process['pid'])
+                CrossPlatformProcess(process['working_dir'], process['last_command'], process['pid'])
             )
 
     async(load_process_cache, 200, silent=True)

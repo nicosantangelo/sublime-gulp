@@ -62,6 +62,12 @@ class BaseCommand(sublime_plugin.WindowCommand):
     def show_input_panel(self, caption, initial_text="", on_done=None, on_change=None, on_cancel=None):
         self.window.show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
 
+    def set_status_bar(self, text):
+        defer_sync(lambda: self.window.active_view().set_status(Settings.PACKAGE_NAME, '%s: %s' % (Settings.PACKAGE_NAME, text)))
+
+    def erase_status(self):
+        self.window.active_view().erase_status(Settings.PACKAGE_NAME)
+
     def status_message(self, text):
         sublime.status_message("%s: %s" % (Settings.PACKAGE_NAME, text))
 

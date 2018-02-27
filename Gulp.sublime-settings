@@ -56,5 +56,11 @@
 
     // If any task is defined on `tasks_on_save` or `silent_tasks_on_save`
     // setting this option to true will run `gulp_kill` before running any of them
-    "kill_before_save_tasks": false
+    "kill_before_save_tasks": false,
+
+    // Can be either true, which will show all the running tasks on the status bar
+    // Or an array of task names to show, like ["watch"]
+    "status_bar_tasks": false
+
+    // TODO: status_bar_format
 }
