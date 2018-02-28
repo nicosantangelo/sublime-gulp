@@ -60,7 +60,8 @@
 
     // Can be either true, which will show all the running tasks on the status bar
     // Or an array of task names to show, like ["watch"]
-    "status_bar_tasks": false
+    "status_bar_tasks": false,
 
-    // TODO: status_bar_format
+    // Status bar message format, where {0} is the joined task names
+    "status_bar_format": "Gulp: {0}"
 }

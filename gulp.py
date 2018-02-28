@@ -19,6 +19,7 @@ if is_sublime_text_3:
     from .gulp_version import GulpVersion
     from .plugins import PluginList, PluginRegistryCall
     from .caches import ProcessCache, CacheFile
+    from .status_bar import StatusBar
     from .timeout import set_timeout, defer, defer_sync, async
 else:
     from base_command import BaseCommand
@@ -29,6 +30,7 @@ else:
     from gulp_version import GulpVersion
     from plugins import PluginList, PluginRegistryCall
     from caches import ProcessCache, CacheFile
+    from status_bar import StatusBar
     from timeout import set_timeout, defer, defer_sync, async
 
 
@@ -214,13 +216,14 @@ class GulpCommand(BaseCommand):
     def run_process(self, task):
         process = CrossPlatformProcess(self.working_dir)
         process.run(task)
-        self.update_status_bar()
+        self.status_bar.update()
         stdout, stderr = process.communicate(self.append_to_output_view_in_main_thread)
         defer_sync(lambda: self.finish(stdout, stderr))
 
     def finish(self, stdout, stderr):
         finish_message = "gulp %s %s finished %s" % (self.task_name, self.task_flag, "with some errors." if stderr else "!")
         self.status_message(finish_message)
+        self.status_bar.update()
         if not self.silent:
             self.set_output_close_on_timeout()
         elif stderr and self.settings.get("show_silent_errors", False):
@@ -229,24 +232,6 @@ class GulpCommand(BaseCommand):
             self.append_to_output_view(stdout)
             self.append_to_output_view(stderr)
             self.silent = True
-
-        if ProcessCache.empty():
-            self.erase_status()
-        else:
-            self.update_status_bar()
-
-    def update_status_bar(self):
-        status_bar_tasks = self.settings.get('status_bar_tasks', False)
-
-        if status_bar_tasks:
-            task_names = set([process.get_task_name() for process in ProcessCache.get()])
-
-            if status_bar_tasks == True:
-                status_task_names = task_names
-            else:
-                status_task_names = task_names.intersection(set(status_bar_tasks))
-
-            self.set_status_bar(', '.join(status_task_names))
 
     def show_running_status_in_output_panel(self):
         with_flag_text = (' with %s' % self.task_flag) if self.task_flag else ''
@@ -386,6 +371,21 @@ class GulpExitCommand(sublime_plugin.WindowCommand):
             self.window.run_command("gulp_kill")
         finally:
             self.window.run_command("exit")
+
+
+class GulpUpdateStatusBarCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        if self.view.settings().get('is_widget'):
+            return
+
+        window = self.view.window()
+        if not window or \
+            (self.view.file_name() and
+                self.view == window.transient_view_in_group(window.active_group())):
+            # it means it is an transient view of a regular file
+            return
+
+        StatusBar(window).update()
 
 
 def plugin_loaded():
