@@ -50,7 +50,11 @@ class GulpVersion():
         self.version_string = version_string or ""
 
     def supports_tasks_simple(self):
-        return LooseVersion(self.cli_version()) >= LooseVersion("3.7.0")
+        # This is a mess. The new gulp-cli started from version 0 and does support tasks-simple,
+        # but there's no reliable way to check which one is installed
+        # So here we are, having to check if the CLI version is _not_ between 3.6.0 and 3.7.0 which works..for now
+        cli_version = LooseVersion(self.cli_version())
+        return cli_version >= LooseVersion("3.7.0") or cli_version <= LooseVersion("3.6.0")
 
     def cli_version(self):
        return self.get("CLI")

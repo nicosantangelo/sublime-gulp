@@ -74,7 +74,7 @@ var _forEachTask4x = function(fn) {
               });
               deps = deps.concat(innerDeps);
             });
-            
+
             fn(task.label, deps);
         }
     });
@@ -103,4 +103,4 @@ if (!gulpsublimecache[gulpfilePath] || gulpsublimecache[gulpfilePath].sha1 !== s
     fs.writeFileSync(cachePath, JSON.stringify(gulpsublimecache));
 }
 
-fs.unlink(tmpfilePath);
+fs.unlinkSync(tmpfilePath);
