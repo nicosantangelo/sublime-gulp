@@ -25,7 +25,7 @@ class CrossPlatformProcess():
         self.working_dir = working_dir
         self.last_command = last_command
         self.pid = pid
-        
+
         self.nonblocking = Settings.get_from_shared_data("nonblocking", True)
         self.path = Env.get_path(Settings.get_from_shared_data('exec_args', False))
 
@@ -101,10 +101,10 @@ class CrossPlatformProcess():
         if sublime.platform() == "windows":
             taskkill = subprocess.Popen(['C:\\Windows\\system32\\tasklist.exe', '/FI', 'PID eq %s' % self.pid, '/FO', 'CSV'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             (stdout, stderr) = taskkill.communicate()
-            
+
             failed = taskkill.returncode == 127 or stderr
             found = str(self.pid) in CrossPlatformCodecs.force_decode(stdout)
-            
+
             return found or failed
         else:
             try:
@@ -130,10 +130,13 @@ class CrossPlatformProcess():
             os.killpg(self.pid, signal.SIGTERM)
         ProcessCache.remove(self)
 
+    def get_task_name(self):
+        return self.last_command.replace('gulp ', '').strip()
+
     def to_json(self):
         return {
             'last_command': self.last_command,
-            'workding_dir': self.working_dir,
+            'working_dir': self.working_dir,
             'pid': self.pid
         }
 

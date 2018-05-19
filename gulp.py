@@ -19,6 +19,7 @@ if is_sublime_text_3:
     from .gulp_version import GulpVersion
     from .plugins import PluginList, PluginRegistryCall
     from .caches import ProcessCache, CacheFile
+    from .status_bar import StatusBar
     from .timeout import set_timeout, defer, defer_sync, async
 else:
     from base_command import BaseCommand
@@ -29,6 +30,7 @@ else:
     from gulp_version import GulpVersion
     from plugins import PluginList, PluginRegistryCall
     from caches import ProcessCache, CacheFile
+    from status_bar import StatusBar
     from timeout import set_timeout, defer, defer_sync, async
 
 
@@ -214,12 +216,14 @@ class GulpCommand(BaseCommand):
     def run_process(self, task):
         process = CrossPlatformProcess(self.working_dir)
         process.run(task)
+        self.status_bar.update()
         stdout, stderr = process.communicate(self.append_to_output_view_in_main_thread)
         defer_sync(lambda: self.finish(stdout, stderr))
 
     def finish(self, stdout, stderr):
         finish_message = "gulp %s %s finished %s" % (self.task_name, self.task_flag, "with some errors." if stderr else "!")
         self.status_message(finish_message)
+        self.status_bar.update()
         if not self.silent:
             self.set_output_close_on_timeout()
         elif stderr and self.settings.get("show_silent_errors", False):
@@ -249,8 +253,8 @@ class GulpArbitraryCommand(GulpCommand):
 
 class GulpLastCommand(BaseCommand):
     def work(self):
-        if ProcessCache.last_command:
-            task_name = ProcessCache.last_command.replace('gulp ', '').strip()
+        if ProcessCache.last_task_name:
+            task_name = ProcessCache.last_task_name
             self.window.run_command("gulp", { "task_name": task_name })
         else:
             self.status_message("You need to run a task first")
@@ -369,11 +373,26 @@ class GulpExitCommand(sublime_plugin.WindowCommand):
             self.window.run_command("exit")
 
 
+class GulpUpdateStatusBarCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        if self.view.settings().get('is_widget'):
+            return
+
+        window = self.view.window()
+        if not window or \
+            (self.view.file_name() and
+                self.view == window.transient_view_in_group(window.active_group())):
+            # it means it is an transient view of a regular file
+            return
+
+        StatusBar(window).update()
+
+
 def plugin_loaded():
     def load_process_cache():
         for process in ProcessCache.get_from_storage():
             ProcessCache.add(
-                CrossPlatformProcess(process['workding_dir'], process['last_command'], process['pid'])
+                CrossPlatformProcess(process['working_dir'], process['last_command'], process['pid'])
             )
 
     async(load_process_cache, 200, silent=True)

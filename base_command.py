@@ -6,10 +6,12 @@ is_sublime_text_3 = int(sublime.version()) >= 3000
 
 if is_sublime_text_3:
     from .settings import Settings
+    from .status_bar import StatusBar
     from .insert_in_output_view import insert_in_output_view
     from .timeout import set_timeout, defer_sync
 else:
     from settings import Settings
+    from status_bar import StatusBar
     from insert_in_output_view import insert_in_output_view
     from timeout import set_timeout, defer_sync
 
@@ -20,6 +22,7 @@ else:
 
 class BaseCommand(sublime_plugin.WindowCommand):
     def run(self, task_name=None, task_flag=None, silent=False, paths=[]):
+        self.settings = None
         self.setup_data_from_settings()
         self.task_name = task_name
         self.task_flag = task_flag if task_name is not None and task_flag is not None else self.get_flag_from_task_name()
@@ -27,6 +30,7 @@ class BaseCommand(sublime_plugin.WindowCommand):
         self._working_dir = ""
         self.searchable_folders = [os.path.dirname(path) for path in paths] if len(paths) > 0 else self.window.folders()
         self.output_view = None
+        self.status_bar = StatusBar(self.window)
         self.work()
 
     def setup_data_from_settings(self):

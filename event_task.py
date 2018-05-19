@@ -12,12 +12,25 @@ else:
 
 
 class EventTask(sublime_plugin.EventListener):
+    # these methods should be run synchronously to check if the
+    # view is transient.
+    def on_new(self, view):
+        view.run_command("gulp_update_status_bar")
+
+    def on_load(self, view):
+        view.run_command("gulp_update_status_bar")
+
+    def on_activated(self, view):
+        view.run_command("gulp_update_status_bar")
+
     def on_post_save(self, view):
         settings = Settings()
         self.view = view
         self.run_kill = settings.get('kill_before_save_tasks', False)
         self.run_tasks(settings.get("tasks_on_save", {}))
         self.run_tasks(settings.get("silent_tasks_on_save", {}), silent=True)
+
+        self.view.run_command("gulp_update_status_bar")
 
     def run_tasks(self, tasks_on_save, silent=False):
         if tasks_on_save:

@@ -13,7 +13,7 @@ else:
 
 class ProcessCache():
     _procs = []
-    last_command = None
+    last_task_name = None
 
     @classmethod
     def get_from_storage(cls):
@@ -32,7 +32,7 @@ class ProcessCache():
 
     @classmethod
     def add(cls, process):
-        cls.last_command = process.last_command
+        cls.last_task_name = process.get_task_name()
         if process not in cls._procs:
             cls._procs.append(process)
 
