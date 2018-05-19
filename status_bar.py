@@ -26,16 +26,18 @@ class StatusBar():
         if status_bar_tasks:
             task_names = set([process.get_task_name() for process in ProcessCache.get()])
 
-            if status_bar_tasks == True:
-                status_task_names = task_names
-            else:
-                status_task_names = task_names.intersection(set(status_bar_tasks))
+            if status_bar_tasks != True:
+                if isinstance(status_bar_tasks, list):
+                    task_names = task_names.intersection(set(status_bar_tasks))
+                else:
+                    task_names.add(status_bar_tasks)
 
-            defer_sync(lambda: self.set(', '.join(status_task_names)))
+            if task_names:
+                defer_sync(lambda: self.set(', '.join(task_names)))
 
     def set(self, text):
-        text_format = self.settings.get('status_bar_format', '{0}')
-        status = text_format.format(text)
+        text_format = self.settings.get('status_bar_format', '{task_name}')
+        status = text_format.format(task_name=text)
         self.window.active_view().set_status(Settings.PACKAGE_NAME, status)
 
     def erase(self):

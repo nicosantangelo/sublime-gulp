@@ -62,6 +62,6 @@
     // Or an array of task names to show, like ["watch"]
     "status_bar_tasks": false,
 
-    // Status bar message format, where {0} is the joined task names
-    "status_bar_format": "Gulp: {0}"
+    // Status bar message format, where {task_name} is the joined task names
+    "status_bar_format": "Gulp: {task_name}"
 }
