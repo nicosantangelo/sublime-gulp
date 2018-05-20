@@ -221,7 +221,7 @@ class GulpCommand(BaseCommand):
         defer_sync(lambda: self.finish(stdout, stderr))
 
     def finish(self, stdout, stderr):
-        finish_message = "gulp %s %s finished %s" % (self.task_name, self.task_flag, "with some errors." if stderr else "!")
+        finish_message = "gulp %s %s finished %s" % (self.task_name or '', self.task_flag, "with some errors." if stderr else "!")
         self.status_message(finish_message)
         self.status_bar.update()
         if not self.silent:
