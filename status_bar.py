@@ -27,10 +27,10 @@ class StatusBar():
             task_names = set([process.get_task_name() for process in ProcessCache.get()])
 
             if status_bar_tasks != True:
-                if isinstance(status_bar_tasks, list):
-                    task_names = task_names.intersection(set(status_bar_tasks))
-                else:
-                    task_names.add(status_bar_tasks)
+                if not isinstance(status_bar_tasks, list):
+                    status_bar_tasks = [status_bar_tasks]
+
+                task_names = task_names.intersection(set(status_bar_tasks))
 
             if task_names:
                 defer_sync(lambda: self.set(', '.join(task_names)))
