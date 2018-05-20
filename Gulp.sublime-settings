@@ -58,10 +58,10 @@
     // setting this option to true will run `gulp_kill` before running any of them
     "kill_before_save_tasks": false,
 
-    // Can be either true, which will show all the running tasks on the status bar
-    // Or an array of task names to show, like ["watch"]
+    // Can be either true, which will show all the running tasks on the status bar,
+    // a task name like "watch" or an array of task names to show, like ["watch", "build"]
     "status_bar_tasks": false,
 
-    // Status bar message format, where {task_name} is the joined task names
+    // Status bar message format, where {task_name} will become the running task names
     "status_bar_format": "Gulp: {task_name}"
 }

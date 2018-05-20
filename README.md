@@ -227,7 +227,9 @@ The defaults are:
     "check_for_gulpfile": false,
     "tasks_on_save": {},
     "silent_tasks_on_save": {},
-    "kill_before_save_tasks": false
+    "kill_before_save_tasks": false,
+    "status_bar_tasks": false,
+    "status_bar_format": "Gulp: {task_name}"
 }
 ````
 
@@ -356,6 +358,14 @@ Works the same way as [tasks_on_save](https://github.com/NicoSantangelo/sublime-
 #### kill_before_save_tasks
 
 If any task is defined on [tasks_on_save](https://github.com/NicoSantangelo/sublime-gulp#tasks_on_save) or [silent_tasks_on_save](https://github.com/NicoSantangelo/sublime-gulp#silent_tasks_on_save) setting this option to `true` will run [gulp_kill](#killing-tasks) before running any of them.
+
+#### status_bar_tasks
+
+Can be either `true`, which will show all the running tasks on the status bar, a task name like `"watch"` or an array of task names to show like `["watch", "build"]`.
+
+#### status_bar_format
+
+Which format to use for [status_bar_tasks](https://github.com/NicoSantangelo/sublime-gulp#status_bar_tasks). You can use `{task_name}` to show the running task names.
 
 
 ### Per project settings
