@@ -33,6 +33,6 @@ In case you don't like this feature you can disable setting `track_processes` to
 Thanks a lot to @kikandrew for kickstarting this.
 
 That is all!
-As always if you have any issues or feature requests go to https://github.com/NicoSantangelo/sublime-gulp/issues
+As always if you have any issues or feature requests go to https://github.com/nicosantangelo/sublime-gulp/issues
 
 Thanks!

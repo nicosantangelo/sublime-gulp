@@ -22,7 +22,7 @@ Just type `cmd-shift-p`/`ctrl-shift-p` to bring up the command pallete and pick 
 You can clone the repo in your `/Packages` (*Preferences -> Browse Packages...*) folder and start using/hacking it.
     
     cd ~/path/to/Packages
-    git clone git://github.com/NicoSantangelo/sublime-gulp.git Gulp
+    git clone git://github.com/nicosantangelo/sublime-gulp.git Gulp
 
 ### Troubleshooting
 
@@ -30,11 +30,11 @@ For older gulp versions, the plugin makes use of [node](http://nodejs.org/) whic
 
 `export NODE_PATH=/usr/local/lib/node_modules`
 
-Sublime Gulp might not work without `var gulp = require('gulp');` defined in each task file. [More info](https://github.com/NicoSantangelo/sublime-gulp/issues/12) (thanks [@smeijer](https://github.com/smeijer) for the help)
+Sublime Gulp might not work without `var gulp = require('gulp');` defined in each task file. [More info](https://github.com/nicosantangelo/sublime-gulp/issues/12) (thanks [@smeijer](https://github.com/smeijer) for the help)
 
 If you are having trouble running the plugin in **Mac OSX** it's possible that your path isn't being reported by your shell. In which case give the plugin [SublimeFixMacPath](https://github.com/int3h/SublimeFixMacPath) a try. It may resolve our issue.
 
-If you still can't get it to run properly, first make sure your Gulp tasks run from a terminal (i.e. outside of sublime) and if so then submit an [issue](https://github.com/NicoSantangelo/sublime-gulp/issues).
+If you still can't get it to run properly, first make sure your Gulp tasks run from a terminal (i.e. outside of sublime) and if so then submit an [issue](https://github.com/nicosantangelo/sublime-gulp/issues).
 
 
 ### CoffeeScript Support
@@ -353,11 +353,11 @@ The base folder for glob pattern is the first folder in you project. So, if you 
 
 #### silent_tasks_on_save
 
-Works the same way as [tasks_on_save](https://github.com/NicoSantangelo/sublime-gulp#tasks_on_save) but it runs the tasks on `silent` mode (using `Gulp (silent)`).
+Works the same way as [tasks_on_save](https://github.com/nicosantangelo/sublime-gulp#tasks_on_save) but it runs the tasks on `silent` mode (using `Gulp (silent)`).
 
 #### kill_before_save_tasks
 
-If any task is defined on [tasks_on_save](https://github.com/NicoSantangelo/sublime-gulp#tasks_on_save) or [silent_tasks_on_save](https://github.com/NicoSantangelo/sublime-gulp#silent_tasks_on_save) setting this option to `true` will run [gulp_kill](#killing-tasks) before running any of them.
+If any task is defined on [tasks_on_save](https://github.com/nicosantangelo/sublime-gulp#tasks_on_save) or [silent_tasks_on_save](https://github.com/nicosantangelo/sublime-gulp#silent_tasks_on_save) setting this option to `true` will run [gulp_kill](#killing-tasks) before running any of them.
 
 #### status_bar_tasks
 
@@ -365,7 +365,7 @@ Can be either `true`, which will show all the running tasks on the status bar, a
 
 #### status_bar_format
 
-Which format to use for [status_bar_tasks](https://github.com/NicoSantangelo/sublime-gulp#status_bar_tasks). You can use `{task_name}` to show the running task names.
+Which format to use for [status_bar_tasks](https://github.com/nicosantangelo/sublime-gulp#status_bar_tasks). You can use `{task_name}` to show the running task names.
 
 
 ### Per project settings
@@ -391,7 +391,7 @@ The package will search first on `"settings": {}`, then on `"Gulp": {}` (ST3 onl
 
 Keep in mind that the only *caveat* is that if you want to override the `syntax` key, you'll need to use `syntax_override` as key.
 
-For a visual example go to [this comment on issue 53](https://github.com/NicoSantangelo/sublime-gulp/issues/53#issuecomment-153012155)
+For a visual example go to [this comment on issue 53](https://github.com/nicosantangelo/sublime-gulp/issues/53#issuecomment-153012155)
 
 
 ## Shortcut Keys
@@ -447,6 +447,6 @@ _Note_: You can run commands like `gulp -v` if you set `task_name` to `""` (empt
 
 ##Acknowledgments
 
-This package is a merge between [Gulp Snippets](https://github.com/filipelinhares/gulp-sublime-snippets) from [@filipelinhares](https://github.com/filipelinhares) and [Gulp](https://github.com/NicoSantangelo/sublime-gulp) from [NicoSantangelo](https://github.com/NicoSantangelo) (this last one, inspired by the awesome [sublime-grunt](https://github.com/tvooo/sublime-grunt)).
+This package is a merge between [Gulp Snippets](https://github.com/filipelinhares/gulp-sublime-snippets) from [@filipelinhares](https://github.com/filipelinhares) and [Gulp](https://github.com/nicosantangelo/sublime-gulp) from [nicosantangelo](https://github.com/nicosantangelo) (this last one, inspired by the awesome [sublime-grunt](https://github.com/tvooo/sublime-grunt)).
 
 Thanks to [@dkebler](https://github.com/dkebler) for re-writing the README.

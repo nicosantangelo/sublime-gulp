@@ -10,9 +10,9 @@
 Recent Changes
 ==============
 
-Good news, you're now using the version 3.0.0 of the Gulp package!. A bunch of stuff changed if you have any troubles you can report it on github.com/NicoSantangelo/sublime-gulp/issues
+Good news, you're now using the version 3.0.0 of the Gulp package!. A bunch of stuff changed if you have any troubles you can report it on github.com/nicosantangelo/sublime-gulp/issues
 
-If you are in a hurry and something is not working, you can replace your Gulp package (Browse Packages -> Gulp folder) with v2.1.2 from github.com/NicoSantangelo/sublime-gulp/releases
+If you are in a hurry and something is not working, you can replace your Gulp package (Browse Packages -> Gulp folder) with v2.1.2 from github.com/nicosantangelo/sublime-gulp/releases
 
 New features/changes:
 
@@ -35,6 +35,6 @@ New features/changes:
 
 That's all!, thanks a lot to @KevinBatdorf and @Sigmus for the suggestions and help.
 
-For issues or feature requests, head over to https://github.com/NicoSantangelo/sublime-gulp/issues
+For issues or feature requests, head over to https://github.com/nicosantangelo/sublime-gulp/issues
 
 Thanks!

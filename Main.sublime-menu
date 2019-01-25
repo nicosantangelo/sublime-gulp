@@ -124,7 +124,7 @@
                             // README
                             {
                                 "caption": "View README in Github",
-                                "command": "open_url", "args": { "url": "https://github.com/NicoSantangelo/sublime-gulp" }
+                                "command": "open_url", "args": { "url": "https://github.com/nicosantangelo/sublime-gulp" }
                             }
                         ]
                     }

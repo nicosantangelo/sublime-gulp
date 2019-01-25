@@ -193,7 +193,7 @@ class GulpCommand(BaseCommand):
         if not self.settings.get("log_errors", True):
             return
         log_path = os.path.join(self.working_dir, GulpCommand.log_file_name)
-        header = "Remember that you can report errors and get help in https://github.com/NicoSantangelo/sublime-gulp" if not os.path.isfile(log_path) else ""
+        header = "Remember that you can report errors and get help in https://github.com/nicosantangelo/sublime-gulp" if not os.path.isfile(log_path) else ""
         timestamp = str(datetime.now().strftime("%m-%d-%Y %H:%M"))
 
         with codecs.open(log_path, "a", "utf-8", errors='replace') as log_file:
@@ -335,7 +335,7 @@ class GulpPluginsCommand(BaseCommand):
     def error_text_for(self, thread):
         error_tuple = (
             "The plugin repository seems to be down.",
-            "If http://gulpjs.com/plugins is working, please report this issue at the Sublime Gulp repo (https://github.com/NicoSantangelo/sublime-gulp).",
+            "If http://gulpjs.com/plugins is working, please report this issue at the Sublime Gulp repo (https://github.com/nicosantangelo/sublime-gulp).",
             "Thanks!",
             thread.error
         )

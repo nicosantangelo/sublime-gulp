@@ -15,7 +15,7 @@ Hello!
 Sublime gulp just got a bunch of new stuff!
 
 1) You can now run any task without having to pick from your predefined gulpfile list. So you can add flags, or just run `gulp -v` if you want.
-Give it a try selecting `Gulp: Run arbitrary task`, more info: https://github.com/NicoSantangelo/sublime-gulp/tree/release#available-commands
+Give it a try selecting `Gulp: Run arbitrary task`, more info: https://github.com/nicosantangelo/sublime-gulp/tree/release#available-commands
 
 2) The package now has support for babel using a `gulpfile.babel.js` file. Thanks @peduxe for the heads up!.
 
@@ -32,4 +32,4 @@ Thanks a lot to everyone who helped with this one, @dkebler, @cksachdev, @ISkomo
 
 ---
 
-As always if you have any issues or feature requests go to https://github.com/NicoSantangelo/sublime-gulp/issues
+As always if you have any issues or feature requests go to https://github.com/nicosantangelo/sublime-gulp/issues

@@ -16,6 +16,6 @@ The latest version of sublime-gulp now has experimental support for gulp4.0-alph
 
 If you tried to list the tasks using gulp4.0, try removing the `.sublime-gulp.cache` file (you can use `Gulp: Delete cache`) and running `Gulp` again.
 
-If you find any problem or you have a feature request please let me know at https://github.com/NicoSantangelo/sublime-gulp/issues
+If you find any problem or you have a feature request please let me know at https://github.com/nicosantangelo/sublime-gulp/issues
 
 Thanks a lot to @Smuliii for the heads up!

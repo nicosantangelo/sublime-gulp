@@ -12,7 +12,7 @@ Recent Changes
 ==============
 
 @filipelinhares' https://github.com/filipelinhares "Gulp Snippets" package has been combined with 
-@NicoSantangelo's https://github.com/NicoSantangelo "Gulp" package.
+@nicosantangelo's https://github.com/nicosantangelo "Gulp" package.
 
 Users of the Gulp Snippets package, all of the snippets still work with the same shortcuts.
 Gulp adds new features like running Tasks.

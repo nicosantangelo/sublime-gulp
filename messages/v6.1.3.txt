@@ -18,6 +18,6 @@ New setting, `status_bar_tasks` and it's companion `status_bar_format` to show t
 
 Thanks a lot to @mkormendy, @jacobraccuia and @DiegoAz for the help.
 
-As always if you have any issues or feature requests go to https://github.com/NicoSantangelo/sublime-gulp/issues
+As always if you have any issues or feature requests go to https://github.com/nicosantangelo/sublime-gulp/issues
 
 That is all, thanks!

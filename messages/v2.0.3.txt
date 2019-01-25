@@ -17,7 +17,7 @@ If you're having troubles using the plugin, now errors will be logged in sublime
 
 Also, if you're running Mac OS, take a look at https://github.com/int3h/SublimeFixMacPath.
 
-That is all, remember that you can report issues or feature requests at: https://github.com/NicoSantangelo/sublime-gulp
+That is all, remember that you can report issues or feature requests at: https://github.com/nicosantangelo/sublime-gulp
 
 
 Thanks!

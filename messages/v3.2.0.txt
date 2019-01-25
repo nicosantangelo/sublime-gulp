@@ -16,6 +16,6 @@ Now the package reads from stdout and stderr without blocking, so now you should
 
 The feature is enabled by default but you can disable it by adding `"nonblocking": false` to the Gulp User Settings.
 
-I hope it helps, for any issue or feature request you can go to https://github.com/NicoSantangelo/sublime-gulp/issues
+I hope it helps, for any issue or feature request you can go to https://github.com/nicosantangelo/sublime-gulp/issues
 
 Thanks!

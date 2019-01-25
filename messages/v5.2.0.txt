@@ -36,4 +36,4 @@ The package will search first on then on `"settings": {}`, `"Gulp": {}` (ST3 onl
 Keep in mind that the only *caveat* is that if you want to override the `syntax` key, you'll need to use `syntax_override` as key.
 
 That is all!
-As always if you have any issues or feature requests go to https://github.com/NicoSantangelo/sublime-gulp/issues
+As always if you have any issues or feature requests go to https://github.com/nicosantangelo/sublime-gulp/issues

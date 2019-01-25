@@ -16,7 +16,7 @@ New feature!
 
 Thanks to @rhaldkhein (https://github.com/rhaldkhein) you can now add a setting to run tasks when a file is saved.
 
-To add a new trigger go to your settings (it works with project specific settings https://github.com/NicoSantangelo/sublime-gulp#per-project-settings) and add a key like this:
+To add a new trigger go to your settings (it works with project specific settings https://github.com/nicosantangelo/sublime-gulp#per-project-settings) and add a key like this:
 
 ```
 {
@@ -36,4 +36,4 @@ To add a new trigger go to your settings (it works with project specific setting
 If you want to run the tasks in silent mode, you can use the key `silent_tasks_on_save`
 
 That is all!
-As always if you have any issues or feature requests go to https://github.com/NicoSantangelo/sublime-gulp/issues
+As always if you have any issues or feature requests go to https://github.com/nicosantangelo/sublime-gulp/issues

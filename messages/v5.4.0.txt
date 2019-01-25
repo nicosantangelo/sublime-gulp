@@ -20,4 +20,4 @@ Useful if you want to re-run `watch` when saving certain files. It defaults to `
 
 
 That is all!
-As always if you have any issues or feature requests go to https://github.com/NicoSantangelo/sublime-gulp/issues
+As always if you have any issues or feature requests go to https://github.com/nicosantangelo/sublime-gulp/issues

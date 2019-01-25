@@ -23,6 +23,6 @@ You can select `Gulp: Exit editor killing running tasks` on the command palette 
 
 You can bind it to `alt+f4` or `super+q` so you don't have to remember it. Sadly it won't run if you close the editor using the close button and Sublime doesn't provide a callback for that.
 
-If you find any problem or you have a feature request you can do so at https://github.com/NicoSantangelo/sublime-gulp/issues
+If you find any problem or you have a feature request you can do so at https://github.com/nicosantangelo/sublime-gulp/issues
 
 Thanks to @dirad for the idea.
