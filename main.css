@@ -149,9 +149,9 @@ footer {
   left: 0;
   position: absolute;
 
-  width: 240px;
+  width: 230px;
   margin: auto;
-  text-align: right;
+  display: flex;
 }
 
 footer iframe {
